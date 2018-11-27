@@ -29,15 +29,6 @@ Also note that when you create a command, always start by adding a command first
 
 To do :
 
-    Add onload functions
-    Add on time command function
-    Add specific day function
-    Command to list all loaded schedulers
-    Reload command
-    Create commands in-game
-    Modify tasks in-game
-    Reload support
-    Fancy GUI
     Add bungeecord support
     API
     Force start a task on command
