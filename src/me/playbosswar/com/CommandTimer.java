@@ -11,6 +11,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
@@ -37,7 +38,7 @@ public class CommandTimer extends JavaPlugin implements Listener {
 		TaskRunner.startTasks();
 		
 		Tools.printDate();
-		Bukkit.getConsoleSender().sendMessage("§a[CommandTimer] v2.0.5 loaded");
+		Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[CommandTimer] v2.1 loaded");
 	}
 	
 	public void onDisable() {

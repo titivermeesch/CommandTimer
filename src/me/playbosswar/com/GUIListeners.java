@@ -1,6 +1,7 @@
 package me.playbosswar.com;
 
 import me.playbosswar.com.AnvilGUI.Versions.AnvilGUI;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -98,7 +99,7 @@ public class GUIListeners implements Listener {
                     ItemStack onHour = new ItemStack( Material.INK_SACK, 1, (byte)10 );
                     ItemMeta onHourMeta = onHour.getItemMeta();
                     ArrayList<String> lore = new ArrayList<>();
-                    lore.add("§aEnabled");
+                    lore.add(ChatColor.GREEN + "Enabled");
 
                     onHourMeta.setLore(lore);
                     onHourMeta.setDisplayName("On hour");
@@ -111,7 +112,7 @@ public class GUIListeners implements Listener {
                     ItemStack onHour = new ItemStack( Material.INK_SACK, 1, (byte)8 );
                     ItemMeta onHourMeta = onHour.getItemMeta();
                     ArrayList<String> lore = new ArrayList<>();
-                    lore.add("§cDisabled");
+                    lore.add(ChatColor.RED + "Disabled");
 
                     onHourMeta.setLore(lore);
                     onHourMeta.setDisplayName("On hour");
@@ -126,7 +127,7 @@ public class GUIListeners implements Listener {
                     ItemStack onHour = new ItemStack( Material.INK_SACK, 1, (byte)10 );
                     ItemMeta onHourMeta = onHour.getItemMeta();
                     ArrayList<String> lore = new ArrayList<>();
-                    lore.add("§aEnabled");
+                    lore.add(ChatColor.GREEN + "Enabled");
 
                     onHourMeta.setLore(lore);
                     onHourMeta.setDisplayName("On load");
@@ -139,7 +140,7 @@ public class GUIListeners implements Listener {
                     ItemStack onHour = new ItemStack( Material.INK_SACK, 1, (byte)8 );
                     ItemMeta onHourMeta = onHour.getItemMeta();
                     ArrayList<String> lore = new ArrayList<>();
-                    lore.add("§cDisabled");
+                    lore.add(ChatColor.RED + "Disabled");
 
                     onHourMeta.setLore(lore);
                     onHourMeta.setDisplayName("On load");
@@ -154,7 +155,7 @@ public class GUIListeners implements Listener {
                     ItemStack onHour = new ItemStack( Material.INK_SACK, 1, (byte)10 );
                     ItemMeta onHourMeta = onHour.getItemMeta();
                     ArrayList<String> lore = new ArrayList<>();
-                    lore.add("§aEnabled");
+                    lore.add(ChatColor.GREEN + "Enabled");
 
                     onHourMeta.setLore(lore);
                     onHourMeta.setDisplayName("On day");
@@ -167,7 +168,7 @@ public class GUIListeners implements Listener {
                     ItemStack onHour = new ItemStack( Material.INK_SACK, 1, (byte)8 );
                     ItemMeta onHourMeta = onHour.getItemMeta();
                     ArrayList<String> lore = new ArrayList<>();
-                    lore.add("§cDisabled");
+                    lore.add(ChatColor.RED + "Disabled");
 
                     onHourMeta.setLore(lore);
                     onHourMeta.setDisplayName("On day");
@@ -176,6 +177,45 @@ public class GUIListeners implements Listener {
                     p.getOpenInventory().setItem(3, onHour);
                     p.updateInventory();
                 }
+            } else if(e.getSlot() == 7) {
+                if(e.getCurrentItem().getType().equals(Material.LEATHER_HELMET)) {
+                    e.setCancelled(true);
+                    ItemStack operator = new ItemStack( Material.IRON_HELMET,1);
+                    ItemMeta operatorMeta = operator.getItemMeta();
+
+                    operatorMeta.setDisplayName("Executed by Operator");
+                    operator.setItemMeta(operatorMeta);
+                    CommandTimer.getPlugin().getConfig().set("settings.tasks." + GUIHandler.o + ".gender", "operator");
+                    CommandTimer.getPlugin().saveConfig();
+
+                    p.getOpenInventory().setItem(7, operator);
+                    p.updateInventory();
+                } else if(e.getCurrentItem().getType().equals(Material.IRON_HELMET)) {
+                    e.setCancelled(true);
+                    ItemStack operator = new ItemStack( Material.DIAMOND_HELMET,1);
+                    ItemMeta operatorMeta = operator.getItemMeta();
+
+                    operatorMeta.setDisplayName("Executed by Console");
+                    CommandTimer.getPlugin().getConfig().set("settings.tasks." + GUIHandler.o + ".gender", "console");
+                    CommandTimer.getPlugin().saveConfig();
+                    operator.setItemMeta(operatorMeta);
+
+                    p.getOpenInventory().setItem(7, operator);
+                    p.updateInventory();
+                } else if(e.getCurrentItem().getType().equals(Material.DIAMOND_HELMET)) {
+                    e.setCancelled(true);
+                    ItemStack operator = new ItemStack( Material.LEATHER_HELMET,1);
+                    ItemMeta operatorMeta = operator.getItemMeta();
+
+                    operatorMeta.setDisplayName("Executed by Player");
+                    operator.setItemMeta(operatorMeta);
+                    CommandTimer.getPlugin().getConfig().set("settings.tasks." + GUIHandler.o + ".gender", "player");
+                    CommandTimer.getPlugin().saveConfig();
+
+                    p.getOpenInventory().setItem(7, operator);
+                    p.updateInventory();
+                }
+
             } else if(e.getSlot() == 4) { //time
                 e.setCancelled(true);
                 GUIHandler.timeSetupGUI(p);
@@ -471,7 +511,7 @@ public class GUIListeners implements Listener {
             } else if (e.getSlot() == 8) { //Reload button
                 CommandTimer.getPlugin().reloadConfig();
                 Tools.reloadTaks();
-                p.sendMessage("§6CommandTimer reloaded");
+                p.sendMessage(ChatColor.GOLD + "CommandTimer reloaded");
                 Tools.closeAllInventories();
             }
         }

@@ -10,16 +10,16 @@ settings:
       #time: '13:49'
       #seconds: 60
       #onload: false
+      #gender: 'console"
     #'2':
      # commands:
-      #- say This message appears every 10 seconds
+      #- say This message appears every 10 seconds with a chance of 50%
       #onhour: false
       #time: '13:49'
       #seconds: 10
       #onload: false
-      #gender: 'player'
-      #permission: 'permission.test.commandtimer'
-      #random: 50
+      #gender: 'console'
+      #random: 0.5
     #'3':
       #commands:
       #- say This message appears after 5 seconds after restart but do not show up again after the restart/reload
@@ -27,6 +27,7 @@ settings:
      #time: '13:49'
      #seconds: 5
      # onload: true
+     #gender: 'console'
     #'4':
       #commands:
       #- say This message appears every 10 seconds every wednesday
@@ -37,3 +38,13 @@ settings:
       #time: '13:49'
       #seconds: 10
       #onload: false
+      #gender: 'console'
+    #'4':
+    #commands:
+    #- say This message is executed every 15 seconds by players with permission
+    #onhour: false
+    #time: '13:49'
+    #seconds: 15
+    #onload: false
+    #gender: 'operator'
+    #permission: 'custom.message'

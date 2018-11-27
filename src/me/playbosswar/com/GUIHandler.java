@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -47,11 +48,11 @@ public class GUIHandler implements Listener {
         ItemMeta metaReloadCommands = reloadCommands.getItemMeta();
         
         //Set the displayname of each ItemMeta
-        metaListCommands.setDisplayName("§6List all timers");
-        metaCreateCommands.setDisplayName("§6Create a timer");
-        metaRemoveCommands.setDisplayName("§6Delete a timer");
-        metaEditCommands.setDisplayName("§6Edit a timer");
-        metaReloadCommands.setDisplayName("§6Reload config");
+        metaListCommands.setDisplayName(ChatColor.GOLD + "List all timers");
+        metaCreateCommands.setDisplayName(ChatColor.GOLD + "Create a timer");
+        metaRemoveCommands.setDisplayName(ChatColor.GOLD + "Delete a timer");
+        metaEditCommands.setDisplayName(ChatColor.GOLD + "6Edit a timer");
+        metaReloadCommands.setDisplayName(ChatColor.GOLD + "Reload config");
 
         //Link the ItemMeta and ItemStack
         listCommands.setItemMeta(metaListCommands);
@@ -80,13 +81,13 @@ public class GUIHandler implements Listener {
 		        ItemMeta genStackMeta = genStack.getItemMeta();
 		        ArrayList<String> lore= new ArrayList<String>();
 		        
-		        lore.add("§6Commands : " + CommandTimer.getPlugin().getConfig().getStringList("settings.tasks." + path + ".commands"));
-		        lore.add("§6On hour : " + CommandTimer.getPlugin().getConfig().getBoolean("settings.tasks." + path + ".onhour"));
-		        lore.add("§6Time : " + CommandTimer.getPlugin().getConfig().getString("settings.tasks." + path + ".time"));
-		        lore.add("§6On load : " + CommandTimer.getPlugin().getConfig().getBoolean("settings.tasks." + path + ".onload"));
-		        lore.add("§6On day : " + CommandTimer.getPlugin().getConfig().getBoolean("settings.tasks." + path + ".onday"));
-		        lore.add("§6Days : " + CommandTimer.getPlugin().getConfig().getStringList("settings.tasks." + path + ".days"));
-		        lore.add("§6Seconds : " + CommandTimer.getPlugin().getConfig().getInt("settings.tasks." + path + ".seconds"));
+		        lore.add(ChatColor.GOLD + "Commands : " + CommandTimer.getPlugin().getConfig().getStringList("settings.tasks." + path + ".commands"));
+		        lore.add(ChatColor.GOLD + "On hour : " + CommandTimer.getPlugin().getConfig().getBoolean("settings.tasks." + path + ".onhour"));
+		        lore.add(ChatColor.GOLD + "Time : " + CommandTimer.getPlugin().getConfig().getString("settings.tasks." + path + ".time"));
+		        lore.add(ChatColor.GOLD + "On load : " + CommandTimer.getPlugin().getConfig().getBoolean("settings.tasks." + path + ".onload"));
+		        lore.add(ChatColor.GOLD + "On day : " + CommandTimer.getPlugin().getConfig().getBoolean("settings.tasks." + path + ".onday"));
+		        lore.add(ChatColor.GOLD + "Days : " + CommandTimer.getPlugin().getConfig().getStringList("settings.tasks." + path + ".days"));
+		        lore.add(ChatColor.GOLD + "Seconds : " + CommandTimer.getPlugin().getConfig().getInt("settings.tasks." + path + ".seconds"));
 		        
 		        genStackMeta.setLore(lore);
 		        genStackMeta.setDisplayName(path + "");
@@ -98,13 +99,13 @@ public class GUIHandler implements Listener {
 			ItemStack close = new ItemStack(Material.BARRIER);
 	        ItemMeta closeMeta = close.getItemMeta();
 	        
-	        closeMeta.setDisplayName("§6Return to main menu");
+	        closeMeta.setDisplayName(ChatColor.GOLD + "Return to main menu");
 	        close.setItemMeta(closeMeta);
 	        allCommands.setItem(53, close);
 			
 			p.openInventory(allCommands);
 		} else {
-			p.sendMessage("§cYou don't have any loaded commands");
+			p.sendMessage(ChatColor.RED + "You don't have any loaded commands");
 		}
 	}
 		
@@ -116,14 +117,14 @@ public class GUIHandler implements Listener {
 			ItemStack genStack = new ItemStack(Material.WOOL);
 	        ItemMeta genStackMeta = genStack.getItemMeta();
 	        ArrayList<String> lore= new ArrayList<String>();
-	        
-	        lore.add("§6Commands : " + CommandTimer.getPlugin().getConfig().getStringList("settings.tasks." + path + ".commands"));
-	        lore.add("§6On hour : " + CommandTimer.getPlugin().getConfig().getBoolean("settings.tasks." + path + ".onhour"));
-	        lore.add("§6Time : " + CommandTimer.getPlugin().getConfig().getString("settings.tasks." + path + ".time"));
-	        lore.add("§6On load : " + CommandTimer.getPlugin().getConfig().getBoolean("settings.tasks." + path + ".onload"));
-	        lore.add("§6On day : " + CommandTimer.getPlugin().getConfig().getBoolean("settings.tasks." + path + ".onday"));
-	        lore.add("§6Days : " + CommandTimer.getPlugin().getConfig().getStringList("settings.tasks." + path + ".days"));
-	        lore.add("§6Seconds : " + CommandTimer.getPlugin().getConfig().getInt("settings.tasks." + path + ".seconds"));
+
+	        lore.add(ChatColor.GOLD + "Commands : " + CommandTimer.getPlugin().getConfig().getStringList("settings.tasks." + path + ".commands"));
+	        lore.add(ChatColor.GOLD + "On hour : " + CommandTimer.getPlugin().getConfig().getBoolean("settings.tasks." + path + ".onhour"));
+	        lore.add(ChatColor.GOLD + "Time : " + CommandTimer.getPlugin().getConfig().getString("settings.tasks." + path + ".time"));
+	        lore.add(ChatColor.GOLD + "On load : " + CommandTimer.getPlugin().getConfig().getBoolean("settings.tasks." + path + ".onload"));
+	        lore.add(ChatColor.GOLD + "On day : " + CommandTimer.getPlugin().getConfig().getBoolean("settings.tasks." + path + ".onday"));
+	        lore.add(ChatColor.GOLD + "Days : " + CommandTimer.getPlugin().getConfig().getStringList("settings.tasks." + path + ".days"));
+	        lore.add(ChatColor.GOLD + "Seconds : " + CommandTimer.getPlugin().getConfig().getInt("settings.tasks." + path + ".seconds"));
 	        
 	        genStackMeta.setLore(lore);
 	        genStackMeta.setDisplayName(path + "");
@@ -135,13 +136,13 @@ public class GUIHandler implements Listener {
 		ItemStack close = new ItemStack(Material.BARRIER);
         ItemMeta closeMeta = close.getItemMeta();
         
-        closeMeta.setDisplayName("§6Return to main menu");
+        closeMeta.setDisplayName(ChatColor.GOLD + "Return to main menu");
         close.setItemMeta(closeMeta);
         deleteCommands.setItem(53, close);
 		
 		p.openInventory(deleteCommands);
 		} else {
-			p.sendMessage("§cYou don't have any loaded commands");
+			p.sendMessage(ChatColor.RED + "You don't have any loaded commands");
 		}
 	}
 	
@@ -160,7 +161,7 @@ public class GUIHandler implements Listener {
 			ItemStack onHour = new ItemStack( Material.INK_SACK, 1, (byte)10 );
 			ItemMeta onHourMeta = onHour.getItemMeta();
 			ArrayList<String> lore = new ArrayList<String>();
-			lore.add("§aEnabled");
+			lore.add(ChatColor.GREEN + "Enabled");
 			onHourMeta.setLore(lore);
 			onHourMeta.setDisplayName("On hour");
 			onHour.setItemMeta(onHourMeta);
@@ -169,7 +170,7 @@ public class GUIHandler implements Listener {
 			ItemStack onHour = new ItemStack( Material.INK_SACK, 1, (byte)8 );
 			ItemMeta onHourMeta = onHour.getItemMeta();
 			ArrayList<String> lore = new ArrayList<String>();
-			lore.add("§cDisabled");
+			lore.add(ChatColor.RED + "Disabled");
 			onHourMeta.setLore(lore);
 			onHourMeta.setDisplayName("On hour");
 			onHour.setItemMeta(onHourMeta);
@@ -180,7 +181,7 @@ public class GUIHandler implements Listener {
 			ItemStack onLoad = new ItemStack( Material.INK_SACK, 1, (byte)10 );
 			ItemMeta onLoadMeta = onLoad.getItemMeta();
 			ArrayList<String> lore2 = new ArrayList<String>();
-			lore2.add("§aEnabled");
+			lore2.add(ChatColor.GREEN + "Enabled");
 			onLoadMeta.setLore(lore2);
 			onLoadMeta.setDisplayName("On load");
 			onLoad.setItemMeta(onLoadMeta);
@@ -189,7 +190,7 @@ public class GUIHandler implements Listener {
 			ItemStack onLoad = new ItemStack( Material.INK_SACK, 1, (byte)8 );
 			ItemMeta onLoadMeta = onLoad.getItemMeta();
 			ArrayList<String> lore2 = new ArrayList<String>();
-			lore2.add("§cDisabled");
+			lore2.add(ChatColor.RED + "Disabled");
 			onLoadMeta.setLore(lore2);
 			onLoadMeta.setDisplayName("On load");
 			onLoad.setItemMeta(onLoadMeta);
@@ -200,7 +201,7 @@ public class GUIHandler implements Listener {
 			ItemStack onDay = new ItemStack( Material.INK_SACK, 1, (byte)10 );
 			ItemMeta onDayMeta = onDay.getItemMeta();
 			ArrayList<String> lore3 = new ArrayList<String>();
-			lore3.add("§aEnabled");
+			lore3.add(ChatColor.GREEN + "Enabled");
 			onDayMeta.setLore(lore3);
 			onDayMeta.setDisplayName("On Day");
 			onDay.setItemMeta(onDayMeta);
@@ -209,12 +210,38 @@ public class GUIHandler implements Listener {
 			ItemStack onDay = new ItemStack( Material.INK_SACK, 1, (byte)8 );
 			ItemMeta onDayMeta = onDay.getItemMeta();
 			ArrayList<String> lore3 = new ArrayList<String>();
-			lore3.add("§cDisabled");
+			lore3.add(ChatColor.RED + "Disabled");
 			onDayMeta.setLore(lore3);
 			onDayMeta.setDisplayName("On Day");
 			onDay.setItemMeta(onDayMeta);
 			createCommands.setItem(3, onDay);
 		}
+
+		String gender = CommandTimer.getPlugin().getConfig().getString("settings.tasks." + o + ".gender");
+		if(gender == null) {
+            CommandTimer.getPlugin().getConfig().set("settings.tasks." + o + ".gender", "console");
+            gender = "console";
+        }
+
+		if(gender.equals("player")) {
+            ItemStack player = new ItemStack(Material.LEATHER_HELMET, 1);
+            ItemMeta playerMeta = player.getItemMeta();
+            playerMeta.setDisplayName("Executed by Player");
+            player.setItemMeta(playerMeta);
+            createCommands.setItem(7, player);
+        } else if(gender.equals("operator")) {
+            ItemStack player = new ItemStack(Material.IRON_HELMET, 1);
+            ItemMeta playerMeta = player.getItemMeta();
+            playerMeta.setDisplayName("Executed by Operator");
+            player.setItemMeta(playerMeta);
+            createCommands.setItem(7, player);
+        } else if(gender.equals("console")) {
+            ItemStack player = new ItemStack(Material.DIAMOND_HELMET, 1);
+            ItemMeta playerMeta = player.getItemMeta();
+            playerMeta.setDisplayName("Executed by Console");
+            player.setItemMeta(playerMeta);
+            createCommands.setItem(7, player);
+        }
 		
 		ItemStack time = new ItemStack(Material.WATCH);
 		ItemStack seconds = new ItemStack(Material.COMPASS);
@@ -379,4 +406,13 @@ public class GUIHandler implements Listener {
 	        return "Saved";
 		});
 	}
+
+	public static void permissionSetupGUI(Player p) {
+        new AnvilGUI(CommandTimer.getPlugin(), p, "Insert permission", (player, reply) -> {
+            CommandTimer.getPlugin().getConfig().set("settings.tasks." + o + ".permission", reply);
+            CommandTimer.getPlugin().saveConfig();
+            createCommandsGUI(p, 1);
+            return "Saved";
+        });
+    }
 }
