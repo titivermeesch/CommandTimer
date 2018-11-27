@@ -17,6 +17,9 @@ settings:
       #time: '13:49'
       #seconds: 10
       #onload: false
+      #gender: 'player'
+      #permission: 'permission.test.commandtimer'
+      #random: 50
     #'3':
       #commands:
       #- say This message appears after 5 seconds after restart but do not show up again after the restart/reload
