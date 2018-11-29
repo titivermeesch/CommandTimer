@@ -21,9 +21,9 @@ public class GUIListeners implements Listener {
         if ((e.getCurrentItem() == null) || (e.getCurrentItem().getType().equals(Material.AIR))) {
             return;
         }
-        e.setCancelled(true);
 
         if (e.getInventory().getTitle().equalsIgnoreCase("All loaded timers")) {
+            e.setCancelled(true);
             if (e.getSlot() == 53) {
                 e.setCancelled(true);
                 GUIHandler.generateGUI(p);
@@ -39,9 +39,9 @@ public class GUIListeners implements Listener {
         if ((e.getCurrentItem() == null) || (e.getCurrentItem().getType().equals(Material.AIR))) {
             return;
         }
-        e.setCancelled(true);
 
         if(e.getInventory().getTitle().equalsIgnoreCase("Create a timer")) {
+            e.setCancelled(true);
             if(e.getSlot() == 0) {
                 if (GUIHandler.editing == 0) {
                     CommandTimer.getPlugin().getConfig().set("settings.tasks." + GUIHandler.o + ".commands", "0");
@@ -238,9 +238,9 @@ public class GUIListeners implements Listener {
         if ((e.getCurrentItem() == null) || (e.getCurrentItem().getType().equals(Material.AIR))) {
             return;
         }
-        e.setCancelled(true);
 
         if(e.getInventory().getTitle().equalsIgnoreCase("Delete a timer")) {
+            e.setCancelled(true);
             if(e.getSlot() == 53) {
                 e.setCancelled(true);
                 GUIHandler.generateGUI(p);
@@ -260,8 +260,9 @@ public class GUIListeners implements Listener {
         if ((e.getCurrentItem() == null) || (e.getCurrentItem().getType().equals(Material.AIR))) {
             return;
         }
-        e.setCancelled(true);
+
         if (e.getInventory().getTitle().equals("Setup days")) { //Everything with the days GUI
+            e.setCancelled(true);
             if (e.getSlot() == 10) { //Monday
                 if (e.getCurrentItem().getType().equals(Material.INK_SACK) && e.getCurrentItem().getDurability() == 8) {
                     e.setCancelled(true);
