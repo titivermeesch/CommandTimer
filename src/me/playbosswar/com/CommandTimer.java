@@ -38,7 +38,7 @@ public class CommandTimer extends JavaPlugin implements Listener {
 		TaskRunner.startTasks();
 		
 		Tools.printDate();
-		Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[CommandTimer] v2.1 loaded");
+		Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[CommandTimer] v2.1.1 loaded");
 	}
 	
 	public void onDisable() {
