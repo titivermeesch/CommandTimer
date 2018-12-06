@@ -38,4 +38,6 @@ To do :
     Add bungeecord support
     Force start a task on command
     Commands that trigger other commands
+    Random executed
+    Conditions
    
