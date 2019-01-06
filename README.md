@@ -40,4 +40,5 @@ To do :
     Commands that trigger other commands
     Random executed
     Conditions
+    Choose how many times a command should be executed
    
