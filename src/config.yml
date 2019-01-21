@@ -19,6 +19,7 @@ settings:
       #seconds: 10
       #onload: false
       #gender: 'console'
+      #useRandom: true
       #random: 0.5
     #'3':
       #commands:

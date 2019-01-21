@@ -113,12 +113,14 @@ public class Tools {
 
 	public static void executeCommand(String task, String cmd, String gender) {
 		if (gender.equals("console")) {
-		    if(c.getDouble("settings.tasks." + task + ".random") != 0) {
+		    if(c.getBoolean("settings.tasks." + task + ".onRandom")) {
 		        double d = c.getDouble("settings.tasks." + task + ".random");
 		        if(randomCheck(d)) {
                     Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), cmd);
                 }
-            }
+            } else {
+				Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), cmd);
+			}
 		} else if (gender.equals("operator")) {
 			for (Player p : Bukkit.getOnlinePlayers()) {
 			    int i = 0;
@@ -127,12 +129,14 @@ public class Tools {
                 }
 				try {
 					p.setOp(true);
-					if(c.getString("settings.tasks." + task + ".random") != null) {
+					if(c.getBoolean("settings.tasks." + task + ".useRandom")) {
                         double d = c.getDouble("settings.tasks." + task + ".random");
                         if(randomCheck(d)) {
                             p.performCommand(cmd);
                         }
-                    }
+                    } else {
+						p.performCommand(cmd);
+					}
 				} finally {
 				    if(i == 0) {
                         p.setOp(false);
@@ -144,12 +148,14 @@ public class Tools {
 			for (Player p : Bukkit.getOnlinePlayers()) {
 				if (perm != null) {
 					if (p.hasPermission(perm)) {
-					    if(c.getDouble("settings.tasks." + task + ".random") != 0) {
+					    if(c.getBoolean("settings.tasks." + task + ".useRandom")) {
                             double d = c.getDouble("settings.tasks." + task + ".random");
                             if(randomCheck(d)) {
                                 p.performCommand(cmd);
                             }
-                        }
+                        } else {
+					    	p.performCommand(cmd);
+						}
 					}
 				}
 			}

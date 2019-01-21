@@ -1,33 +1,37 @@
 package me.playbosswar.com;
 
-import java.io.File;
-import java.text.SimpleDateFormat;
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.TimeUnit;
+import net.md_5.bungee.api.ProxyServer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 
 public class CommandTimer extends JavaPlugin implements Listener {
 
 	private static Plugin plugin;
 	public int t;
-	public static FileConfiguration config;
-    static File cfile;
-	ArrayList<String> done = new ArrayList<>();
-	public HashMap<String, Integer> tasks = new HashMap<>();
 
 	public void onEnable() {
 		plugin = this;
+        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            Bukkit.getPluginManager().registerEvents(this, this);
+            Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[CommandTimer] PlaceholderAPI detected -> We will use it!");
+        }
+
+        try {
+            Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+            Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "BungeeCord MessagingChannel registered");
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+
+
+
 		//Register the GUI events
 		Tools.registerEvents(this, new GUIListeners());
 		//Register the commands
@@ -38,7 +42,7 @@ public class CommandTimer extends JavaPlugin implements Listener {
 		TaskRunner.startTasks();
 		
 		Tools.printDate();
-		Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[CommandTimer] v2.1.2 loaded");
+		Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[CommandTimer] v2.1.3 loaded");
 	}
 	
 	public void onDisable() {
@@ -48,11 +52,26 @@ public class CommandTimer extends JavaPlugin implements Listener {
 	}
 	
 	private void registerCommands() {
+
 		getCommand("commandtimer").setExecutor(new CommandHandler());
 	}
 		
 	
 	public static Plugin getPlugin() {
 		return plugin;
+	}
+
+	public static void sendBungee(Player p) {
+		ByteArrayOutputStream b = new ByteArrayOutputStream();
+		DataOutputStream out = new DataOutputStream(b);
+		try {
+			out.writeUTF("Command");
+			out.writeUTF("ALL");
+			out.writeUTF("/alert Testing command distance");
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+
+		p.sendPluginMessage(getPlugin(), "BungeeCord", b.toByteArray());
 	}
 }
