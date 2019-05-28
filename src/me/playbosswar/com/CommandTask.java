@@ -1,9 +1,8 @@
 package me.playbosswar.com;
 
 import java.util.List;
-import org.bukkit.scheduler.BukkitRunnable;
 
-public class CommandTask extends BukkitRunnable {
+public class CommandTask implements Runnable {
 	public List<String> commands;
 	public String gender;
 	public String task;
