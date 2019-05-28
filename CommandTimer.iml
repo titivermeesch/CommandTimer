@@ -65,28 +65,6 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://H:/Docs/Spigot versions/spigot-1.12.1.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://H:/Docs/Spigot versions/spigot-1.12.1.jar!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://H:/Docs/Spigot versions/spigot-1.12.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://H:/Docs/Spigot versions/spigot-1.12.jar!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
           <root url="jar://H:/Docs/Spigot versions/spigot-1.13.1.jar!/" />
         </CLASSES>
         <JAVADOC />
@@ -98,11 +76,11 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://H:/Docs/Spigot versions/spigot-1.13.jar!/" />
+          <root url="jar://H:/Docs/Spigot versions/spigot-1.13.2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://H:/Docs/Spigot versions/spigot-1.13.jar!/" />
+          <root url="jar://H:/Docs/Spigot versions/spigot-1.13.2.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -213,6 +191,61 @@
         <JAVADOC />
         <SOURCES>
           <root url="jar://H:/Docs/Spigot versions/spigot-1.9.4-R0.1-SNAPSHOT-latest.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://H:/Docs/Spigot versions/spigot-1.13.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://H:/Docs/Spigot versions/spigot-1.13.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://H:/Docs/Spigot versions/spigot-1.12.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://H:/Docs/Spigot versions/spigot-1.12.1.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://H:/Docs/Spigot versions/spigot-1.12.2.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://H:/Docs/Spigot versions/spigot-1.12.2.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://H:/Docs/Spigot versions/spigot-1.12.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://H:/Docs/Spigot versions/spigot-1.12.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://H:/Downloads/spigot-1.14.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://H:/Downloads/spigot-1.14.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
