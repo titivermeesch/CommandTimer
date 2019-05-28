@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="PlaceholderAPI">
+    <output-path>$PROJECT_DIR$/out/artifacts/PlaceholderAPI</output-path>
+    <root id="archive" name="PlaceholderAPI.jar">
+      <element id="artifact" artifact-name="CommandTimer" />
+    </root>
+  </artifact>
+</component>
