@@ -23,7 +23,7 @@ public class GUIListeners implements Listener {
             return;
         }
 
-        if(e.getInventory().getTitle().equalsIgnoreCase("All loaded timers")) {
+        if(e.getView().getTitle().equalsIgnoreCase("All loaded timers")) {
             e.setCancelled(true);
             if(e.getSlot() == 53) {
                 e.setCancelled(true);
@@ -45,7 +45,7 @@ public class GUIListeners implements Listener {
             return;
         }
 
-        if(e.getInventory().getTitle().equalsIgnoreCase("Create a timer")) {
+        if(e.getView().getTitle().equalsIgnoreCase("Create a timer")) {
             e.setCancelled(true);
             if (GUIHandler.editing == 0) {
                 CommandTimer.getPlugin().getConfig().set("settings.tasks." + GUIHandler.o + ".commands", "0"); //Enable editing mode
@@ -247,7 +247,7 @@ public class GUIListeners implements Listener {
             return;
         }
 
-        if(e.getInventory().getTitle().equals("Setup days")) {
+        if(e.getView().getTitle().equals("Setup days")) {
             if(e.getCurrentItem().getType().equals(Material.INK_SACK)) {
                 e.setCancelled(true);
                 if (e.getSlot() == 10) { //Monday
@@ -458,7 +458,7 @@ public class GUIListeners implements Listener {
     @EventHandler
     public void mainGUI(InventoryClickEvent e) { //Main GUI Events
         Player p = (Player) e.getWhoClicked();
-        if (e.getInventory().getTitle().equalsIgnoreCase("CommandTimer")) {
+        if (e.getView().getTitle().equalsIgnoreCase("CommandTimer")) {
             e.setCancelled(true);
 
             if ((e.getCurrentItem() == null) || (e.getCurrentItem().getType().equals(Material.AIR))) {
