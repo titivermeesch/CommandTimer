@@ -1,8 +1,5 @@
 package me.playbosswar.com.AnvilGUI.Versions;
 
-import me.playbosswar.com.AnvilGUI.Versions.VersionMatcher;
-import me.playbosswar.com.AnvilGUI.Versions.VersionWrapper;
-import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
