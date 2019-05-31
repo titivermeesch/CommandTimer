@@ -6,6 +6,7 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.Inventory;
@@ -63,21 +64,25 @@ public class GUIHandler implements Listener {
 	public static void listCommandsGUI(Player p) { //GUI that shows all the loaded commands
 		if(CommandTimer.getPlugin().getConfig().getString("settings.tasks.1") != null) {
 			Inventory allCommands = Bukkit.getServer().createInventory(p, 54, "All loaded timers");
+			FileConfiguration c = CommandTimer.getPlugin().getConfig();
 			for (final String path : CommandTimer.getPlugin().getConfig().getConfigurationSection("settings.tasks").getKeys(false)) { 
 				//Generate an unique item for each command
 				ItemStack genStack = new ItemStack(Material.WOOL);
 		        ItemMeta genStackMeta = genStack.getItemMeta();
 		        ArrayList<String> lore= new ArrayList<String>();
-		        
-		        lore.add(ChatColor.GOLD + "Commands : " + CommandTimer.getPlugin().getConfig().getStringList("settings.tasks." + path + ".commands"));
-		        lore.add(ChatColor.GOLD + "On hour : " + CommandTimer.getPlugin().getConfig().getBoolean("settings.tasks." + path + ".onhour"));
-		        lore.add(ChatColor.GOLD + "Time : " + CommandTimer.getPlugin().getConfig().getString("settings.tasks." + path + ".time"));
-		        lore.add(ChatColor.GOLD + "On load : " + CommandTimer.getPlugin().getConfig().getBoolean("settings.tasks." + path + ".onload"));
-		        lore.add(ChatColor.GOLD + "On day : " + CommandTimer.getPlugin().getConfig().getBoolean("settings.tasks." + path + ".onday"));
-		        lore.add(ChatColor.GOLD + "Days : " + CommandTimer.getPlugin().getConfig().getStringList("settings.tasks." + path + ".days"));
-		        lore.add(ChatColor.GOLD + "Seconds : " + CommandTimer.getPlugin().getConfig().getInt("settings.tasks." + path + ".seconds"));
-				lore.add(ChatColor.GOLD + "UseRandom : " + CommandTimer.getPlugin().getConfig().getBoolean("settings.tasks." + path + ".useRandom"));
-				lore.add(ChatColor.GOLD + "Random : " + CommandTimer.getPlugin().getConfig().getDouble("settings.tasks." + path + ".random"));
+
+				lore.add(ChatColor.GOLD + "Commands : " + c.getStringList("settings.tasks." + path + ".commands"));
+				lore.add(ChatColor.GOLD + "On hour : " + c.getBoolean("settings.tasks." + path + ".onhour"));
+				lore.add(ChatColor.GOLD + "Time : " + c.getStringList("settings.tasks." + path + ".time"));
+				lore.add(ChatColor.GOLD + "On load : " + c.getBoolean("settings.tasks." + path + ".onload"));
+				lore.add(ChatColor.GOLD + "On day : " + c.getBoolean("settings.tasks." + path + ".onday"));
+				lore.add(ChatColor.GOLD + "Days : " + c.getStringList("settings.tasks." + path + ".days"));
+				lore.add(ChatColor.GOLD + "Seconds : " + c.getInt("settings.tasks." + path + ".seconds"));
+				lore.add(ChatColor.GOLD + "UseRandom : " + c.getBoolean("settings.tasks." + path + ".useRandom"));
+				lore.add(ChatColor.GOLD + "Random : " + c.getDouble("settings.tasks." + path + ".random"));
+				lore.add(ChatColor.GOLD + "Gender : " + c.getString("settings.tasks." + path + ".gender"));
+				lore.add(ChatColor.GOLD + "Bungee : " + c.getBoolean("settings.tasks." + path + ".bungee"));
+				lore.add(ChatColor.GOLD + "Permission : " + c.getString("settings.tasks." + path + ".permissoin"));
 				lore.add(ChatColor.RED + "Left-Click to delete this command");
 		        
 		        genStackMeta.setLore(lore);
@@ -100,38 +105,36 @@ public class GUIHandler implements Listener {
 		}
 	}
 
-	public static void createCommandsGUI(Player p, int recall) { //Open the general GUI to create commands
-		if(recall != 1) { //Calculate how many commands there are, if it's a recall you are editing the same command so you don't need to recalculate that
+	public static void createCommandsGUI(Player p, int recall) {
+		if (recall != 1) {
 			calcCommands();
 		}
-		
+
 		Inventory createCommands = Bukkit.getServer().createInventory(p, 18, "Create a timer");
-		
-		ItemStack addCommand = new ItemStack(Material.COMMAND); //This item will always there, so no if else statement needed
+		ItemStack addCommand = new ItemStack(Material.COMMAND);
 		ItemMeta addCommandMeta = addCommand.getItemMeta();
-		
-		if(CommandTimer.getPlugin().getConfig().getBoolean("settings.tasks." + o + ".onhour")) { //ONHOUR
-			ItemStack onHour = new ItemStack( Material.INK_SACK, 1, (byte)10 );
-			ItemMeta onHourMeta = onHour.getItemMeta();
-			ArrayList<String> lore = new ArrayList<>();
+		if (CommandTimer.getPlugin().getConfig().getBoolean("settings.tasks." + GUIHandler.o + ".onhour")) {
+			final ItemStack onHour = new ItemStack(Material.INK_SACK, 1, (byte)10);
+			final ItemMeta onHourMeta = onHour.getItemMeta();
+			final ArrayList<String> lore = new ArrayList<String>();
 			lore.add(ChatColor.GREEN + "Enabled");
 			onHourMeta.setLore(lore);
 			onHourMeta.setDisplayName("On hour");
 			onHour.setItemMeta(onHourMeta);
 			createCommands.setItem(1, onHour);
-		} else {
-			ItemStack onHour = new ItemStack( Material.INK_SACK, 1, (byte)8 );
+		}
+		else {
+			ItemStack onHour = new ItemStack(Material.INK_SACK, 1, (byte)8);
 			ItemMeta onHourMeta = onHour.getItemMeta();
 			ArrayList<String> lore = new ArrayList<>();
 			lore.add(ChatColor.RED + "Disabled");
-			onHourMeta.setLore(lore);
+			onHourMeta.setLore((List)lore);
 			onHourMeta.setDisplayName("On hour");
 			onHour.setItemMeta(onHourMeta);
 			createCommands.setItem(1, onHour);
 		}
-		
-		if(CommandTimer.getPlugin().getConfig().getBoolean("settings.tasks." + o + ".onload")) { //ONLOAD
-			ItemStack onLoad = new ItemStack( Material.INK_SACK, 1, (byte)10 );
+		if (CommandTimer.getPlugin().getConfig().getBoolean("settings.tasks." + GUIHandler.o + ".onload")) {
+			ItemStack onLoad = new ItemStack(Material.INK_SACK, 1, (byte)10);
 			ItemMeta onLoadMeta = onLoad.getItemMeta();
 			ArrayList<String> lore2 = new ArrayList<>();
 			lore2.add(ChatColor.GREEN + "Enabled");
@@ -139,19 +142,19 @@ public class GUIHandler implements Listener {
 			onLoadMeta.setDisplayName("On load");
 			onLoad.setItemMeta(onLoadMeta);
 			createCommands.setItem(2, onLoad);
-		} else {
-			ItemStack onLoad = new ItemStack( Material.INK_SACK, 1, (byte)8 );
+		}
+		else {
+			ItemStack onLoad = new ItemStack(Material.INK_SACK, 1, (byte)8);
 			ItemMeta onLoadMeta = onLoad.getItemMeta();
-			ArrayList<String> lore2 = new ArrayList<>();
+			ArrayList<String> lore2 = new ArrayList<String>();
 			lore2.add(ChatColor.RED + "Disabled");
 			onLoadMeta.setLore(lore2);
 			onLoadMeta.setDisplayName("On load");
 			onLoad.setItemMeta(onLoadMeta);
 			createCommands.setItem(2, onLoad);
 		}
-		
-		if(CommandTimer.getPlugin().getConfig().getBoolean("settings.tasks." + o + ".onday")) { //ONDAY
-			ItemStack onDay = new ItemStack( Material.INK_SACK, 1, (byte)10 );
+		if (CommandTimer.getPlugin().getConfig().getBoolean("settings.tasks." + GUIHandler.o + ".onday")) {
+			ItemStack onDay = new ItemStack(Material.INK_SACK, 1, (byte)10);
 			ItemMeta onDayMeta = onDay.getItemMeta();
 			ArrayList<String> lore3 = new ArrayList<>();
 			lore3.add(ChatColor.GREEN + "Enabled");
@@ -159,8 +162,9 @@ public class GUIHandler implements Listener {
 			onDayMeta.setDisplayName("On Day");
 			onDay.setItemMeta(onDayMeta);
 			createCommands.setItem(3, onDay);
-		} else {
-			ItemStack onDay = new ItemStack( Material.INK_SACK, 1, (byte)8 );
+		}
+		else {
+			ItemStack onDay = new ItemStack(Material.INK_SACK, 1, (byte)8);
 			ItemMeta onDayMeta = onDay.getItemMeta();
 			ArrayList<String> lore3 = new ArrayList<>();
 			lore3.add(ChatColor.RED + "Disabled");
@@ -169,86 +173,105 @@ public class GUIHandler implements Listener {
 			onDay.setItemMeta(onDayMeta);
 			createCommands.setItem(3, onDay);
 		}
-
-        if(CommandTimer.getPlugin().getConfig().getBoolean("settings.tasks." + o + ".useRandom")) { //USE RANDOM
-            ItemStack onRandom = new ItemStack( Material.INK_SACK, 1, (byte)10 );
-            ItemMeta onRandomMeta = onRandom.getItemMeta();
-            ArrayList<String> lore2 = new ArrayList<>();
-            lore2.add(ChatColor.GREEN + "Enabled");
-            onRandomMeta.setLore(lore2);
-            onRandomMeta.setDisplayName("Use Random");
-            onRandom.setItemMeta(onRandomMeta);
-            createCommands.setItem(4, onRandom);
-        } else {
-            ItemStack onRandom = new ItemStack( Material.INK_SACK, 1, (byte)8 );
-            ItemMeta onRandomMeta = onRandom.getItemMeta();
-            ArrayList<String> lore2 = new ArrayList<>();
-            lore2.add(ChatColor.RED + "Disabled");
-            onRandomMeta.setLore(lore2);
-            onRandomMeta.setDisplayName("Use Random");
-            onRandom.setItemMeta(onRandomMeta);
-            createCommands.setItem(4, onRandom);
-        }
-
-		String gender = CommandTimer.getPlugin().getConfig().getString("settings.tasks." + o + ".gender");
-		if(gender == null) {
-            CommandTimer.getPlugin().getConfig().set("settings.tasks." + o + ".gender", "console");
-            gender = "console";
-        }
-
-		if(gender.equals("player")) {
-            ItemStack player = new ItemStack(Material.LEATHER_HELMET, 1);
-            ItemMeta playerMeta = player.getItemMeta();
-            playerMeta.setDisplayName("Executed by Player");
-            player.setItemMeta(playerMeta);
-            createCommands.setItem(8, player);
-        } else if(gender.equals("operator")) {
-            ItemStack player = new ItemStack(Material.IRON_HELMET, 1);
-            ItemMeta playerMeta = player.getItemMeta();
-            playerMeta.setDisplayName("Executed by Operator");
-            player.setItemMeta(playerMeta);
-            createCommands.setItem(8, player);
-        } else if(gender.equals("console")) {
-            ItemStack player = new ItemStack(Material.DIAMOND_HELMET, 1);
-            ItemMeta playerMeta = player.getItemMeta();
-            playerMeta.setDisplayName("Executed by Console");
-            player.setItemMeta(playerMeta);
-            createCommands.setItem(8, player);
-        }
-		
+		if (CommandTimer.getPlugin().getConfig().getBoolean("settings.tasks." + GUIHandler.o + ".useRandom")) {
+			ItemStack onRandom = new ItemStack(Material.INK_SACK, 1, (byte)10);
+			ItemMeta onRandomMeta = onRandom.getItemMeta();
+			ArrayList<String> lore2 = new ArrayList<>();
+			lore2.add(ChatColor.GREEN + "Enabled");
+			onRandomMeta.setLore(lore2);
+			onRandomMeta.setDisplayName("Use Random");
+			onRandom.setItemMeta(onRandomMeta);
+			createCommands.setItem(4, onRandom);
+		}
+		else {
+			ItemStack onRandom = new ItemStack(Material.INK_SACK, 1, (byte)8);
+			ItemMeta onRandomMeta = onRandom.getItemMeta();
+			ArrayList<String> lore2 = new ArrayList<>();
+			lore2.add(ChatColor.RED + "Disabled");
+			onRandomMeta.setLore(lore2);
+			onRandomMeta.setDisplayName("Use Random");
+			onRandom.setItemMeta(onRandomMeta);
+			createCommands.setItem(4, onRandom);
+		}
+		if (CommandTimer.getPlugin().getConfig().getBoolean("settings.tasks." + GUIHandler.o + ".bungee")) {
+			ItemStack bungee = new ItemStack(Material.INK_SACK, 1, (byte)10);
+			ItemMeta bungeeMeta = bungee.getItemMeta();
+			ArrayList<String> lore2 = new ArrayList<>();
+			lore2.add(ChatColor.GREEN + "Enabled");
+			bungeeMeta.setLore(lore2);
+			bungeeMeta.setDisplayName("Bungee");
+			bungee.setItemMeta(bungeeMeta);
+			createCommands.setItem(5, bungee);
+		}
+		else {
+			ItemStack bungee = new ItemStack(Material.INK_SACK, 1, (byte)8);
+			ItemMeta bungeeMeta = bungee.getItemMeta();
+			ArrayList<String> lore2 = new ArrayList<>();
+			lore2.add(ChatColor.RED + "Disabled");
+			bungeeMeta.setLore(lore2);
+			bungeeMeta.setDisplayName("Bungee");
+			bungee.setItemMeta(bungeeMeta);
+			createCommands.setItem(5, bungee);
+		}
+		String gender = CommandTimer.getPlugin().getConfig().getString("settings.tasks." + GUIHandler.o + ".gender");
+		if (gender == "") {
+			CommandTimer.getPlugin().getConfig().set("settings.tasks." + GUIHandler.o + ".gender", "console");
+			gender = "console";
+		}
+		if (gender.equals("player")) {
+			ItemStack player = new ItemStack(Material.LEATHER_HELMET, 1);
+			ItemMeta playerMeta = player.getItemMeta();
+			playerMeta.setDisplayName("Executed by Player");
+			player.setItemMeta(playerMeta);
+			createCommands.setItem(9, player);
+		}
+		else if (gender.equals("operator")) {
+			ItemStack player = new ItemStack(Material.IRON_HELMET, 1);
+			ItemMeta playerMeta = player.getItemMeta();
+			playerMeta.setDisplayName("Executed by Operator");
+			player.setItemMeta(playerMeta);
+			createCommands.setItem(9, player);
+		}
+		else if (gender.equals("console")) {
+			ItemStack player = new ItemStack(Material.DIAMOND_HELMET, 1);
+			ItemMeta playerMeta = player.getItemMeta();
+			playerMeta.setDisplayName("Executed by Console");
+			player.setItemMeta(playerMeta);
+			createCommands.setItem(9, player);
+		}
 		ItemStack time = new ItemStack(Material.WATCH);
 		ItemStack seconds = new ItemStack(Material.COMPASS);
 		ItemStack days = new ItemStack(Material.PAPER);
-        ItemStack random = new ItemStack(Material.WATCH);
+		ItemStack random = new ItemStack(Material.WATCH);
+		ItemStack permission = new ItemStack(Material.ANVIL);
 		ItemStack save = new ItemStack(Material.NETHER_STAR);
-		
 		ItemMeta timeMeta = time.getItemMeta();
 		ItemMeta daysMeta = days.getItemMeta();
 		ItemMeta secondsMeta = seconds.getItemMeta();
 		ItemMeta randomMeta = random.getItemMeta();
+		ItemMeta permissionMeta = permission.getItemMeta();
 		ItemMeta saveMeta = save.getItemMeta();
-		
 		addCommandMeta.setDisplayName("Add a command");
 		timeMeta.setDisplayName("Time");
 		daysMeta.setDisplayName("Days");
 		secondsMeta.setDisplayName("Seconds");
 		randomMeta.setDisplayName("Random");
+		permissionMeta.setDisplayName("Permission");
 		saveMeta.setDisplayName("Save");
-		
 		addCommand.setItemMeta(addCommandMeta);
 		time.setItemMeta(timeMeta);
 		days.setItemMeta(daysMeta);
 		seconds.setItemMeta(secondsMeta);
 		random.setItemMeta(randomMeta);
+		permission.setItemMeta(permissionMeta);
 		save.setItemMeta(saveMeta);
-		
 		createCommands.setItem(0, addCommand);
-		createCommands.setItem(5, time);
-		createCommands.setItem(6, days);
-		createCommands.setItem(7, seconds);
-		createCommands.setItem(9, random);
+		createCommands.setItem(6, time);
+		createCommands.setItem(7, days);
+		createCommands.setItem(8, seconds);
+		createCommands.setItem(10, random);
+		createCommands.setItem(11, permission);
 		createCommands.setItem(17, save);
-		
 		p.openInventory(createCommands);
 	}
 	

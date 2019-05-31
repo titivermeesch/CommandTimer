@@ -1,176 +1,238 @@
 package me.playbosswar.com;
 
-import java.text.SimpleDateFormat;
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.Random;
-
+import com.google.common.collect.Iterables;
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 
-public class Tools {
+import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.util.Date;
+import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
+public class Tools {
 	static FileConfiguration c = CommandTimer.getPlugin().getConfig();
-	
-	public static void printDate() { //Print the date
+
+	public static void printDate() {
 		LocalDate date = LocalDate.now();
 		DayOfWeek dow = date.getDayOfWeek();
-		if(CommandTimer.getPlugin().getConfig().getBoolean("timeonload")) {
-			Bukkit.getConsoleSender().sendMessage("§aServer time : " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+		if (CommandTimer.getPlugin().getConfig().getBoolean("timeonload")) {
+			Bukkit.getConsoleSender().sendMessage("§aServer time : " + java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss")));
 			Bukkit.getConsoleSender().sendMessage("§aServer day : " + dow);
 		}
 	}
-	
-	public static void initConfig() { //Load configuration file
+
+	public static void initConfig() {
 		CommandTimer.getPlugin().saveDefaultConfig();
 		CommandTimer.getPlugin().getConfig().options().copyDefaults(false);
 	}
-	
-	public static void registerEvents(Plugin plugin, Listener... listeners) { //Register all events
-		Listener[] arrayOfListener;
-		int j = (arrayOfListener = listeners).length;
-		for (int i = 0; i < j; i++) {
-			Listener listener = arrayOfListener[i];
+
+	public static void registerEvents(Plugin plugin, Listener... listeners) {
+		for (final Listener listener : listeners) {
 			Bukkit.getServer().getPluginManager().registerEvents(listener, plugin);
 		}
 	}
-	
-	public static void closeAllInventories() { //Close inventories to prevent errors
-		for(Player p : Bukkit.getOnlinePlayers()) {
+
+	public static void registerBungeeChannels() {
+		CommandTimer.getPlugin().getServer().getMessenger().registerOutgoingPluginChannel(CommandTimer.getPlugin(), "ct:ct");
+	}
+
+	public static void closeAllInventories() {
+		for (Player p : Bukkit.getOnlinePlayers()) {
 			p.closeInventory();
 		}
 	}
-	
-	public static void reloadTaks() { //Reload all loaded tasks
+
+	public static void reloadTaks() {
 		Bukkit.getScheduler().cancelTasks(CommandTimer.getPlugin());
 		TaskRunner.startTasks();
 	}
 
-	public static void cancelTasks() { //Cancel all tasks
+	public static void cancelTasks() {
 		CommandTimer.getPlugin().getServer().getScheduler().cancelTasks(CommandTimer.getPlugin());
 	}
 
-	public static String getGender(String task) { //Get how the command should be executed (OPERATOR, CONSOLE, PLAYER)
-		String configGender = c.getString("settings.tasks." + task + ".gender").toLowerCase();
-		if(configGender.equals("player") || configGender.equals("console") || configGender.equals("operator")) {
+	public static String getGender(final String task) {
+		String configGender = Tools.c.getString("settings.tasks." + task + ".gender").toLowerCase();
+		if (configGender.equals("player") || configGender.equals("console") || configGender.equals("operator")) {
 			return configGender;
 		}
 		return null;
 	}
 
-	public static void easyCommandRunner(String task, long ticks, String gender) {
-		Bukkit.getScheduler().scheduleSyncRepeatingTask(CommandTimer.getPlugin(), new CommandTask(c.getStringList("settings.tasks." + task + ".commands"), gender, task), ticks, ticks);
+	public static void easyCommandRunner(final String task, final long ticks, final String gender) {
+		Bukkit.getScheduler().scheduleSyncRepeatingTask(CommandTimer.getPlugin(), new CommandTask(Tools.c.getStringList("settings.tasks." + task + ".commands"), gender, task), ticks, ticks);
 	}
 
 	public static void simpleCommandRunner(String task, String gender) {
-
 		Bukkit.getScheduler().scheduleSyncDelayedTask(CommandTimer.getPlugin(), new Runnable() {
+
 			@Override
 			public void run() {
-				for (String next : c.getStringList("settings.tasks." + task + ".commands")) { //Go through all commands
-						executeCommand(task, next, gender);
+				for (String next : Tools.c.getStringList("settings.tasks." + task + ".commands")) {
+					Tools.executeCommand(task, next, gender);
 				}
 			}
-		}, 50);
+		}, 50L);
 	}
 
-	public static void complexCommandRunner(String task, String gender) {
+
+
+	public static void complexCommandRunner(final String task, final String gender) {
 		Timer timer = new Timer();
 		timer.schedule(new TimerTask() {
 			@Override
 			public void run() {
-				Date date = new Date();
-				SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
-				String formattedDate = df.format(date);
-
-				for (String hour : c.getStringList("settings.tasks." + task + ".time")) {
+				final Date date = new Date();
+				final SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
+				final String formattedDate = df.format(date);
+				for (final String hour : Tools.c.getStringList("settings.tasks." + task + ".time")) {
 					if (formattedDate.equals(hour)) {
-						Bukkit.getScheduler().scheduleSyncDelayedTask(CommandTimer.getPlugin(), new Runnable() {
+						Bukkit.getScheduler().scheduleSyncDelayedTask(CommandTimer.getPlugin(), (Runnable)new Runnable() {
 							@Override
 							public void run() {
-								int i = c.getStringList("settings.tasks." + task + ".time").toArray().length;
-								for (String next : c.getStringList("settings.tasks." + task + ".commands")) {
-									if(i>0) {
-											executeCommand(task, next, gender);
-										i--;
+								int i = Tools.c.getStringList("settings.tasks." + task + ".time").toArray().length;
+								for (final String next : Tools.c.getStringList("settings.tasks." + task + ".commands")) {
+									if (i > 0) {
+										Tools.executeCommand(task, next, gender);
+										--i;
 									}
 								}
 							}
-						}, 50);
+						}, 50L);
 					}
 				}
 			}
-		}, 1, 1000);
+		}, 1L, 1000L);
 	}
+
 
 	public static void executeCommand(String task, String cmd, String gender) {
 		if (gender.equals("console")) {
-		    if(c.getBoolean("settings.tasks." + task + ".onRandom")) {
-		        double d = c.getDouble("settings.tasks." + task + ".random");
-		        if(randomCheck(d)) {
-                    Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), cmd);
-                }
-            } else {
-				Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), cmd);
-			}
-		} else if (gender.equals("operator")) {
-			for (Player p : Bukkit.getOnlinePlayers()) {
-			    int i = 0;
-			    if(p.isOp()) {
-			        i = 1;
-                }
-				try {
-					p.setOp(true);
-					if(c.getBoolean("settings.tasks." + task + ".useRandom")) {
-                        double d = c.getDouble("settings.tasks." + task + ".random");
-                        if(randomCheck(d)) {
-                            p.performCommand(cmd);
-                        }
-                    } else {
-						p.performCommand(cmd);
+			if (Tools.c.getBoolean("settings.tasks." + task + ".useRandom")) {
+				final double d = Tools.c.getDouble("settings.tasks." + task + ".random");
+				if (randomCheck(d)) {
+					if (Tools.c.getBoolean("settings.tasks." + task + ".bungee")) {
+						sendToBungee(cmd);
+						return;
 					}
-				} finally {
-				    if(i == 0) {
-                        p.setOp(false);
-                    }
+					Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), cmd);
 				}
 			}
-		} else if (gender.equals("player")) {
-			String perm = c.getString("settings.tasks." + task + ".permission");
-			for (Player p : Bukkit.getOnlinePlayers()) {
+			else {
+				if (Tools.c.getBoolean("settings.tasks." + task + ".bungee")) {
+					sendToBungee(cmd);
+					return;
+				}
+				Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), cmd);
+			}
+		}
+		else if (gender.equals("operator")) {
+			for (final Player p : Bukkit.getOnlinePlayers()) {
+				int i = 0;
+				if (p.isOp()) {
+					i = 1;
+				}
+				try {
+					p.setOp(true);
+					if (Tools.c.getBoolean("settings.tasks." + task + ".useRandom")) {
+						final double d2 = Tools.c.getDouble("settings.tasks." + task + ".random");
+						if (!randomCheck(d2)) {
+							continue;
+						}
+						if (Tools.c.getBoolean("settings.tasks." + task + ".bungee")) {
+							sendToBungee(cmd);
+							return;
+						}
+						p.performCommand(cmd);
+					}
+					else {
+						if (Tools.c.getBoolean("settings.tasks." + task + ".bungee")) {
+							sendToBungee(cmd);
+							return;
+						}
+						p.performCommand(cmd);
+					}
+				}
+				finally {
+					if (i == 0) {
+						p.setOp(false);
+					}
+				}
+			}
+		}
+		else if (gender.equals("player")) {
+			final String perm = Tools.c.getString("settings.tasks." + task + ".permission");
+			for (final Player p2 : Bukkit.getOnlinePlayers()) {
 				if (perm != null) {
-					if (p.hasPermission(perm)) {
-					    if(c.getBoolean("settings.tasks." + task + ".useRandom")) {
-                            double d = c.getDouble("settings.tasks." + task + ".random");
-                            if(randomCheck(d)) {
-                                p.performCommand(cmd);
-                            }
-                        } else {
-					    	p.performCommand(cmd);
+					if (!p2.hasPermission(perm)) {
+						continue;
+					}
+					if (Tools.c.getBoolean("settings.tasks." + task + ".useRandom")) {
+						final double d2 = Tools.c.getDouble("settings.tasks." + task + ".random");
+						if (!randomCheck(d2)) {
+							continue;
+						}
+						if (Tools.c.getBoolean("settings.tasks." + task + ".bungee")) {
+							sendToBungee(cmd);
+						}
+						else {
+							p2.performCommand(cmd);
 						}
 					}
+					else {
+						if (Tools.c.getBoolean("settings.tasks." + task + ".bungee")) {
+							sendToBungee(cmd);
+							return;
+						}
+						p2.performCommand(cmd);
+					}
+				}
+				else if (Tools.c.getBoolean("settings.tasks." + task + ".useRandom")) {
+					final double d2 = Tools.c.getDouble("settings.tasks." + task + ".random");
+					if (!randomCheck(d2)) {
+						continue;
+					}
+					if (Tools.c.getBoolean("settings.tasks." + task + ".bungee")) {
+						sendToBungee(cmd);
+					}
+					else {
+						p2.performCommand(cmd);
+					}
+				}
+				else {
+					if (Tools.c.getBoolean("settings.tasks." + task + ".bungee")) {
+						sendToBungee(cmd);
+						return;
+					}
+					p2.performCommand(cmd);
 				}
 			}
 		}
 	}
 
+
+
+	public static void sendToBungee(String cmd) {
+		ByteArrayDataOutput out = ByteStreams.newDataOutput();
+		out.writeUTF("command");
+		out.writeUTF(cmd);
+		if (!Bukkit.getOnlinePlayers().toString().equals("[]")) {
+			Player player = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
+			player.sendPluginMessage(CommandTimer.getPlugin(), "ct:ct", out.toByteArray());
+		}
+	}
+
 	public static boolean randomCheck(double random) {
-	    Random r = new Random();
-	    float chance = r.nextFloat();
-
-	    if(chance <= random) {
-            return true;
-        }
-        return false;
-    }
-
-
+		final Random r = new Random();
+		final float chance = r.nextFloat();
+		return chance <= random;
+	}
 }

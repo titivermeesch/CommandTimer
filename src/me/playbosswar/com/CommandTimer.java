@@ -13,17 +13,14 @@ public class CommandTimer extends JavaPlugin implements Listener {
 
 	public void onEnable() {
 		plugin = this;
-		//Register the GUI events
 		Tools.registerEvents(this, new GUIListeners());
-		//Register the commands
 		registerCommands();
-		//Load configuration file
+		Tools.registerBungeeChannels();
 		Tools.initConfig();
-		//Load all tasks in config
 		TaskRunner.startTasks();
 		
 		Tools.printDate();
-		Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[CommandTimer] v2.3 loaded");
+		Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[CommandTimer] v2.4.1 loaded");
 	}
 	
 	public void onDisable() {
