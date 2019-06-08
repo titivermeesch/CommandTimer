@@ -213,11 +213,13 @@ public class GUIHandler implements Listener {
 			bungee.setItemMeta(bungeeMeta);
 			createCommands.setItem(5, bungee);
 		}
+
 		String gender = CommandTimer.getPlugin().getConfig().getString("settings.tasks." + GUIHandler.o + ".gender");
-		if (gender == "") {
+		if (recall == 0) {
 			CommandTimer.getPlugin().getConfig().set("settings.tasks." + GUIHandler.o + ".gender", "console");
 			gender = "console";
 		}
+
 		if (gender.equals("player")) {
 			ItemStack player = new ItemStack(Material.LEATHER_HELMET, 1);
 			ItemMeta playerMeta = player.getItemMeta();

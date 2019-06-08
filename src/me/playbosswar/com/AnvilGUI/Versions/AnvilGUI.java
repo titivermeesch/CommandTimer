@@ -14,6 +14,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
 import java.util.function.BiFunction;
+import org.apache.commons.lang.Validate;
 
 /**
  * An anvil gui, used for gathering a user's input
@@ -115,7 +116,7 @@ public class AnvilGUI {
      * @throws IllegalArgumentException If the inventory isn't open
      */
     public void closeInventory() {
-        //Validate.isTrue(open, "You can't close an inventory that isn't open!");
+        Validate.isTrue(open, "You can't close an inventory that isn't open!");
         open = false;
 
         WRAPPER.handleInventoryCloseEvent(holder);
@@ -123,6 +124,14 @@ public class AnvilGUI {
         WRAPPER.sendPacketCloseWindow(holder, containerId);
 
         HandlerList.unregisterAll(listener);
+    }
+
+    /**
+     * Returns the Bukkit inventory for this anvil gui
+     * @return the {@link Inventory} for this anvil gui
+     */
+    public Inventory getInventory() {
+        return inventory;
     }
 
     /**

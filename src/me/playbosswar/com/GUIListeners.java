@@ -477,7 +477,7 @@ public class GUIListeners implements Listener {
                 }
             } else if(e.getSlot() == 26) {
                 e.setCancelled(true);
-                GUIHandler.generateGUI(p);
+                GUIHandler.createCommandsGUI(p, 1);
                 return;
             }
         }
