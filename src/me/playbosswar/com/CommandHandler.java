@@ -13,7 +13,7 @@ public class CommandHandler implements CommandExecutor {
             if(sender instanceof Player) {
                 Player p = (Player) sender;
                 if(p.hasPermission("commandtimer.use") || p.isOp()) {
-                    GUIHandler.generateGUI(p);
+                    GUIHandler.listCommandsGUI(p);
                 } else {
                     p.sendMessage(ChatColor.RED + "You don't have the right permission for this");
                 }
