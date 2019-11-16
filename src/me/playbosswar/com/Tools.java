@@ -1,8 +1,8 @@
 package me.playbosswar.com;
 
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -12,8 +12,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class Tools {
-	static FileConfiguration c = Main.getPlugin().getConfig();
-
 	public static void printDate() {
 		LocalDate date = LocalDate.now();
 		DayOfWeek dow = date.getDayOfWeek();
@@ -30,6 +28,8 @@ public class Tools {
 
 	public static void reloadTaks() {
 		Bukkit.getScheduler().cancelTasks(Main.getPlugin());
+		Main.getPlugin().reloadConfig();
+		initConfig();
 		TaskRunner.startTasks();
 	}
 
@@ -38,7 +38,7 @@ public class Tools {
 	}
 
 	public static String getGender(final String task) {
-		String configGender = Tools.c.getString("tasks." + task + ".gender").toLowerCase();
+		String configGender = Main.getPlugin().getConfig().getString("tasks." + task + ".gender").toLowerCase();
 		if (configGender.equals("player") || configGender.equals("console") || configGender.equals("operator")) {
 			return configGender;
 		}
@@ -46,7 +46,8 @@ public class Tools {
 	}
 
 	public static void easyCommandRunner(final String task, final long ticks, final String gender) {
-		Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getPlugin(), new CommandTask(Tools.c.getStringList("tasks." + task + ".commands"), gender, task), ticks, ticks);
+		Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getPlugin(), new CommandTask(Main.getPlugin().getConfig()
+				.getStringList("tasks." + task + ".commands"), gender, task), ticks, ticks);
 	}
 
 	public static void simpleCommandRunner(String task, String gender) {
@@ -54,7 +55,7 @@ public class Tools {
 
 			@Override
 			public void run() {
-				for (String next : Tools.c.getStringList("tasks." + task + ".commands")) {
+				for (String next : Main.getPlugin().getConfig().getStringList("tasks." + task + ".commands")) {
 					Tools.executeCommand(task, next, gender);
 				}
 			}
@@ -69,13 +70,13 @@ public class Tools {
 				final Date date = new Date();
 				final SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
 				final String formattedDate = df.format(date);
-				for (final String hour : Tools.c.getStringList("tasks." + task + ".time")) {
+				for (final String hour : Main.getPlugin().getConfig().getStringList("tasks." + task + ".time")) {
 					if (formattedDate.equals(hour)) {
 						Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(), (Runnable)new Runnable() {
 							@Override
 							public void run() {
-								int i = Tools.c.getStringList("tasks." + task + ".time").toArray().length;
-								for (final String next : Tools.c.getStringList("tasks." + task + ".commands")) {
+								int i = Main.getPlugin().getConfig().getStringList("tasks." + task + ".time").toArray().length;
+								for (final String next : Main.getPlugin().getConfig().getStringList("tasks." + task + ".commands")) {
 									if (i > 0) {
 										Tools.executeCommand(task, next, gender);
 										--i;
@@ -92,8 +93,8 @@ public class Tools {
 
 	public static void executeCommand(String task, String cmd, String gender) {
 		if (gender.equals("console")) {
-			if (Tools.c.getBoolean("tasks." + task + ".useRandom")) {
-				final double d = Tools.c.getDouble("tasks." + task + ".random");
+			if (Main.getPlugin().getConfig().getBoolean("tasks." + task + ".useRandom")) {
+				final double d = Main.getPlugin().getConfig().getDouble("tasks." + task + ".random");
 				if (randomCheck(d)) {
 					Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), cmd);
 				}
@@ -110,8 +111,8 @@ public class Tools {
 				}
 				try {
 					p.setOp(true);
-					if (Tools.c.getBoolean("tasks." + task + ".useRandom")) {
-						final double d2 = Tools.c.getDouble("tasks." + task + ".random");
+					if (Main.getPlugin().getConfig().getBoolean("tasks." + task + ".useRandom")) {
+						final double d2 = Main.getPlugin().getConfig().getDouble("tasks." + task + ".random");
 						if (!randomCheck(d2)) {
 							continue;
 						}
@@ -129,14 +130,14 @@ public class Tools {
 			}
 		}
 		else if (gender.equals("player")) {
-			final String perm = Tools.c.getString("tasks." + task + ".permission");
+			final String perm = Main.getPlugin().getConfig().getString("tasks." + task + ".permission");
 			for (final Player p2 : Bukkit.getOnlinePlayers()) {
 				if (perm != null) {
 					if (!p2.hasPermission(perm)) {
 						continue;
 					}
-					if (Tools.c.getBoolean("tasks." + task + ".useRandom")) {
-						final double d2 = Tools.c.getDouble("tasks." + task + ".random");
+					if (Main.getPlugin().getConfig().getBoolean("tasks." + task + ".useRandom")) {
+						final double d2 = Main.getPlugin().getConfig().getDouble("tasks." + task + ".random");
 						if (!randomCheck(d2)) {
 							continue;
 						}
@@ -148,8 +149,8 @@ public class Tools {
 						p2.performCommand(cmd);
 					}
 				}
-				else if (Tools.c.getBoolean("tasks." + task + ".useRandom")) {
-					final double d2 = Tools.c.getDouble("tasks." + task + ".random");
+				else if (Main.getPlugin().getConfig().getBoolean("tasks." + task + ".useRandom")) {
+					final double d2 = Main.getPlugin().getConfig().getDouble("tasks." + task + ".random");
 					if (!randomCheck(d2)) {
 						continue;
 					}

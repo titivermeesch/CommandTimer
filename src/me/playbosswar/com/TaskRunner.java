@@ -1,39 +1,46 @@
 package me.playbosswar.com;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.plugin.Plugin;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 
 public class TaskRunner {
 
-    static FileConfiguration c = Main.getPlugin().getConfig();
+    public static Plugin p = Main.getPlugin();
 
     public static void startTasks() {
-        if(c.contains("tasks")) {
-            for (String task : c.getConfigurationSection("tasks").getKeys(false)) {
+        Main.getPlugin().saveDefaultConfig();
+        Main.getPlugin().getConfig().options().copyDefaults(false);
+        if(p.getConfig().contains("tasks")) {
+            for (String task : Main.getPlugin().getConfig().getConfigurationSection("tasks").getKeys(false)) {
 
-                long ticks = 20L * c.getLong("tasks." + task + ".seconds");
+                Bukkit.getConsoleSender().sendMessage("Command is " + p.getConfig().getStringList("tasks." + task + ".commands"));
+                Bukkit.getConsoleSender().sendMessage("other command is " + Main.getPlugin().getConfig().getStringList("tasks." + task + ".commands"));
+
+                long ticks = 20L * p.getConfig().getLong("tasks." + task + ".seconds");
                 LocalDate date = LocalDate.now();
                 DayOfWeek dow = date.getDayOfWeek();
                 String gender = Tools.getGender(task);
 
-                if(c.getBoolean("tasks." + task + ".onday")) {
+                if(p.getConfig().getBoolean("tasks." + task + ".onday")) {
 
-                    if(c.getStringList("tasks." + task + ".days").contains(dow.toString())) {
-                        if (c.getBoolean("tasks." + task + ".onhour")) {
+                    if(p.getConfig().getStringList("tasks." + task + ".days").contains(dow.toString())) {
+                        if (p.getConfig().getBoolean("tasks." + task + ".onhour")) {
                             Tools.complexCommandRunner(task, gender);
                         } else {
-                            if (c.getBoolean("tasks." + task + ".onload")) {
+                            if (p.getConfig().getBoolean("tasks." + task + ".onload")) {
                                 Tools.simpleCommandRunner(task, gender);
                             } else {
                                 Tools.easyCommandRunner(task, ticks, gender);
                             }
                         }
                     }
-                } else if (c.getBoolean("tasks." + task + ".onhour")) {
+                } else if (p.getConfig().getBoolean("tasks." + task + ".onhour")) {
                     Tools.complexCommandRunner(task, gender);
                 } else {
-                    if (c.getBoolean("tasks." + task + ".onload")) {
+                    if (p.getConfig().getBoolean("tasks." + task + ".onload")) {
                         Tools.simpleCommandRunner(task, gender);
                     } else {
                         Tools.easyCommandRunner(task, ticks, gender);
