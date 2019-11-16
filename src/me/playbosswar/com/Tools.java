@@ -79,8 +79,6 @@ public class Tools {
 		}, 50L);
 	}
 
-
-
 	public static void complexCommandRunner(final String task, final String gender) {
 		Timer timer = new Timer();
 		timer.schedule(new TimerTask() {

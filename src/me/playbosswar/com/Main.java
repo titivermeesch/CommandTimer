@@ -7,7 +7,6 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Main extends JavaPlugin implements Listener {
-
 	private static Plugin plugin;
 	public int t;
 
@@ -17,7 +16,6 @@ public class Main extends JavaPlugin implements Listener {
 		registerCommands();
 		Tools.initConfig();
 		TaskRunner.startTasks();
-		
 		Tools.printDate();
 		Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[CommandTimer] v2.4.2 loaded");
 	}
