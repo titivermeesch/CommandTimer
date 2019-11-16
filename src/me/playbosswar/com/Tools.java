@@ -29,20 +29,14 @@ public class Tools {
 	public static void reloadTaks() {
 		Bukkit.getScheduler().cancelTasks(Main.getPlugin());
 		Main.getPlugin().reloadConfig();
-		initConfig();
 		TaskRunner.startTasks();
 	}
 
-	public static void cancelTasks() {
-		Main.getPlugin().getServer().getScheduler().cancelTasks(Main.getPlugin());
-	}
-
 	public static String getGender(final String task) {
-		String configGender = Main.getPlugin().getConfig().getString("tasks." + task + ".gender").toLowerCase();
-		if (configGender.equals("player") || configGender.equals("console") || configGender.equals("operator")) {
-			return configGender;
+		if(!Main.getPlugin().getConfig().contains("tasks." + task + ".gender")) {
+			return "console";
 		}
-		return null;
+		return Main.getPlugin().getConfig().getString("tasks." + task + ".gender").toLowerCase();
 	}
 
 	public static void easyCommandRunner(final String task, final long ticks, final String gender) {

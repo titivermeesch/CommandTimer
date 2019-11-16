@@ -12,6 +12,7 @@ public class CommandHandler implements CommandExecutor {
             sender.sendMessage(ChatColor.GOLD + "CommandTimer reloaded");
             return true;
         }
+        sender.sendMessage(ChatColor.RED + "Your command is invalid.");
         return true;
     }
 }
