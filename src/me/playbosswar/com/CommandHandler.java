@@ -23,7 +23,7 @@ public class CommandHandler implements CommandExecutor {
                 return true;
             }
         } else if(args[0].equals("reload")) {
-            CommandTimer.getPlugin().reloadConfig();
+            Main.getPlugin().reloadConfig();
             Tools.reloadTaks();
             sender.sendMessage(ChatColor.GOLD + "CommandTimer reloaded");
             Tools.closeAllInventories();

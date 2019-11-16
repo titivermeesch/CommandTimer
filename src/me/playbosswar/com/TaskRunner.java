@@ -6,7 +6,7 @@ import java.time.LocalDate;
 
 public class TaskRunner {
 
-    static FileConfiguration c = CommandTimer.getPlugin().getConfig();
+    static FileConfiguration c = Main.getPlugin().getConfig();
 
     public static void startTasks() {
         Tools.cancelTasks(); //Cancel all tasks that may still be running

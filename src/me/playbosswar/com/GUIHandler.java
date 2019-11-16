@@ -13,10 +13,10 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 public class GUIHandler implements Listener {
 	public static void listCommandsGUI(Player p) { //GUI that shows all the loaded commands
-		if(CommandTimer.getPlugin().getConfig().getString("tasks.1") != null) {
+		if(Main.getPlugin().getConfig().getString("tasks.1") != null) {
 			Inventory allCommands = Bukkit.getServer().createInventory(p, 54, "All loaded timers");
-			FileConfiguration c = CommandTimer.getPlugin().getConfig();
-			for (final String path : CommandTimer.getPlugin().getConfig().getConfigurationSection("tasks").getKeys(false)) {
+			FileConfiguration c = Main.getPlugin().getConfig();
+			for (final String path : Main.getPlugin().getConfig().getConfigurationSection("tasks").getKeys(false)) {
 				//Generate an unique item for each command
 				ItemStack genStack = new ItemStack(Material.WOOL);
 		        ItemMeta genStackMeta = genStack.getItemMeta();

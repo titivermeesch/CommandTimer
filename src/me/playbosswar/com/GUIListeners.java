@@ -24,8 +24,8 @@ public class GUIListeners implements Listener {
             }
             int id = Integer.parseInt(e.getCurrentItem().getItemMeta().getDisplayName());
             e.setCancelled(true);
-            CommandTimer.getPlugin().getConfig().set("tasks." + id , null);
-            CommandTimer.getPlugin().saveConfig();
+            Main.getPlugin().getConfig().set("tasks." + id , null);
+            Main.getPlugin().saveConfig();
             GUIHandler.listCommandsGUI(p);
         }
     }

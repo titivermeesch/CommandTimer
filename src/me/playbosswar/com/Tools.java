@@ -18,30 +18,26 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class Tools {
-	static FileConfiguration c = CommandTimer.getPlugin().getConfig();
+	static FileConfiguration c = Main.getPlugin().getConfig();
 
 	public static void printDate() {
 		LocalDate date = LocalDate.now();
 		DayOfWeek dow = date.getDayOfWeek();
-		if (CommandTimer.getPlugin().getConfig().getBoolean("timeonload")) {
+		if (Main.getPlugin().getConfig().getBoolean("timeonload")) {
 			Bukkit.getConsoleSender().sendMessage("§aServer time : " + java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss")));
 			Bukkit.getConsoleSender().sendMessage("§aServer day : " + dow);
 		}
 	}
 
 	public static void initConfig() {
-		CommandTimer.getPlugin().saveDefaultConfig();
-		CommandTimer.getPlugin().getConfig().options().copyDefaults(false);
+		Main.getPlugin().saveDefaultConfig();
+		Main.getPlugin().getConfig().options().copyDefaults(false);
 	}
 
 	public static void registerEvents(Plugin plugin, Listener... listeners) {
 		for (final Listener listener : listeners) {
 			Bukkit.getServer().getPluginManager().registerEvents(listener, plugin);
 		}
-	}
-
-	public static void registerBungeeChannels() {
-		CommandTimer.getPlugin().getServer().getMessenger().registerOutgoingPluginChannel(CommandTimer.getPlugin(), "ct:ct");
 	}
 
 	public static void closeAllInventories() {
@@ -51,12 +47,12 @@ public class Tools {
 	}
 
 	public static void reloadTaks() {
-		Bukkit.getScheduler().cancelTasks(CommandTimer.getPlugin());
+		Bukkit.getScheduler().cancelTasks(Main.getPlugin());
 		TaskRunner.startTasks();
 	}
 
 	public static void cancelTasks() {
-		CommandTimer.getPlugin().getServer().getScheduler().cancelTasks(CommandTimer.getPlugin());
+		Main.getPlugin().getServer().getScheduler().cancelTasks(Main.getPlugin());
 	}
 
 	public static String getGender(final String task) {
@@ -68,11 +64,11 @@ public class Tools {
 	}
 
 	public static void easyCommandRunner(final String task, final long ticks, final String gender) {
-		Bukkit.getScheduler().scheduleSyncRepeatingTask(CommandTimer.getPlugin(), new CommandTask(Tools.c.getStringList("tasks." + task + ".commands"), gender, task), ticks, ticks);
+		Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getPlugin(), new CommandTask(Tools.c.getStringList("tasks." + task + ".commands"), gender, task), ticks, ticks);
 	}
 
 	public static void simpleCommandRunner(String task, String gender) {
-		Bukkit.getScheduler().scheduleSyncDelayedTask(CommandTimer.getPlugin(), new Runnable() {
+		Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(), new Runnable() {
 
 			@Override
 			public void run() {
@@ -95,7 +91,7 @@ public class Tools {
 				final String formattedDate = df.format(date);
 				for (final String hour : Tools.c.getStringList("tasks." + task + ".time")) {
 					if (formattedDate.equals(hour)) {
-						Bukkit.getScheduler().scheduleSyncDelayedTask(CommandTimer.getPlugin(), (Runnable)new Runnable() {
+						Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(), (Runnable)new Runnable() {
 							@Override
 							public void run() {
 								int i = Tools.c.getStringList("tasks." + task + ".time").toArray().length;
@@ -226,7 +222,7 @@ public class Tools {
 		out.writeUTF(cmd);
 		if (!Bukkit.getOnlinePlayers().toString().equals("[]")) {
 			Player player = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
-			player.sendPluginMessage(CommandTimer.getPlugin(), "ct:ct", out.toByteArray());
+			player.sendPluginMessage(Main.getPlugin(), "ct:ct", out.toByteArray());
 		}
 	}
 

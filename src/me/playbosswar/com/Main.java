@@ -6,7 +6,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class CommandTimer extends JavaPlugin implements Listener {
+public class Main extends JavaPlugin implements Listener {
 
 	private static Plugin plugin;
 	public int t;
@@ -15,7 +15,6 @@ public class CommandTimer extends JavaPlugin implements Listener {
 		plugin = this;
 		Tools.registerEvents(this, new GUIListeners());
 		registerCommands();
-		Tools.registerBungeeChannels();
 		Tools.initConfig();
 		TaskRunner.startTasks();
 		

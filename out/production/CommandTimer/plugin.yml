@@ -1,0 +1,9 @@
+name: CommandTimer
+version: 2.5
+description: This plugin allows you to schedule commands that will be executed
+main: me.playbosswar.com.CommandTimer
+author: PlayBossWar
+commands:
+  commandtimer:
+    usage: /<command>
+    description: List all commands
