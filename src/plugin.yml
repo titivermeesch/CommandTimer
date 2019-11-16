@@ -6,4 +6,4 @@ author: PlayBossWar
 commands:
   commandtimer:
     usage: /<command>
-    description: Main command
+    description: List all commands
