@@ -20,10 +20,10 @@ public class GUIHandler implements Listener {
 	public static int editing = 0;
 	
 	public static void calcCommands() { //Calculate how many commands there are loaded and what the id of the next command should be
-		if(CommandTimer.getPlugin().getConfig().getString("settings.tasks.1") == null) {
-			CommandTimer.getPlugin().getConfig().set("settings.tasks.1", 0);
+		if(CommandTimer.getPlugin().getConfig().getString("tasks.1") == null) {
+			CommandTimer.getPlugin().getConfig().set("tasks.1", 0);
 		}
-		for (final String path : CommandTimer.getPlugin().getConfig().getConfigurationSection("settings.tasks").getKeys(false)) {
+		for (final String path : CommandTimer.getPlugin().getConfig().getConfigurationSection("tasks").getKeys(false)) {
 			o++;
 		}
 	}
@@ -61,27 +61,27 @@ public class GUIHandler implements Listener {
 	}
 	
 	public static void listCommandsGUI(Player p) { //GUI that shows all the loaded commands
-		if(CommandTimer.getPlugin().getConfig().getString("settings.tasks.1") != null) {
+		if(CommandTimer.getPlugin().getConfig().getString("tasks.1") != null) {
 			Inventory allCommands = Bukkit.getServer().createInventory(p, 54, "All loaded timers");
 			FileConfiguration c = CommandTimer.getPlugin().getConfig();
-			for (final String path : CommandTimer.getPlugin().getConfig().getConfigurationSection("settings.tasks").getKeys(false)) { 
+			for (final String path : CommandTimer.getPlugin().getConfig().getConfigurationSection("tasks").getKeys(false)) {
 				//Generate an unique item for each command
 				ItemStack genStack = new ItemStack(Material.WOOL);
 		        ItemMeta genStackMeta = genStack.getItemMeta();
 		        ArrayList<String> lore= new ArrayList<String>();
 
-				lore.add(ChatColor.GOLD + "Commands : " + c.getStringList("settings.tasks." + path + ".commands"));
-				lore.add(ChatColor.GOLD + "On hour : " + c.getBoolean("settings.tasks." + path + ".onhour"));
-				lore.add(ChatColor.GOLD + "Time : " + c.getStringList("settings.tasks." + path + ".time"));
-				lore.add(ChatColor.GOLD + "On load : " + c.getBoolean("settings.tasks." + path + ".onload"));
-				lore.add(ChatColor.GOLD + "On day : " + c.getBoolean("settings.tasks." + path + ".onday"));
-				lore.add(ChatColor.GOLD + "Days : " + c.getStringList("settings.tasks." + path + ".days"));
-				lore.add(ChatColor.GOLD + "Seconds : " + c.getInt("settings.tasks." + path + ".seconds"));
-				lore.add(ChatColor.GOLD + "UseRandom : " + c.getBoolean("settings.tasks." + path + ".useRandom"));
-				lore.add(ChatColor.GOLD + "Random : " + c.getDouble("settings.tasks." + path + ".random"));
-				lore.add(ChatColor.GOLD + "Gender : " + c.getString("settings.tasks." + path + ".gender"));
-				lore.add(ChatColor.GOLD + "Bungee : " + c.getBoolean("settings.tasks." + path + ".bungee"));
-				lore.add(ChatColor.GOLD + "Permission : " + c.getString("settings.tasks." + path + ".permissoin"));
+				lore.add(ChatColor.GOLD + "Commands : " + c.getStringList("tasks." + path + ".commands"));
+				lore.add(ChatColor.GOLD + "On hour : " + c.getBoolean("tasks." + path + ".onhour"));
+				lore.add(ChatColor.GOLD + "Time : " + c.getStringList("tasks." + path + ".time"));
+				lore.add(ChatColor.GOLD + "On load : " + c.getBoolean("tasks." + path + ".onload"));
+				lore.add(ChatColor.GOLD + "On day : " + c.getBoolean("tasks." + path + ".onday"));
+				lore.add(ChatColor.GOLD + "Days : " + c.getStringList("tasks." + path + ".days"));
+				lore.add(ChatColor.GOLD + "Seconds : " + c.getInt("tasks." + path + ".seconds"));
+				lore.add(ChatColor.GOLD + "UseRandom : " + c.getBoolean("tasks." + path + ".useRandom"));
+				lore.add(ChatColor.GOLD + "Random : " + c.getDouble("tasks." + path + ".random"));
+				lore.add(ChatColor.GOLD + "Gender : " + c.getString("tasks." + path + ".gender"));
+				lore.add(ChatColor.GOLD + "Bungee : " + c.getBoolean("tasks." + path + ".bungee"));
+				lore.add(ChatColor.GOLD + "Permission : " + c.getString("tasks." + path + ".permissoin"));
 				lore.add(ChatColor.RED + "Left-Click to delete this command");
 		        
 		        genStackMeta.setLore(lore);
@@ -112,7 +112,7 @@ public class GUIHandler implements Listener {
 		Inventory createCommands = Bukkit.getServer().createInventory(p, 18, "Create a timer");
 		ItemStack addCommand = new ItemStack(Material.COMMAND);
 		ItemMeta addCommandMeta = addCommand.getItemMeta();
-		if (CommandTimer.getPlugin().getConfig().getBoolean("settings.tasks." + GUIHandler.o + ".onhour")) {
+		if (CommandTimer.getPlugin().getConfig().getBoolean("tasks." + GUIHandler.o + ".onhour")) {
 			final ItemStack onHour = new ItemStack(Material.INK_SACK, 1, (byte)10);
 			final ItemMeta onHourMeta = onHour.getItemMeta();
 			final ArrayList<String> lore = new ArrayList<String>();
@@ -132,7 +132,7 @@ public class GUIHandler implements Listener {
 			onHour.setItemMeta(onHourMeta);
 			createCommands.setItem(1, onHour);
 		}
-		if (CommandTimer.getPlugin().getConfig().getBoolean("settings.tasks." + GUIHandler.o + ".onload")) {
+		if (CommandTimer.getPlugin().getConfig().getBoolean("tasks." + GUIHandler.o + ".onload")) {
 			ItemStack onLoad = new ItemStack(Material.INK_SACK, 1, (byte)10);
 			ItemMeta onLoadMeta = onLoad.getItemMeta();
 			ArrayList<String> lore2 = new ArrayList<>();
@@ -152,7 +152,7 @@ public class GUIHandler implements Listener {
 			onLoad.setItemMeta(onLoadMeta);
 			createCommands.setItem(2, onLoad);
 		}
-		if (CommandTimer.getPlugin().getConfig().getBoolean("settings.tasks." + GUIHandler.o + ".onday")) {
+		if (CommandTimer.getPlugin().getConfig().getBoolean("tasks." + GUIHandler.o + ".onday")) {
 			ItemStack onDay = new ItemStack(Material.INK_SACK, 1, (byte)10);
 			ItemMeta onDayMeta = onDay.getItemMeta();
 			ArrayList<String> lore3 = new ArrayList<>();
@@ -172,7 +172,7 @@ public class GUIHandler implements Listener {
 			onDay.setItemMeta(onDayMeta);
 			createCommands.setItem(3, onDay);
 		}
-		if (CommandTimer.getPlugin().getConfig().getBoolean("settings.tasks." + GUIHandler.o + ".useRandom")) {
+		if (CommandTimer.getPlugin().getConfig().getBoolean("tasks." + GUIHandler.o + ".useRandom")) {
 			ItemStack onRandom = new ItemStack(Material.INK_SACK, 1, (byte)10);
 			ItemMeta onRandomMeta = onRandom.getItemMeta();
 			ArrayList<String> lore2 = new ArrayList<>();
@@ -192,7 +192,7 @@ public class GUIHandler implements Listener {
 			onRandom.setItemMeta(onRandomMeta);
 			createCommands.setItem(4, onRandom);
 		}
-		if (CommandTimer.getPlugin().getConfig().getBoolean("settings.tasks." + GUIHandler.o + ".bungee")) {
+		if (CommandTimer.getPlugin().getConfig().getBoolean("tasks." + GUIHandler.o + ".bungee")) {
 			ItemStack bungee = new ItemStack(Material.INK_SACK, 1, (byte)10);
 			ItemMeta bungeeMeta = bungee.getItemMeta();
 			ArrayList<String> lore2 = new ArrayList<>();
@@ -213,9 +213,9 @@ public class GUIHandler implements Listener {
 			createCommands.setItem(5, bungee);
 		}
 
-		String gender = CommandTimer.getPlugin().getConfig().getString("settings.tasks." + GUIHandler.o + ".gender");
+		String gender = CommandTimer.getPlugin().getConfig().getString("tasks." + GUIHandler.o + ".gender");
 		if (recall == 0) {
-			CommandTimer.getPlugin().getConfig().set("settings.tasks." + GUIHandler.o + ".gender", "console");
+			CommandTimer.getPlugin().getConfig().set("tasks." + GUIHandler.o + ".gender", "console");
 			gender = "console";
 		}
 
@@ -279,7 +279,7 @@ public class GUIHandler implements Listener {
 	public static void daySetupGUI(Player p) { //Opens GUI to setup the days
 		Inventory setupDays = Bukkit.getServer().createInventory(p, 27, "Setup days");
 		
-		if(CommandTimer.getPlugin().getConfig().getStringList("settings.tasks." + o + ".days").contains("MONDAY")) {
+		if(CommandTimer.getPlugin().getConfig().getStringList("tasks." + o + ".days").contains("MONDAY")) {
 			ItemStack days1 = new ItemStack( Material.INK_SACK, 1, (byte)10 );
 			ItemMeta days1Meta = days1.getItemMeta();
 			days1Meta.setDisplayName("Monday");
@@ -293,7 +293,7 @@ public class GUIHandler implements Listener {
 			setupDays.setItem(10, days1);
 		}
 		
-		if(CommandTimer.getPlugin().getConfig().getStringList("settings.tasks." + o + ".days").contains("TUESDAY")) {
+		if(CommandTimer.getPlugin().getConfig().getStringList("tasks." + o + ".days").contains("TUESDAY")) {
 			ItemStack days2 = new ItemStack( Material.INK_SACK, 1, (byte)10 );
 			ItemMeta days2Meta = days2.getItemMeta();
 			days2Meta.setDisplayName("Tuesday");
@@ -307,7 +307,7 @@ public class GUIHandler implements Listener {
 			setupDays.setItem(11, days2);
 		}
 		
-		if(CommandTimer.getPlugin().getConfig().getStringList("settings.tasks." + o + ".days").contains("WEDNESDAY")) {
+		if(CommandTimer.getPlugin().getConfig().getStringList("tasks." + o + ".days").contains("WEDNESDAY")) {
 			ItemStack days3 = new ItemStack( Material.INK_SACK, 1, (byte)10 );
 			ItemMeta days3Meta = days3.getItemMeta();
 			days3Meta.setDisplayName("Wednesday");
@@ -321,7 +321,7 @@ public class GUIHandler implements Listener {
 			setupDays.setItem(12, days3);
 		}
 		
-		if(CommandTimer.getPlugin().getConfig().getStringList("settings.tasks." + o + ".days").contains("THURSDAY")) {
+		if(CommandTimer.getPlugin().getConfig().getStringList("tasks." + o + ".days").contains("THURSDAY")) {
 			ItemStack days4 = new ItemStack( Material.INK_SACK, 1, (byte)10 );
 			ItemMeta days4Meta = days4.getItemMeta();
 			days4Meta.setDisplayName("Thursday");
@@ -335,7 +335,7 @@ public class GUIHandler implements Listener {
 			setupDays.setItem(13, days4);
 		}
 		
-		if(CommandTimer.getPlugin().getConfig().getStringList("settings.tasks." + o + ".days").contains("FRIDAY")) {
+		if(CommandTimer.getPlugin().getConfig().getStringList("tasks." + o + ".days").contains("FRIDAY")) {
 			ItemStack days5 = new ItemStack( Material.INK_SACK, 1, (byte)10 );
 			ItemMeta days5Meta = days5.getItemMeta();
 			days5Meta.setDisplayName("Friday");
@@ -349,7 +349,7 @@ public class GUIHandler implements Listener {
 			setupDays.setItem(14, days5);
 		}
 		
-		if(CommandTimer.getPlugin().getConfig().getStringList("settings.tasks." + o + ".days").contains("SATURDAY")) {
+		if(CommandTimer.getPlugin().getConfig().getStringList("tasks." + o + ".days").contains("SATURDAY")) {
 			ItemStack days6 = new ItemStack( Material.INK_SACK, 1, (byte)10 );
 			ItemMeta days6Meta = days6.getItemMeta();
 			days6Meta.setDisplayName("Saturday");
@@ -363,7 +363,7 @@ public class GUIHandler implements Listener {
 			setupDays.setItem(15, days6);
 		}
 		
-		if(CommandTimer.getPlugin().getConfig().getStringList("settings.tasks." + o + ".days").contains("SUNDAY")) {
+		if(CommandTimer.getPlugin().getConfig().getStringList("tasks." + o + ".days").contains("SUNDAY")) {
 			ItemStack days7 = new ItemStack( Material.INK_SACK, 1, (byte)10 );
 			ItemMeta days7Meta = days7.getItemMeta();
 			days7Meta.setDisplayName("Sunday");
@@ -390,9 +390,9 @@ public class GUIHandler implements Listener {
 	public static void timeSetupGUI(Player p) { //Opens the GUI to setup the time
 		new AnvilGUI(CommandTimer.getPlugin(), p, "09:00:00", (player, reply) -> {
 			String msg = reply.toString();
-			List<String> sl = CommandTimer.getPlugin().getConfig().getStringList("settings.tasks." + o + ".time");
+			List<String> sl = CommandTimer.getPlugin().getConfig().getStringList("tasks." + o + ".time");
 			sl.add(msg);
-			CommandTimer.getPlugin().getConfig().set("settings.tasks." + o + ".time", sl);
+			CommandTimer.getPlugin().getConfig().set("tasks." + o + ".time", sl);
 			CommandTimer.getPlugin().saveConfig();
 	        createCommandsGUI(p, 1);
 	        return "Saved";
@@ -402,7 +402,7 @@ public class GUIHandler implements Listener {
 	public static void secondSetupGUI(Player p) { //GUI to setup the seconds
 		new AnvilGUI(CommandTimer.getPlugin(), p, "Insert seconds", (player, reply) -> {
 			int sec = Integer.parseInt(reply);
-			CommandTimer.getPlugin().getConfig().set("settings.tasks." + o + ".seconds", sec);
+			CommandTimer.getPlugin().getConfig().set("tasks." + o + ".seconds", sec);
 			CommandTimer.getPlugin().saveConfig();
 	        createCommandsGUI(p, 1);
 	        return "Saved";
@@ -412,8 +412,8 @@ public class GUIHandler implements Listener {
     public static void randomSetupGUI(Player p) { //Opens the GUI to setup the random value
         new AnvilGUI(CommandTimer.getPlugin(), p, "Insert random (0.1 - 1)", (player, reply) -> {
             double r = Double.parseDouble(reply);
-            List<String> sl = CommandTimer.getPlugin().getConfig().getStringList("settings.tasks." + o + ".time");
-            CommandTimer.getPlugin().getConfig().set("settings.tasks." + o + ".random", r);
+            List<String> sl = CommandTimer.getPlugin().getConfig().getStringList("tasks." + o + ".time");
+            CommandTimer.getPlugin().getConfig().set("tasks." + o + ".random", r);
             CommandTimer.getPlugin().saveConfig();
             createCommandsGUI(p, 1);
             return "Saved";
@@ -422,7 +422,7 @@ public class GUIHandler implements Listener {
 
 	public static void permissionSetupGUI(Player p) {
         new AnvilGUI(CommandTimer.getPlugin(), p, "command.use.permission", (player, reply) -> {
-            CommandTimer.getPlugin().getConfig().set("settings.tasks." + o + ".permission", reply);
+            CommandTimer.getPlugin().getConfig().set("tasks." + o + ".permission", reply);
             CommandTimer.getPlugin().saveConfig();
             createCommandsGUI(p, 1);
             return "Saved";

@@ -32,7 +32,7 @@ public class GUIListeners implements Listener {
             }
             int id = Integer.parseInt(e.getCurrentItem().getItemMeta().getDisplayName());
             e.setCancelled(true);
-            CommandTimer.getPlugin().getConfig().set("settings.tasks." + id , null);
+            CommandTimer.getPlugin().getConfig().set("tasks." + id , null);
             CommandTimer.getPlugin().saveConfig();
             GUIHandler.listCommandsGUI(p);
         }
@@ -47,14 +47,14 @@ public class GUIListeners implements Listener {
         if (e.getView().getTitle().equalsIgnoreCase("Create a timer")) {
             e.setCancelled(true);
             if (GUIHandler.editing == 0) {
-                CommandTimer.getPlugin().getConfig().set("settings.tasks." + GUIHandler.o + ".commands", "0");
+                CommandTimer.getPlugin().getConfig().set("tasks." + GUIHandler.o + ".commands", "0");
                 GUIHandler.editing = 1;
             }
             if (e.getSlot() == 0) {
                 new AnvilGUI(CommandTimer.getPlugin(), p, "Insert command", (player, reply) -> {
-                    List<String> sl = CommandTimer.getPlugin().getConfig().getStringList("settings.tasks." + GUIHandler.o + ".commands");
+                    List<String> sl = CommandTimer.getPlugin().getConfig().getStringList("tasks." + GUIHandler.o + ".commands");
                     sl.add(reply);
-                    CommandTimer.getPlugin().getConfig().set("settings.tasks." + GUIHandler.o + ".commands", sl);
+                    CommandTimer.getPlugin().getConfig().set("tasks." + GUIHandler.o + ".commands", sl);
                     CommandTimer.getPlugin().saveConfig();
                     GUIHandler.createCommandsGUI(p, 1);
                     return "Saved";
@@ -62,7 +62,7 @@ public class GUIListeners implements Listener {
             }
             else if (e.getSlot() == 1) {
                 if(e.getCurrentItem().getDurability() == 8) {
-                    CommandTimer.getPlugin().getConfig().set("settings.tasks." + GUIHandler.o + ".onhour", true);
+                    CommandTimer.getPlugin().getConfig().set("tasks." + GUIHandler.o + ".onhour", true);
                     ItemStack onHour = new ItemStack( Material.INK_SACK, 1, (byte)10 );
                     ItemMeta onHourMeta = onHour.getItemMeta();
                     ArrayList<String> lore = new ArrayList<>();
@@ -77,7 +77,7 @@ public class GUIListeners implements Listener {
                     p.updateInventory();
                 }
                 else {
-                    CommandTimer.getPlugin().getConfig().set("settings.tasks." + GUIHandler.o + ".onhour", false);
+                    CommandTimer.getPlugin().getConfig().set("tasks." + GUIHandler.o + ".onhour", false);
                     ItemStack onHour = new ItemStack( Material.INK_SACK, 1, (byte)8 );
                     ItemMeta onHourMeta = onHour.getItemMeta();
                     ArrayList<String> lore = new ArrayList<>();
@@ -94,7 +94,7 @@ public class GUIListeners implements Listener {
             }
             else if (e.getSlot() == 2) {
                 if (e.getCurrentItem().getDurability() == 8) {
-                    CommandTimer.getPlugin().getConfig().set("settings.tasks." + GUIHandler.o + ".onload", true);
+                    CommandTimer.getPlugin().getConfig().set("tasks." + GUIHandler.o + ".onload", true);
                     final ItemStack onHour = new ItemStack(Material.INK_SACK, 1, (byte)10);
                     final ItemMeta onHourMeta = onHour.getItemMeta();
                     final ArrayList<String> lore = new ArrayList<>();
@@ -107,7 +107,7 @@ public class GUIListeners implements Listener {
                     p.updateInventory();
                 }
                 else {
-                    CommandTimer.getPlugin().getConfig().set("settings.tasks." + GUIHandler.o + ".onload", false);
+                    CommandTimer.getPlugin().getConfig().set("tasks." + GUIHandler.o + ".onload", false);
                     ItemStack onHour = new ItemStack(Material.INK_SACK, 1, (byte)8);
                     ItemMeta onHourMeta = onHour.getItemMeta();
                     ArrayList<String> lore = new ArrayList<>();
@@ -122,7 +122,7 @@ public class GUIListeners implements Listener {
             }
             else if (e.getSlot() == 3) {
                 if (e.getCurrentItem().getDurability() == 8) {
-                    CommandTimer.getPlugin().getConfig().set("settings.tasks." + GUIHandler.o + ".onday", true);
+                    CommandTimer.getPlugin().getConfig().set("tasks." + GUIHandler.o + ".onday", true);
                     ItemStack onHour = new ItemStack(Material.INK_SACK, 1, (byte)10);
                     ItemMeta onHourMeta = onHour.getItemMeta();
                     ArrayList<String> lore = new ArrayList<>();
@@ -135,7 +135,7 @@ public class GUIListeners implements Listener {
                     p.updateInventory();
                 }
                 else {
-                    CommandTimer.getPlugin().getConfig().set("settings.tasks." + GUIHandler.o + ".onday", false);
+                    CommandTimer.getPlugin().getConfig().set("tasks." + GUIHandler.o + ".onday", false);
                     ItemStack onHour = new ItemStack(Material.INK_SACK, 1, (byte)8);
                     ItemMeta onHourMeta = onHour.getItemMeta();
                     ArrayList<String> lore = new ArrayList<>();
@@ -150,7 +150,7 @@ public class GUIListeners implements Listener {
             }
             else if (e.getSlot() == 4) {
                 if (e.getCurrentItem().getDurability() == 8) {
-                    CommandTimer.getPlugin().getConfig().set("settings.tasks." + GUIHandler.o + ".useRandom", true);
+                    CommandTimer.getPlugin().getConfig().set("tasks." + GUIHandler.o + ".useRandom", true);
                     ItemStack useRandom = new ItemStack(Material.INK_SACK, 1, (byte)10);
                     ItemMeta useRandomMeta = useRandom.getItemMeta();
                     ArrayList<String> lore = new ArrayList<>();
@@ -163,7 +163,7 @@ public class GUIListeners implements Listener {
                     p.updateInventory();
                 }
                 else {
-                    CommandTimer.getPlugin().getConfig().set("settings.tasks." + GUIHandler.o + ".useRandom", false);
+                    CommandTimer.getPlugin().getConfig().set("tasks." + GUIHandler.o + ".useRandom", false);
                     ItemStack useRandom = new ItemStack(Material.INK_SACK, 1, (byte)8);
                     ItemMeta useRandomMeta = useRandom.getItemMeta();
                     ArrayList<String> lore = new ArrayList<>();
@@ -178,7 +178,7 @@ public class GUIListeners implements Listener {
             }
             else if (e.getSlot() == 5) {
                 if (e.getCurrentItem().getDurability() == 8) {
-                    CommandTimer.getPlugin().getConfig().set("settings.tasks." + GUIHandler.o + ".bungee", true);
+                    CommandTimer.getPlugin().getConfig().set("tasks." + GUIHandler.o + ".bungee", true);
                     ItemStack bungee = new ItemStack(Material.INK_SACK, 1, (byte)10);
                     ItemMeta bungeeMeta = bungee.getItemMeta();
                     ArrayList<String> lore = new ArrayList<>();
@@ -191,7 +191,7 @@ public class GUIListeners implements Listener {
                     p.updateInventory();
                 }
                 else {
-                    CommandTimer.getPlugin().getConfig().set("settings.tasks." + GUIHandler.o + ".bungee", false);
+                    CommandTimer.getPlugin().getConfig().set("tasks." + GUIHandler.o + ".bungee", false);
                     ItemStack bungee = new ItemStack(Material.INK_SACK, 1, (byte)8);
                     ItemMeta bungeeMeta = bungee.getItemMeta();
                     ArrayList<String> lore = new ArrayList<>();
@@ -211,7 +211,7 @@ public class GUIListeners implements Listener {
                     ItemMeta operatorMeta = operator.getItemMeta();
                     operatorMeta.setDisplayName("Executed by Operator");
                     operator.setItemMeta(operatorMeta);
-                    CommandTimer.getPlugin().getConfig().set("settings.tasks." + GUIHandler.o + ".gender", "operator");
+                    CommandTimer.getPlugin().getConfig().set("tasks." + GUIHandler.o + ".gender", "operator");
                     CommandTimer.getPlugin().saveConfig();
                     p.getOpenInventory().setItem(9, operator);
                     p.updateInventory();
@@ -221,7 +221,7 @@ public class GUIListeners implements Listener {
                     ItemStack operator = new ItemStack(Material.DIAMOND_HELMET, 1);
                     ItemMeta operatorMeta = operator.getItemMeta();
                     operatorMeta.setDisplayName("Executed by Console");
-                    CommandTimer.getPlugin().getConfig().set("settings.tasks." + GUIHandler.o + ".gender", "console");
+                    CommandTimer.getPlugin().getConfig().set("tasks." + GUIHandler.o + ".gender", "console");
                     CommandTimer.getPlugin().saveConfig();
                     operator.setItemMeta(operatorMeta);
                     p.getOpenInventory().setItem(9, operator);
@@ -233,7 +233,7 @@ public class GUIListeners implements Listener {
                     ItemMeta operatorMeta = operator.getItemMeta();
                     operatorMeta.setDisplayName("Executed by Player");
                     operator.setItemMeta(operatorMeta);
-                    CommandTimer.getPlugin().getConfig().set("settings.tasks." + GUIHandler.o + ".gender", "player");
+                    CommandTimer.getPlugin().getConfig().set("tasks." + GUIHandler.o + ".gender", "player");
                     CommandTimer.getPlugin().saveConfig();
                     p.getOpenInventory().setItem(9, operator);
                     p.updateInventory();
@@ -270,7 +270,7 @@ public class GUIListeners implements Listener {
     @EventHandler
     public void daysCommandsGUIEvent(InventoryClickEvent e) {
         Player p = (Player) e.getWhoClicked();
-        List<String> sl = CommandTimer.getPlugin().getConfig().getStringList("settings.tasks." + GUIHandler.o + ".days");
+        List<String> sl = CommandTimer.getPlugin().getConfig().getStringList("tasks." + GUIHandler.o + ".days");
         if ((e.getCurrentItem() == null) || (e.getCurrentItem().getType().equals(Material.AIR))) {
             return;
         }
@@ -287,7 +287,7 @@ public class GUIListeners implements Listener {
                         day.setItemMeta(dayMeta);
 
                         sl.add("MONDAY");
-                        CommandTimer.getPlugin().getConfig().set("settings.tasks." + GUIHandler.o + ".days", sl);
+                        CommandTimer.getPlugin().getConfig().set("tasks." + GUIHandler.o + ".days", sl);
                         CommandTimer.getPlugin().saveConfig();
 
                         p.getOpenInventory().setItem(10, day);
@@ -300,7 +300,7 @@ public class GUIListeners implements Listener {
                         day.setItemMeta(dayMeta);
 
                         sl.remove("MONDAY");
-                        CommandTimer.getPlugin().getConfig().set("settings.tasks." + GUIHandler.o + ".days", sl);
+                        CommandTimer.getPlugin().getConfig().set("tasks." + GUIHandler.o + ".days", sl);
                         CommandTimer.getPlugin().saveConfig();
 
                         p.getOpenInventory().setItem(10, day);
@@ -315,7 +315,7 @@ public class GUIListeners implements Listener {
                         day.setItemMeta(dayMeta);
 
                         sl.add("TUESDAY");
-                        CommandTimer.getPlugin().getConfig().set("settings.tasks." + GUIHandler.o + ".days", sl);
+                        CommandTimer.getPlugin().getConfig().set("tasks." + GUIHandler.o + ".days", sl);
                         CommandTimer.getPlugin().saveConfig();
 
                         p.getOpenInventory().setItem(11, day);
@@ -328,7 +328,7 @@ public class GUIListeners implements Listener {
                         day.setItemMeta(dayMeta);
 
                         sl.remove("TUESDAY");
-                        CommandTimer.getPlugin().getConfig().set("settings.tasks." + GUIHandler.o + ".days", sl);
+                        CommandTimer.getPlugin().getConfig().set("tasks." + GUIHandler.o + ".days", sl);
                         CommandTimer.getPlugin().saveConfig();
 
                         p.getOpenInventory().setItem(11, day);
@@ -343,7 +343,7 @@ public class GUIListeners implements Listener {
                         day.setItemMeta(dayMeta);
 
                         sl.add("WEDNESDAY");
-                        CommandTimer.getPlugin().getConfig().set("settings.tasks." + GUIHandler.o + ".days", sl);
+                        CommandTimer.getPlugin().getConfig().set("tasks." + GUIHandler.o + ".days", sl);
                         CommandTimer.getPlugin().saveConfig();
 
                         p.getOpenInventory().setItem(12, day);
@@ -356,7 +356,7 @@ public class GUIListeners implements Listener {
                         day.setItemMeta(dayMeta);
 
                         sl.remove("WEDNESDAY");
-                        CommandTimer.getPlugin().getConfig().set("settings.tasks." + GUIHandler.o + ".days", sl);
+                        CommandTimer.getPlugin().getConfig().set("tasks." + GUIHandler.o + ".days", sl);
                         CommandTimer.getPlugin().saveConfig();
 
                         p.getOpenInventory().setItem(12, day);
@@ -371,7 +371,7 @@ public class GUIListeners implements Listener {
                         day.setItemMeta(dayMeta);
 
                         sl.add("THURSDAY");
-                        CommandTimer.getPlugin().getConfig().set("settings.tasks." + GUIHandler.o + ".days", sl);
+                        CommandTimer.getPlugin().getConfig().set("tasks." + GUIHandler.o + ".days", sl);
                         CommandTimer.getPlugin().saveConfig();
 
                         p.getOpenInventory().setItem(13, day);
@@ -384,7 +384,7 @@ public class GUIListeners implements Listener {
                         day.setItemMeta(dayMeta);
 
                         sl.remove("THURSDAY");
-                        CommandTimer.getPlugin().getConfig().set("settings.tasks." + GUIHandler.o + ".days", sl);
+                        CommandTimer.getPlugin().getConfig().set("tasks." + GUIHandler.o + ".days", sl);
                         CommandTimer.getPlugin().saveConfig();
 
                         p.getOpenInventory().setItem(13, day);
@@ -399,7 +399,7 @@ public class GUIListeners implements Listener {
                         day.setItemMeta(dayMeta);
 
                         sl.add("FRIDAY");
-                        CommandTimer.getPlugin().getConfig().set("settings.tasks." + GUIHandler.o + ".days", sl);
+                        CommandTimer.getPlugin().getConfig().set("tasks." + GUIHandler.o + ".days", sl);
                         CommandTimer.getPlugin().saveConfig();
 
                         p.getOpenInventory().setItem(14, day);
@@ -412,7 +412,7 @@ public class GUIListeners implements Listener {
                         day.setItemMeta(dayMeta);
 
                         sl.remove("FRIDAY");
-                        CommandTimer.getPlugin().getConfig().set("settings.tasks." + GUIHandler.o + ".days", sl);
+                        CommandTimer.getPlugin().getConfig().set("tasks." + GUIHandler.o + ".days", sl);
                         CommandTimer.getPlugin().saveConfig();
 
                         p.getOpenInventory().setItem(14, day);
@@ -427,7 +427,7 @@ public class GUIListeners implements Listener {
                         day.setItemMeta(dayMeta);
 
                         sl.add("SATURDAY");
-                        CommandTimer.getPlugin().getConfig().set("settings.tasks." + GUIHandler.o + ".days", sl);
+                        CommandTimer.getPlugin().getConfig().set("tasks." + GUIHandler.o + ".days", sl);
                         CommandTimer.getPlugin().saveConfig();
 
                         p.getOpenInventory().setItem(15, day);
@@ -440,7 +440,7 @@ public class GUIListeners implements Listener {
                         day.setItemMeta(dayMeta);
 
                         sl.remove("SATURDAY");
-                        CommandTimer.getPlugin().getConfig().set("settings.tasks." + GUIHandler.o + ".days", sl);
+                        CommandTimer.getPlugin().getConfig().set("tasks." + GUIHandler.o + ".days", sl);
                         CommandTimer.getPlugin().saveConfig();
 
                         p.getOpenInventory().setItem(15, day);
@@ -455,7 +455,7 @@ public class GUIListeners implements Listener {
                         day.setItemMeta(dayMeta);
 
                         sl.add("SUNDAY");
-                        CommandTimer.getPlugin().getConfig().set("settings.tasks." + GUIHandler.o + ".days", sl);
+                        CommandTimer.getPlugin().getConfig().set("tasks." + GUIHandler.o + ".days", sl);
                         CommandTimer.getPlugin().saveConfig();
 
                         p.getOpenInventory().setItem(16, day);
@@ -468,7 +468,7 @@ public class GUIListeners implements Listener {
                         day.setItemMeta(dayMeta);
 
                         sl.remove("SUNDAY");
-                        CommandTimer.getPlugin().getConfig().set("settings.tasks." + GUIHandler.o + ".days", sl);
+                        CommandTimer.getPlugin().getConfig().set("tasks." + GUIHandler.o + ".days", sl);
                         CommandTimer.getPlugin().saveConfig();
 
                         p.getOpenInventory().setItem(16, day);

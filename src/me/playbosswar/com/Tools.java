@@ -60,7 +60,7 @@ public class Tools {
 	}
 
 	public static String getGender(final String task) {
-		String configGender = Tools.c.getString("settings.tasks." + task + ".gender").toLowerCase();
+		String configGender = Tools.c.getString("tasks." + task + ".gender").toLowerCase();
 		if (configGender.equals("player") || configGender.equals("console") || configGender.equals("operator")) {
 			return configGender;
 		}
@@ -68,7 +68,7 @@ public class Tools {
 	}
 
 	public static void easyCommandRunner(final String task, final long ticks, final String gender) {
-		Bukkit.getScheduler().scheduleSyncRepeatingTask(CommandTimer.getPlugin(), new CommandTask(Tools.c.getStringList("settings.tasks." + task + ".commands"), gender, task), ticks, ticks);
+		Bukkit.getScheduler().scheduleSyncRepeatingTask(CommandTimer.getPlugin(), new CommandTask(Tools.c.getStringList("tasks." + task + ".commands"), gender, task), ticks, ticks);
 	}
 
 	public static void simpleCommandRunner(String task, String gender) {
@@ -76,7 +76,7 @@ public class Tools {
 
 			@Override
 			public void run() {
-				for (String next : Tools.c.getStringList("settings.tasks." + task + ".commands")) {
+				for (String next : Tools.c.getStringList("tasks." + task + ".commands")) {
 					Tools.executeCommand(task, next, gender);
 				}
 			}
@@ -93,13 +93,13 @@ public class Tools {
 				final Date date = new Date();
 				final SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
 				final String formattedDate = df.format(date);
-				for (final String hour : Tools.c.getStringList("settings.tasks." + task + ".time")) {
+				for (final String hour : Tools.c.getStringList("tasks." + task + ".time")) {
 					if (formattedDate.equals(hour)) {
 						Bukkit.getScheduler().scheduleSyncDelayedTask(CommandTimer.getPlugin(), (Runnable)new Runnable() {
 							@Override
 							public void run() {
-								int i = Tools.c.getStringList("settings.tasks." + task + ".time").toArray().length;
-								for (final String next : Tools.c.getStringList("settings.tasks." + task + ".commands")) {
+								int i = Tools.c.getStringList("tasks." + task + ".time").toArray().length;
+								for (final String next : Tools.c.getStringList("tasks." + task + ".commands")) {
 									if (i > 0) {
 										Tools.executeCommand(task, next, gender);
 										--i;
@@ -116,10 +116,10 @@ public class Tools {
 
 	public static void executeCommand(String task, String cmd, String gender) {
 		if (gender.equals("console")) {
-			if (Tools.c.getBoolean("settings.tasks." + task + ".useRandom")) {
-				final double d = Tools.c.getDouble("settings.tasks." + task + ".random");
+			if (Tools.c.getBoolean("tasks." + task + ".useRandom")) {
+				final double d = Tools.c.getDouble("tasks." + task + ".random");
 				if (randomCheck(d)) {
-					if (Tools.c.getBoolean("settings.tasks." + task + ".bungee")) {
+					if (Tools.c.getBoolean("tasks." + task + ".bungee")) {
 						sendToBungee(cmd);
 						return;
 					}
@@ -127,7 +127,7 @@ public class Tools {
 				}
 			}
 			else {
-				if (Tools.c.getBoolean("settings.tasks." + task + ".bungee")) {
+				if (Tools.c.getBoolean("tasks." + task + ".bungee")) {
 					sendToBungee(cmd);
 					return;
 				}
@@ -142,19 +142,19 @@ public class Tools {
 				}
 				try {
 					p.setOp(true);
-					if (Tools.c.getBoolean("settings.tasks." + task + ".useRandom")) {
-						final double d2 = Tools.c.getDouble("settings.tasks." + task + ".random");
+					if (Tools.c.getBoolean("tasks." + task + ".useRandom")) {
+						final double d2 = Tools.c.getDouble("tasks." + task + ".random");
 						if (!randomCheck(d2)) {
 							continue;
 						}
-						if (Tools.c.getBoolean("settings.tasks." + task + ".bungee")) {
+						if (Tools.c.getBoolean("tasks." + task + ".bungee")) {
 							sendToBungee(cmd);
 							return;
 						}
 						p.performCommand(cmd);
 					}
 					else {
-						if (Tools.c.getBoolean("settings.tasks." + task + ".bungee")) {
+						if (Tools.c.getBoolean("tasks." + task + ".bungee")) {
 							sendToBungee(cmd);
 							return;
 						}
@@ -169,18 +169,18 @@ public class Tools {
 			}
 		}
 		else if (gender.equals("player")) {
-			final String perm = Tools.c.getString("settings.tasks." + task + ".permission");
+			final String perm = Tools.c.getString("tasks." + task + ".permission");
 			for (final Player p2 : Bukkit.getOnlinePlayers()) {
 				if (perm != null) {
 					if (!p2.hasPermission(perm)) {
 						continue;
 					}
-					if (Tools.c.getBoolean("settings.tasks." + task + ".useRandom")) {
-						final double d2 = Tools.c.getDouble("settings.tasks." + task + ".random");
+					if (Tools.c.getBoolean("tasks." + task + ".useRandom")) {
+						final double d2 = Tools.c.getDouble("tasks." + task + ".random");
 						if (!randomCheck(d2)) {
 							continue;
 						}
-						if (Tools.c.getBoolean("settings.tasks." + task + ".bungee")) {
+						if (Tools.c.getBoolean("tasks." + task + ".bungee")) {
 							sendToBungee(cmd);
 						}
 						else {
@@ -188,19 +188,19 @@ public class Tools {
 						}
 					}
 					else {
-						if (Tools.c.getBoolean("settings.tasks." + task + ".bungee")) {
+						if (Tools.c.getBoolean("tasks." + task + ".bungee")) {
 							sendToBungee(cmd);
 							return;
 						}
 						p2.performCommand(cmd);
 					}
 				}
-				else if (Tools.c.getBoolean("settings.tasks." + task + ".useRandom")) {
-					final double d2 = Tools.c.getDouble("settings.tasks." + task + ".random");
+				else if (Tools.c.getBoolean("tasks." + task + ".useRandom")) {
+					final double d2 = Tools.c.getDouble("tasks." + task + ".random");
 					if (!randomCheck(d2)) {
 						continue;
 					}
-					if (Tools.c.getBoolean("settings.tasks." + task + ".bungee")) {
+					if (Tools.c.getBoolean("tasks." + task + ".bungee")) {
 						sendToBungee(cmd);
 					}
 					else {
@@ -208,7 +208,7 @@ public class Tools {
 					}
 				}
 				else {
-					if (Tools.c.getBoolean("settings.tasks." + task + ".bungee")) {
+					if (Tools.c.getBoolean("tasks." + task + ".bungee")) {
 						sendToBungee(cmd);
 						return;
 					}

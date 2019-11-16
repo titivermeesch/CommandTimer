@@ -1,24 +1,23 @@
 #GENERAL
 timeonload: true
 
-settings:
-  tasks:
-    '1':
-      commands:
-        - say This message will only show up at a specific time.
-      onhour: true
-      time: '13:49'
-      seconds: 60
-      onload: false
-      gender: 'console'
-    '2':
-      commands:
-        - say This message appears every 10 seconds with a chance of 50%
-      onhour: false
-      time:
-        - '13:49'
-      seconds: 10
-      onload: false
-      gender: 'console'
-      useRandom: true
-      random: 0.5
+tasks:
+  '1':
+    commands:
+      - say This message will only show up at a specific time.
+    onhour: true
+    time: '13:49'
+    seconds: 60
+    onload: false
+    gender: 'console'
+  '2':
+    commands:
+      - say This message appears every 10 seconds with a chance of 50%
+    onhour: false
+    time:
+      - '13:49'
+    seconds: 10
+    onload: false
+    gender: 'console'
+    useRandom: true
+    random: 0.5
