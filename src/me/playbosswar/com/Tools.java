@@ -1,14 +1,8 @@
 package me.playbosswar.com;
 
-import com.google.common.collect.Iterables;
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
-import org.bukkit.plugin.Plugin;
-
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -32,18 +26,6 @@ public class Tools {
 	public static void initConfig() {
 		Main.getPlugin().saveDefaultConfig();
 		Main.getPlugin().getConfig().options().copyDefaults(false);
-	}
-
-	public static void registerEvents(Plugin plugin, Listener... listeners) {
-		for (final Listener listener : listeners) {
-			Bukkit.getServer().getPluginManager().registerEvents(listener, plugin);
-		}
-	}
-
-	public static void closeAllInventories() {
-		for (Player p : Bukkit.getOnlinePlayers()) {
-			p.closeInventory();
-		}
 	}
 
 	public static void reloadTaks() {
@@ -113,18 +95,10 @@ public class Tools {
 			if (Tools.c.getBoolean("tasks." + task + ".useRandom")) {
 				final double d = Tools.c.getDouble("tasks." + task + ".random");
 				if (randomCheck(d)) {
-					if (Tools.c.getBoolean("tasks." + task + ".bungee")) {
-						sendToBungee(cmd);
-						return;
-					}
 					Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), cmd);
 				}
 			}
 			else {
-				if (Tools.c.getBoolean("tasks." + task + ".bungee")) {
-					sendToBungee(cmd);
-					return;
-				}
 				Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), cmd);
 			}
 		}
@@ -141,17 +115,9 @@ public class Tools {
 						if (!randomCheck(d2)) {
 							continue;
 						}
-						if (Tools.c.getBoolean("tasks." + task + ".bungee")) {
-							sendToBungee(cmd);
-							return;
-						}
 						p.performCommand(cmd);
 					}
 					else {
-						if (Tools.c.getBoolean("tasks." + task + ".bungee")) {
-							sendToBungee(cmd);
-							return;
-						}
 						p.performCommand(cmd);
 					}
 				}
@@ -174,18 +140,11 @@ public class Tools {
 						if (!randomCheck(d2)) {
 							continue;
 						}
-						if (Tools.c.getBoolean("tasks." + task + ".bungee")) {
-							sendToBungee(cmd);
-						}
 						else {
 							p2.performCommand(cmd);
 						}
 					}
 					else {
-						if (Tools.c.getBoolean("tasks." + task + ".bungee")) {
-							sendToBungee(cmd);
-							return;
-						}
 						p2.performCommand(cmd);
 					}
 				}
@@ -194,33 +153,14 @@ public class Tools {
 					if (!randomCheck(d2)) {
 						continue;
 					}
-					if (Tools.c.getBoolean("tasks." + task + ".bungee")) {
-						sendToBungee(cmd);
-					}
 					else {
 						p2.performCommand(cmd);
 					}
 				}
 				else {
-					if (Tools.c.getBoolean("tasks." + task + ".bungee")) {
-						sendToBungee(cmd);
-						return;
-					}
 					p2.performCommand(cmd);
 				}
 			}
-		}
-	}
-
-
-
-	public static void sendToBungee(String cmd) {
-		ByteArrayDataOutput out = ByteStreams.newDataOutput();
-		out.writeUTF("command");
-		out.writeUTF(cmd);
-		if (!Bukkit.getOnlinePlayers().toString().equals("[]")) {
-			Player player = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
-			player.sendPluginMessage(Main.getPlugin(), "ct:ct", out.toByteArray());
 		}
 	}
 

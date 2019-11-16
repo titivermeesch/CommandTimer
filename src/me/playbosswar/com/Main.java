@@ -12,7 +12,6 @@ public class Main extends JavaPlugin implements Listener {
 
 	public void onEnable() {
 		plugin = this;
-		Tools.registerEvents(this, new GUIListeners());
 		registerCommands();
 		Tools.initConfig();
 		TaskRunner.startTasks();
@@ -21,7 +20,6 @@ public class Main extends JavaPlugin implements Listener {
 	}
 	
 	public void onDisable() {
-		Tools.closeAllInventories();
 		saveDefaultConfig();
 		plugin = null;
 	}
