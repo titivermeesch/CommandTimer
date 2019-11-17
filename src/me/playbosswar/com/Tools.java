@@ -126,7 +126,7 @@ public class Tools {
             final String perm = c.getString("tasks." + task + ".permission");
 
             for (final Player p : Bukkit.getOnlinePlayers()) {
-                if(cmd.contains("{player}")) {
+                if (cmd.contains("{player}")) {
                     cmd = StringUtils.replace(cmd, "{player}", p.getDisplayName());
                 }
 
