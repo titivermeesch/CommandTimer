@@ -1,6 +1,7 @@
 package me.playbosswar.com;
 
 import me.playbosswar.com.genders.GenderHandler.Gender;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -83,7 +84,7 @@ public class Tools {
     }
 
 
-    public static void executeCommand(String task, String cmd, Gender gender) {
+    public static void executeCommand(final String task, String cmd, final Gender gender) {
         final FileConfiguration c = pl.getConfig();
 
         if (gender.equals(Gender.CONSOLE)) {
@@ -100,6 +101,10 @@ public class Tools {
 
         if (gender.equals(Gender.OPERATOR)) {
             for (final Player p : Bukkit.getOnlinePlayers()) {
+                if(cmd.contains("{player}")) {
+                    cmd = StringUtils.replace(cmd, "{player}", p.getDisplayName());
+                }
+
                 Boolean isOp = p.isOp();
 
                 try {
@@ -125,6 +130,10 @@ public class Tools {
             final String perm = c.getString("tasks." + task + ".permission");
 
             for (final Player p : Bukkit.getOnlinePlayers()) {
+                if(cmd.contains("{player}")) {
+                    cmd = StringUtils.replace(cmd, "{player}", p.getDisplayName());
+                }
+
                 if (perm == null) {
                     p.performCommand(cmd);
                     continue;
