@@ -10,7 +10,7 @@ public class GenderHandler {
     }
 
     public static Gender getGender(final String task) {
-        String gender = Main.getPlugin().getConfig().getString("tasks." + task + ".gender").toLowerCase();
+        final String gender = Main.getPlugin().getConfig().getString("tasks." + task + ".gender").toLowerCase();
 
         if(gender == "console") return Gender.CONSOLE;
         if(gender == "player") return Gender.PLAYER;

@@ -10,15 +10,15 @@ public class TaskRunner {
     public static Plugin p = Main.getPlugin();
 
     public static void startTasks() {
-        FileConfiguration c = p.getConfig();
+        final FileConfiguration c = p.getConfig();
 
         if (!c.contains("tasks")) {
             return;
         }
 
         for (String task : c.getConfigurationSection("tasks").getKeys(false)) {
-            long seconds = 20L * c.getLong("tasks." + task + ".seconds");
-            Gender gender = GenderHandler.getGender(task);
+            final long seconds = 20L * c.getLong("tasks." + task + ".seconds");
+            final Gender gender = GenderHandler.getGender(task);
 
             if (c.getBoolean("tasks." + task + ".onload")) {
                 Tools.simpleCommandRunner(task, gender);

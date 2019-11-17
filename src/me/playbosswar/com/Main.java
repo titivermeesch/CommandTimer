@@ -8,7 +8,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class Main extends JavaPlugin implements Listener {
     private static Plugin plugin;
-    public int t;
 
     public void onEnable() {
         plugin = this;

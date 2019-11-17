@@ -19,7 +19,7 @@ public class CommandTask implements Runnable {
     }
 
     public void run() {
-        for (String command : this.commands) {
+        for (final String command : this.commands) {
             Tools.executeCommand(task, command, gender);
         }
     }
