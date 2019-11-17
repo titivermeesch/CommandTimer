@@ -1,6 +1,5 @@
 package me.playbosswar.com;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import me.playbosswar.com.genders.GenderHandler.Gender;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -21,12 +20,11 @@ public class Tools {
     public static Plugin pl = Main.getPlugin();
 
     public static void printDate() {
-        LocalDate date = LocalDate.now();
-        DayOfWeek dow = date.getDayOfWeek();
-        if (Main.getPlugin().getConfig().getBoolean("timeonload")) {
-            Bukkit.getConsoleSender().sendMessage("§aServer time : " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
-            Bukkit.getConsoleSender().sendMessage("§aServer day : " + dow);
-        }
+        final LocalDate date = LocalDate.now();
+        final DayOfWeek dow = date.getDayOfWeek();
+        final String time = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"));
+        Bukkit.getConsoleSender().sendMessage("§aServer time : " + time);
+        Bukkit.getConsoleSender().sendMessage("§aServer day : " + dow);
     }
 
     public static void initConfig() {
@@ -46,37 +44,39 @@ public class Tools {
                 .getStringList("tasks." + task + ".commands"), gender, task), seconds, seconds);
     }
 
-    public static void simpleCommandRunner(String task, Gender gender) {
+    public static void simpleCommandRunner(final String task, final Gender gender) {
         Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(), () -> {
-            for (String next : pl.getConfig().getStringList("tasks." + task + ".commands")) {
+            for (final String next : pl.getConfig().getStringList("tasks." + task + ".commands")) {
                 Tools.executeCommand(task, next, gender);
             }
         }, 50L);
     }
 
     public static void complexCommandRunner(final String task, final Gender gender) {
-        FileConfiguration c = pl.getConfig();
+        final FileConfiguration c = pl.getConfig();
 
         if (!c.contains("tasks." + task + ".time")) {
             return;
         }
 
-        Date date = new Date();
-        SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss");
-        String formattedDate = df.format(date);
-
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
+                final Date date = new Date();
+                final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+                final String formattedDate = dateFormat.format(date);
+
                 for (final String hour : c.getStringList("tasks." + task + ".time")) {
-                    if (formattedDate.equals(hour)) {
-                        Bukkit.getScheduler().scheduleSyncDelayedTask(pl, () -> {
-                            for (final String next : c.getStringList("tasks." + task + ".commands")) {
-                                Tools.executeCommand(task, next, gender);
-                            }
-                        }, 50L);
+                    if (!formattedDate.equals(hour)) {
+                        continue;
                     }
+
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(pl, () -> {
+                        for (final String next : c.getStringList("tasks." + task + ".commands")) {
+                            Tools.executeCommand(task, next, gender);
+                        }
+                    }, 50L);
                 }
             }
         }, 1L, 1000L);
@@ -84,7 +84,7 @@ public class Tools {
 
 
     public static void executeCommand(String task, String cmd, Gender gender) {
-        FileConfiguration c = pl.getConfig();
+        final FileConfiguration c = pl.getConfig();
 
         if (gender.equals(Gender.CONSOLE)) {
             if (!c.contains("tasks." + task + ".random")) {
