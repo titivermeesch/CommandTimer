@@ -101,22 +101,18 @@ public class Tools {
 
         if (gender.equals(Gender.OPERATOR)) {
             for (final Player p : Bukkit.getOnlinePlayers()) {
-                if(cmd.contains("{player}")) {
-                    cmd = StringUtils.replace(cmd, "{player}", p.getDisplayName());
-                }
-
                 Boolean isOp = p.isOp();
 
                 try {
                     p.setOp(true);
                     if (!c.contains("tasks." + task + ".random")) {
-                        p.performCommand(cmd);
+                        p.performCommand(cmd.replace("{player}", p.getDisplayName()));
                         return;
                     }
 
                     final double d = c.getDouble("tasks." + task + ".random");
                     if (randomCheck(d)) {
-                        p.performCommand(cmd);
+                        p.performCommand(cmd.replace("{player}", p.getDisplayName()));
                     }
                 } finally {
                     if (!isOp) {
@@ -135,7 +131,7 @@ public class Tools {
                 }
 
                 if (perm == null) {
-                    p.performCommand(cmd);
+                    p.performCommand(cmd.replace("{player}", p.getDisplayName()));
                     continue;
                 }
 
@@ -146,7 +142,7 @@ public class Tools {
                 if (pl.getConfig().contains("tasks." + task + ".random")) {
                     final double d = c.getDouble("tasks." + task + ".random");
                     if (randomCheck(d)) {
-                        p.performCommand(cmd);
+                        p.performCommand(cmd.replace("{player}", p.getDisplayName()));
                     }
                 }
             }
