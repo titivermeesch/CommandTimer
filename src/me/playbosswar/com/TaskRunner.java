@@ -1,47 +1,35 @@
 package me.playbosswar.com;
-import org.bukkit.configuration.file.FileConfiguration;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
+import me.playbosswar.com.genders.GenderHandler;
+import me.playbosswar.com.genders.GenderHandler.Gender;
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.plugin.Plugin;
 
 public class TaskRunner {
-
-    static FileConfiguration c = CommandTimer.getPlugin().getConfig();
+    public static Plugin p = Main.getPlugin();
 
     public static void startTasks() {
-        Tools.cancelTasks(); //Cancel all tasks that may still be running
-        if(c.contains("settings.tasks")) { //Check if there are any tasks in the config file
-            for (String task : c.getConfigurationSection("settings.tasks").getKeys(false)) { //Loop throught all tasks that exist
+        final FileConfiguration c = p.getConfig();
 
-                /* VARIABLE DECLARATION */
-                long ticks = 20L * c.getLong("settings.tasks." + task + ".seconds");
-                LocalDate date = LocalDate.now();
-                DayOfWeek dow = date.getDayOfWeek();
-                String gender = Tools.getGender(task);
+        if (!c.contains("tasks")) {
+            return;
+        }
 
-                if(c.getBoolean("settings.tasks." + task + ".onday")) { //Checks if the onday function is enabled, if so, retreive date data and check if onhour is enabled too
+        for (String task : c.getConfigurationSection("tasks").getKeys(false)) {
+            final long seconds = 20L * c.getLong("tasks." + task + ".seconds");
+            final Gender gender = GenderHandler.getGender(task);
 
-                    if(c.getStringList("settings.tasks." + task + ".days").contains(dow.toString())) { //Checks if the date today correspond
-                        if (c.getBoolean("settings.tasks." + task + ".onhour")) { //Once day correspond, checks if you have to execute it on hour too
-                            Tools.complexCommandRunner(task, gender);
-                        } else { //Check if it is onload and onday
-                            if (c.getBoolean("settings.tasks." + task + ".onload")) { //Check if onload
-                                Tools.simpleCommandRunner(task, gender);
-                            } else {
-                                Tools.easyCommandRunner(task, ticks, gender);
-                            }
-                        }
-                    }
-                } else if (c.getBoolean("settings.tasks." + task + ".onhour")) { //check if onhour only (not onday) {
-                    Tools.complexCommandRunner(task, gender);
-                } else {
-                    if (c.getBoolean("settings.tasks." + task + ".onload")) {
-                        Tools.simpleCommandRunner(task, gender);
-                    } else {
-                        Tools.easyCommandRunner(task, ticks, gender);
-                    }
-                }
+            if (c.getBoolean("tasks." + task + ".onload")) {
+                Tools.simpleCommandRunner(task, gender);
+                continue;
             }
+
+            if (c.contains("tasks." + task + ".time") && c.getStringList("tasks." + task + ".time").size() > 0) {
+                Tools.complexCommandRunner(task, gender);
+                continue;
+            }
+            Tools.easyCommandRunner(task, seconds, gender);
         }
     }
 }

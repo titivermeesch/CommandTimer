@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/CommandTimer.iml" filepath="$PROJECT_DIR$/CommandTimer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/commandtimer/commandtimer.iml" filepath="$PROJECT_DIR$/commandtimer/commandtimer.iml" />
     </modules>
   </component>
 </project>
