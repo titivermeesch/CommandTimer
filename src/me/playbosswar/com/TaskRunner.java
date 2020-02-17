@@ -6,10 +6,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.Plugin;
 
-public class TaskRunner {
-    public static Plugin p = Main.getPlugin();
+class TaskRunner {
+    private static Plugin p = Main.getPlugin();
 
-    public static void startTasks() {
+    static void startTasks() {
         final FileConfiguration c = p.getConfig();
 
         if (!c.contains("tasks")) {

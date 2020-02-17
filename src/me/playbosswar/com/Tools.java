@@ -17,10 +17,10 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class Tools {
-    public static Plugin pl = Main.getPlugin();
+class Tools {
+    private static Plugin pl = Main.getPlugin();
 
-    public static void printDate() {
+    static void printDate() {
         final LocalDate date = LocalDate.now();
         final DayOfWeek dow = date.getDayOfWeek();
         final String time = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"));
@@ -28,24 +28,24 @@ public class Tools {
         Bukkit.getConsoleSender().sendMessage("§aServer day : " + dow);
     }
 
-    public static void initConfig() {
+    static void initConfig() {
         pl.saveDefaultConfig();
         pl.getConfig().options().copyDefaults(false);
     }
 
-    public static void reloadTaks() {
+    static void reloadTaks() {
         Bukkit.getScheduler().cancelTasks(Main.getPlugin());
         pl.reloadConfig();
         TaskRunner.startTasks();
     }
 
 
-    public static void easyCommandRunner(final String task, final long seconds, final Gender gender) {
+    static void easyCommandRunner(final String task, final long seconds, final Gender gender) {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(pl, new CommandTask(pl.getConfig()
                 .getStringList("tasks." + task + ".commands"), gender, task), seconds, seconds);
     }
 
-    public static void simpleCommandRunner(final String task, final Gender gender) {
+    static void simpleCommandRunner(final String task, final Gender gender) {
         Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(), () -> {
             for (final String next : pl.getConfig().getStringList("tasks." + task + ".commands")) {
                 Tools.executeCommand(task, next, gender);
@@ -53,7 +53,7 @@ public class Tools {
         }, 50L);
     }
 
-    public static void complexCommandRunner(final String task, final Gender gender) {
+    static void complexCommandRunner(final String task, final Gender gender) {
         final FileConfiguration c = pl.getConfig();
 
         if (!c.contains("tasks." + task + ".time")) {
@@ -84,7 +84,7 @@ public class Tools {
     }
 
 
-    public static void executeCommand(final String task, String cmd, final Gender gender) {
+    static void executeCommand(final String task, String cmd, final Gender gender) {
         final FileConfiguration c = pl.getConfig();
 
         if (gender.equals(Gender.CONSOLE)) {
@@ -101,7 +101,7 @@ public class Tools {
 
         if (gender.equals(Gender.OPERATOR)) {
             for (final Player p : Bukkit.getOnlinePlayers()) {
-                Boolean isOp = p.isOp();
+                boolean isOp = p.isOp();
 
                 try {
                     p.setOp(true);
@@ -149,7 +149,7 @@ public class Tools {
         }
     }
 
-    public static boolean randomCheck(double random) {
+    private static boolean randomCheck(double random) {
         final Random r = new Random();
         final float chance = r.nextFloat();
         return chance <= random;
