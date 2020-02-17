@@ -5,7 +5,8 @@ tasks:
   '1':
     commands:
       - say This message will only show up at a specific time.
-    time: '13:49'
+    time:
+      - '13:49'
     gender: 'console'
   '2':
     commands:
