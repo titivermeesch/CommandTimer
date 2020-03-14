@@ -8,7 +8,7 @@ import org.bukkit.command.CommandSender;
 public class CommandHandler implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
         if (args.length == 1 && args[0].equals("reload")) {
-            Tools.reloadTaks();
+            Tools.reloadTasks();
             sender.sendMessage(ChatColor.GOLD + "CommandTimer reloaded");
             return true;
         }

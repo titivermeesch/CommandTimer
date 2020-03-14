@@ -2,13 +2,13 @@
 timeonload: true
 
 tasks:
-  '1':
+  'command 1':
     commands:
       - say This message will only show up at a specific time.
     time:
       - '13:49'
     gender: 'console'
-  '2':
+  'random test command':
     commands:
       - say This message appears every 10 seconds with a chance of 50%
     seconds: 10
