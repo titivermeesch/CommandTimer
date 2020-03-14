@@ -107,7 +107,7 @@ class Tools {
                     if (pl.getConfig().contains("tasks." + task + ".random")) {
                         final double d = c.getDouble("tasks." + task + ".random");
                         if (randomCheck(d)) {
-                            p.performCommand(cmd.replace("{player}", p.getDisplayName()));
+                            Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), cmd);
                         }
                     }
                 }

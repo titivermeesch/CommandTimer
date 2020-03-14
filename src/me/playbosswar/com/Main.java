@@ -15,7 +15,7 @@ public class Main extends JavaPlugin implements Listener {
         Tools.initConfig();
         TaskRunner.startTasks();
         Tools.printDate();
-        Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[CommandTimer] v3.0.2 loaded");
+        Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[CommandTimer] v3.0.2.1 loaded");
     }
 
     public void onDisable() {
