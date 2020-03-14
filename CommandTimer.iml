@@ -296,5 +296,6 @@
         </SOURCES>
       </library>
     </orderEntry>
+    <orderEntry type="library" name="Maven: me.clip:placeholderapi:2.10.4" level="project" />
   </component>
 </module>

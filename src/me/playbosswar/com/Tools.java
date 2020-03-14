@@ -1,8 +1,10 @@
 package me.playbosswar.com;
 
 import me.playbosswar.com.genders.GenderHandler.Gender;
+import me.playbosswar.com.hooks.PAPIHook;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -18,14 +20,27 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 class Tools {
+
+    private Tools() {
+        throw new AssertionError("Instantiating utility class.");
+    }
+
     private static Plugin pl = Main.getPlugin();
+
+    public static String color(String str) {
+        return ChatColor.translateAlternateColorCodes('&', str);
+    }
+
+    public static void sendConsole(String str) {
+        Bukkit.getConsoleSender().sendMessage(color(str));
+    }
 
     static void printDate() {
         final LocalDate date = LocalDate.now();
         final DayOfWeek dow = date.getDayOfWeek();
         final String time = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"));
-        Bukkit.getConsoleSender().sendMessage("§aServer time : " + time);
-        Bukkit.getConsoleSender().sendMessage("§aServer day : " + dow);
+        sendConsole("&aServer time :&e " + time);
+        sendConsole("&aServer day :&e " + dow);
     }
 
     static void initConfig() {
@@ -85,7 +100,8 @@ class Tools {
         final String perm = c.getString("tasks." + task + ".permission");
 
         if (gender.equals(Gender.CONSOLE)) {
-            if(perm == null) {
+            if (perm == null) {
+                cmd = PAPIHook.parsePAPI(cmd, null);
                 if (!c.contains("tasks." + task + ".random")) {
                     Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), cmd);
                 }
@@ -98,6 +114,7 @@ class Tools {
                 for (final Player p : Bukkit.getOnlinePlayers()) {
                     if (cmd.contains("{player}")) {
                         cmd = StringUtils.replace(cmd, "{player}", p.getDisplayName());
+                        cmd = PAPIHook.parsePAPI(cmd, p);
                     }
 
                     if (!p.hasPermission(perm)) {
@@ -120,6 +137,7 @@ class Tools {
 
                 try {
                     p.setOp(true);
+                    cmd = PAPIHook.parsePAPI(cmd, p);
                     if (!c.contains("tasks." + task + ".random")) {
                         p.performCommand(cmd.replace("{player}", p.getDisplayName()));
                         return;
@@ -141,6 +159,7 @@ class Tools {
             final String permission = c.getString("tasks." + task + ".permission");
 
             for (final Player p : Bukkit.getOnlinePlayers()) {
+                cmd = PAPIHook.parsePAPI(cmd, p);
                 if (cmd.contains("{player}")) {
                     cmd = StringUtils.replace(cmd, "{player}", p.getDisplayName());
                 }
@@ -164,8 +183,9 @@ class Tools {
         }
     }
 
+    private static Random r = new Random();
+
     private static boolean randomCheck(double random) {
-        final Random r = new Random();
         final float chance = r.nextFloat();
         return chance <= random;
     }

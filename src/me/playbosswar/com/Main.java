@@ -1,7 +1,5 @@
 package me.playbosswar.com;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -9,15 +7,17 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class Main extends JavaPlugin implements Listener {
     private static Plugin plugin;
 
+    @Override
     public void onEnable() {
         plugin = this;
         registerCommands();
         Tools.initConfig();
         TaskRunner.startTasks();
         Tools.printDate();
-        Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[CommandTimer] v3.0.2.1 loaded");
+        Tools.sendConsole("&a[CommandTimer] &e" + getDescription().getVersion() + "&a loaded!");
     }
 
+    @Override
     public void onDisable() {
         saveDefaultConfig();
         plugin = null;

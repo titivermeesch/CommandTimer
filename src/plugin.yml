@@ -1,8 +1,11 @@
-name: CommandTimer
-version: 3.0.2.1
-description: This plugin allows you to schedule commands that will be executed
 main: me.playbosswar.com.Main
+name: "${project.name}"
+version: "${project.version}"
+description: "${project.description}"
 author: PlayBossWar
+softdepend:
+  - PlaceholderAPI
+
 commands:
   commandtimer:
     usage: /<command>

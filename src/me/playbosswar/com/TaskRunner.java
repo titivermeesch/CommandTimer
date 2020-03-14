@@ -12,35 +12,31 @@ class TaskRunner {
         final FileConfiguration c = p.getConfig();
 
         if (!c.contains("tasks")) {
-            System.out.println("No tasks found");
+            Tools.sendConsole("No tasks found");
             return;
         }
 
         for (String task : c.getConfigurationSection("tasks").getKeys(false)) {
-            System.out.println("Analysing task");
-            System.out.println(task);
+            Tools.sendConsole("Analysing task");
+            Tools.sendConsole(task);
             final long seconds = 20L * c.getLong("tasks." + task + ".seconds");
-            System.out.println(seconds);
+            Tools.sendConsole(seconds + "");
             Gender gender = GenderHandler.getGender(task);
-            System.out.println(gender);
-
-            if(gender == null) {
-                gender = Gender.CONSOLE;
-            }
+            Tools.sendConsole(gender.name());
 
             if (c.getBoolean("tasks." + task + ".onload")) {
-                System.out.println("SimplecommandRunner");
+                Tools.sendConsole("SimplecommandRunner");
                 Tools.simpleCommandRunner(task, gender);
                 continue;
             }
 
-            if (c.contains("tasks." + task + ".time") && c.getStringList("tasks." + task + ".time").size() > 0) {
-                System.out.println("complex command runner");
+            if (c.contains("tasks." + task + ".time") && !c.getStringList("tasks." + task + ".time").isEmpty()) {
+                Tools.sendConsole("complex command runner");
                 Tools.complexCommandRunner(task, gender);
                 continue;
             }
 
-            System.out.println("Scheduled task");
+            Tools.sendConsole("Scheduled task");
             Tools.easyCommandRunner(task, seconds, gender);
         }
     }
