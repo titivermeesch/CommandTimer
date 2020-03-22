@@ -1,0 +1,12 @@
+main: me.playbosswar.com.Main
+name: "${project.name}"
+version: "${project.version}"
+description: "${project.description}"
+author: PlayBossWar
+softdepend:
+  - PlaceholderAPI
+
+commands:
+  commandtimer:
+    usage: /<command>
+    description: List all commands
