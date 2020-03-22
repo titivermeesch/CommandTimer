@@ -10,6 +10,11 @@ public class GenderHandler {
         PLAYER
     }
 
+    /**
+     * Transform string to Gender enum
+     * @param task - Task string
+     * @return Gender
+     */
     public static Gender getGender(final String task) {
         final String gender = Main.getPlugin().getConfig().getString("tasks." + task + ".gender").toLowerCase();
         if (gender.equals("console")) return Gender.CONSOLE;
