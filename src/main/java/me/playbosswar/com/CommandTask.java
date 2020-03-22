@@ -10,7 +10,7 @@ public class CommandTask implements Runnable {
     private Gender gender;
     private String task;
 
-    CommandTask(List<String> commands, Gender gender, String task) {
+    public CommandTask(List<String> commands, Gender gender, String task) {
         this.commands = commands;
         this.gender = gender;
         this.task = task;

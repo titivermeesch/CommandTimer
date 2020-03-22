@@ -19,7 +19,7 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
-class Tools {
+public class Tools {
 
     private Tools() {
         throw new AssertionError("Instantiating utility class.");
@@ -35,7 +35,7 @@ class Tools {
         Bukkit.getConsoleSender().sendMessage(color(str));
     }
 
-    static void printDate() {
+    public static void printDate() {
         final LocalDate date = LocalDate.now();
         final DayOfWeek dow = date.getDayOfWeek();
         final String time = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"));
@@ -43,7 +43,7 @@ class Tools {
         sendConsole("&aServer day :&e " + dow);
     }
 
-    static void initConfig() {
+    public static void initConfig() {
         pl.saveDefaultConfig();
         pl.getConfig().options().copyDefaults(false);
     }

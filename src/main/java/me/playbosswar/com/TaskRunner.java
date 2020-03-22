@@ -1,14 +1,13 @@
 package me.playbosswar.com;
 
 import me.playbosswar.com.genders.GenderHandler;
-import me.playbosswar.com.genders.GenderHandler.Gender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.Plugin;
 
-class TaskRunner {
+public class TaskRunner {
     private static Plugin p = Main.getPlugin();
 
-    static void startTasks() {
+    public static void startTasks() {
         final FileConfiguration c = p.getConfig();
 
         if (!c.contains("tasks")) {
@@ -18,7 +17,7 @@ class TaskRunner {
 
         for (String task : c.getConfigurationSection("tasks").getKeys(false)) {
             final long seconds = 20L * c.getLong("tasks." + task + ".seconds");
-            Gender gender = GenderHandler.getGender(task);
+            GenderHandler.Gender gender = GenderHandler.getGender(task);
 
             if (c.getBoolean("tasks." + task + ".onload")) {
                 Tools.simpleCommandRunner(task, gender);
