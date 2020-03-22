@@ -1,6 +1,7 @@
 package me.playbosswar.com;
 
 import me.playbosswar.com.genders.GenderHandler;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.Plugin;
 
@@ -20,7 +21,11 @@ public class TaskRunner {
             GenderHandler.Gender gender = GenderHandler.getGender(task);
 
             if (c.getBoolean("tasks." + task + ".onload")) {
-                Tools.simpleCommandRunner(task, gender);
+                Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(), () -> {
+                    for (final String cmd : p.getConfig().getStringList("tasks." + task + ".commands")) {
+                        Tools.executeCommand(task, cmd, gender);
+                    }
+                }, 50L);
                 continue;
             }
 
@@ -29,7 +34,11 @@ public class TaskRunner {
                 continue;
             }
 
-            Tools.easyCommandRunner(task, seconds, gender);
+            Bukkit.getScheduler().scheduleSyncRepeatingTask(p, () -> {
+                for (String cmd : p.getConfig().getStringList("tasks." + task + ".commands")) {
+                    Tools.executeCommand(task, cmd, gender);
+                }
+            }, seconds, seconds);
         }
     }
 }
