@@ -2,7 +2,6 @@ package me.playbosswar.com;
 
 import me.playbosswar.com.genders.GenderHandler.Gender;
 import me.playbosswar.com.hooks.PAPIHook;
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -14,27 +13,20 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 public class Tools {
-
-    private Tools() {
-        throw new AssertionError("Instantiating utility class.");
-    }
-
     private static Plugin pl = Main.getPlugin();
-
     public static String color(String str) {
         return ChatColor.translateAlternateColorCodes('&', str);
     }
-
     public static void sendConsole(String str) {
         Bukkit.getConsoleSender().sendMessage(color(str));
     }
 
+    /**
+     * Show current time & day
+     */
     public static void printDate() {
         final LocalDate date = LocalDate.now();
         final DayOfWeek dow = date.getDayOfWeek();
@@ -43,32 +35,27 @@ public class Tools {
         sendConsole("&aServer day :&e " + dow);
     }
 
+    /**
+     * Load configuration file
+     */
     public static void initConfig() {
         pl.saveDefaultConfig();
         pl.getConfig().options().copyDefaults(false);
     }
 
+    /**
+     * Reload all plugin tasks
+     */
     static void reloadTasks() {
         Bukkit.getScheduler().cancelTasks(Main.getPlugin());
         pl.reloadConfig();
         TaskRunner.startTasks();
     }
 
-
-    static void easyCommandRunner(final String task, final long seconds, final Gender gender) {
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(pl, new CommandTask(pl.getConfig()
-                .getStringList("tasks." + task + ".commands"), gender, task), seconds, seconds);
-    }
-
-    static void simpleCommandRunner(final String task, final Gender gender) {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(), () -> {
-            for (final String next : pl.getConfig().getStringList("tasks." + task + ".commands")) {
-                Tools.executeCommand(task, next, gender);
-            }
-        }, 50L);
-    }
-
-    static void complexCommandRunner(final String task, final Gender gender) {
+    /**
+     * Check the time before executing the actual command
+     */
+    static void complexCommandRunner(final String task, String command, final Gender gender) {
         final FileConfiguration c = pl.getConfig();
 
         Timer timer = new Timer();
@@ -84,70 +71,73 @@ public class Tools {
                         continue;
                     }
 
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(pl, () -> {
-                        for (final String next : c.getStringList("tasks." + task + ".commands")) {
-                            Tools.executeCommand(task, next, gender);
-                        }
-                    }, 50L);
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(pl, () -> Tools.executeCommand(task, command, gender), 50L);
                 }
             }
         }, 1L, 1000L);
     }
 
 
+    /**
+     * Execute a command based on permission, random, gender, days
+     */
     static void executeCommand(final String task, String cmd, final Gender gender) {
         final FileConfiguration c = pl.getConfig();
         final String perm = c.getString("tasks." + task + ".permission");
+        final boolean perUser = c.getBoolean("tasks." + task + ".perUser");
+        final List<String> worlds = c.getStringList("tasks." + task + ".worlds");
+
+        if(c.contains("tasks." + task + ".days") && !c.getStringList("tasks." + task + ".days").isEmpty()) {
+            final LocalDate date = LocalDate.now();
+            final DayOfWeek dow = date.getDayOfWeek();
+            if(!c.getStringList("tasks." + task + ".days").contains(dow.toString())) {
+                return;
+            }
+        }
+
+        if (pl.getConfig().contains("tasks." + task + ".random")) {
+            final double randomValue = c.getDouble("tasks." + task + ".random");
+            if (!randomCheck(randomValue)) {
+                return;
+            }
+        }
 
         if (gender.equals(Gender.CONSOLE)) {
-            if (perm == null) {
-                cmd = PAPIHook.parsePAPI(cmd, null);
-                if (!c.contains("tasks." + task + ".random")) {
-                    Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), cmd);
+            if (!perUser) {
+                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(cmd, null));
+                return;
+            }
+
+            for (final Player p : Bukkit.getOnlinePlayers()) {
+                String worldName = p.getWorld().getName();
+                if(worlds.size() > 0 && !worlds.contains(worldName)) {
+                    return;
                 }
 
-                final double d = c.getDouble("tasks." + task + ".random");
-                if (randomCheck(d)) {
-                    Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), cmd);
+                if(perm == null) {
+                    Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(cmd, p));
                 }
-            } else {
-                for (final Player p : Bukkit.getOnlinePlayers()) {
-                    cmd = PAPIHook.parsePAPI(cmd, p);
 
-                    if (cmd.contains("{player}")) {
-                        cmd = StringUtils.replace(cmd, "{player}", p.getDisplayName());
-                    }
-
-                    if (!p.hasPermission(perm)) {
-                        continue;
-                    }
-
-                    if (pl.getConfig().contains("tasks." + task + ".random")) {
-                        final double d = c.getDouble("tasks." + task + ".random");
-                        if (randomCheck(d)) {
-                            Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), cmd);
-                        }
-                    }
+                if (!p.hasPermission(perm)) {
+                    continue;
                 }
+
+                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(cmd, p));
             }
         }
 
         if (gender.equals(Gender.OPERATOR)) {
             for (final Player p : Bukkit.getOnlinePlayers()) {
+                String worldName = p.getWorld().getName();
+                if(worlds.size() > 0 && !worlds.contains(worldName)) {
+                    return;
+                }
+
                 final boolean isOp = p.isOp();
 
                 try {
                     p.setOp(true);
-                    cmd = PAPIHook.parsePAPI(cmd, p);
-                    if (!c.contains("tasks." + task + ".random")) {
-                        p.performCommand(cmd.replace("{player}", p.getDisplayName()));
-                        return;
-                    }
-
-                    final double d = c.getDouble("tasks." + task + ".random");
-                    if (randomCheck(d)) {
-                        p.performCommand(cmd.replace("{player}", p.getDisplayName()));
-                    }
+                    p.performCommand(PAPIHook.parsePAPI(cmd, p));
                 } finally {
                     if (!isOp) {
                         p.setOp(false);
@@ -157,36 +147,35 @@ public class Tools {
         }
 
         if (gender.equals(Gender.PLAYER)) {
-            final String permission = c.getString("tasks." + task + ".permission");
-
             for (final Player p : Bukkit.getOnlinePlayers()) {
+                String worldName = p.getWorld().getName();
+                if(worlds.size() > 0 && !worlds.contains(worldName)) {
+                    return;
+                }
+
                 cmd = PAPIHook.parsePAPI(cmd, p);
-                if (cmd.contains("{player}")) {
-                    cmd = StringUtils.replace(cmd, "{player}", p.getDisplayName());
-                }
 
-                if (permission == null) {
-                    p.performCommand(cmd.replace("{player}", p.getDisplayName()));
+                if (perm == null) {
+                    p.performCommand(cmd);
                     continue;
                 }
 
-                if (!p.hasPermission(permission)) {
+                if (!p.hasPermission(perm)) {
                     continue;
                 }
 
-                if (pl.getConfig().contains("tasks." + task + ".random")) {
-                    final double d = c.getDouble("tasks." + task + ".random");
-                    if (randomCheck(d)) {
-                        p.performCommand(cmd.replace("{player}", p.getDisplayName()));
-                    }
-                }
+                p.performCommand(cmd);
             }
         }
     }
 
-    private static Random r = new Random();
-
+    /**
+     * Returns a boolean value based on the value
+     * @param random - value between 0 and 1
+     * @return boolean
+     */
     private static boolean randomCheck(double random) {
+        final Random r = new Random();
         final float chance = r.nextFloat();
         return chance <= random;
     }

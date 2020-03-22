@@ -2,15 +2,27 @@
 timeonload: true
 
 tasks:
-  'command 1':
+  command 1:
     commands:
       - say This message will only show up at a specific time.
     time:
-      - '13:49'
-    gender: 'console'
-  'random test command':
+      - 13:49
+    gender: console
+  random test command:
     commands:
       - say This message appears every 10 seconds with a chance of 50%
     seconds: 10
-    gender: 'console'
+    gender: console
     random: 0.5
+    perUser: true
+  world limited command:
+    commands:
+      - say This command will only run on the main world and on Monday, Wednesday and Sunday
+      - say This command will be executed sometimes as well
+    seconds: 5
+    days:
+      - MONDAY
+      - WEDNESDAY
+      - SUNDAY
+    worlds:
+      - world
