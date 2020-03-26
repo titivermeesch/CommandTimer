@@ -16,6 +16,13 @@ public class ConfigVerification {
                 return false;
             }
 
+            if(task.contains("1")) {
+                Tools.sendConsole("&6Your configuration file use task names with a 1 in it, please remove it.");
+                Tools.sendConsole("&cConfiguration file invalid, CommandTimer disabled...");
+                Bukkit.getPluginManager().disablePlugin(Main.getPlugin());
+                return false;
+            }
+
             if(!c.contains("tasks." + task + ".gender")) {
                 Tools.sendConsole("&6One of your tasks does not have a gender, please give each task a gender");
                 Tools.sendConsole("&cConfiguration file invalid, CommandTimer disabled...");
