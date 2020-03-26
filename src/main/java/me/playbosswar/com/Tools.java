@@ -57,7 +57,6 @@ public class Tools {
      */
     static void complexCommandRunner(final String task, String command, final Gender gender) {
         final FileConfiguration c = pl.getConfig();
-
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
@@ -116,6 +115,7 @@ public class Tools {
 
                 if(perm == null) {
                     Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(cmd, p));
+                    return;
                 }
 
                 if (!p.hasPermission(perm)) {
