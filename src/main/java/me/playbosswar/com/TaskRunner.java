@@ -5,10 +5,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.Plugin;
 
+import java.util.HashMap;
 import java.util.List;
 
 public class TaskRunner {
     private static Plugin p = Main.getPlugin();
+    private static HashMap<String, Integer> tasksTimesExecuted = new HashMap<>();
 
     public static void startTasks() {
         final FileConfiguration c = p.getConfig();
@@ -22,6 +24,7 @@ public class TaskRunner {
             List<String> commands = p.getConfig().getStringList("tasks." + task + ".commands");
             final long seconds = 20L * c.getLong("tasks." + task + ".seconds");
             GenderHandler.Gender gender = GenderHandler.getGender(task);
+            tasksTimesExecuted.put(task, 0);
 
             for (String cmd : commands) {
                 if (c.getBoolean("tasks." + task + ".onload")) {
@@ -34,7 +37,16 @@ public class TaskRunner {
                     continue;
                 }
 
-                Bukkit.getScheduler().scheduleSyncRepeatingTask(p, () -> Tools.executeCommand(task, cmd, gender), seconds, seconds);
+                Bukkit.getScheduler().scheduleSyncRepeatingTask(p, () -> {
+                    int timesExecuted = tasksTimesExecuted.get(task);
+
+                    if (c.contains("tasks." + task + ".executionLimit") && timesExecuted >= c.getInt("tasks." + task + ".executionLimit")) {
+                        return;
+                    }
+
+                    tasksTimesExecuted.replace(task, ++timesExecuted);
+                    Tools.executeCommand(task, cmd, gender);
+                }, seconds, seconds);
             }
         }
     }

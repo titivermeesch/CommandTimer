@@ -17,11 +17,12 @@ import java.util.*;
 
 public class Tools {
     private static Plugin pl = Main.getPlugin();
+    private static HashMap<String, Integer> tasksTimesExecuted = new HashMap<>();
     public static String color(String str) {
         return ChatColor.translateAlternateColorCodes('&', str);
     }
     public static void sendConsole(String str) {
-        Bukkit.getConsoleSender().sendMessage(color(str));
+        Bukkit.getConsoleSender().sendMessage(color("&a[CommandTimer] " + str));
     }
 
     /**
@@ -49,6 +50,7 @@ public class Tools {
     static void reloadTasks() {
         Bukkit.getScheduler().cancelTasks(Main.getPlugin());
         pl.reloadConfig();
+        ConfigVerification.checkConfigurationFileValidity();
         TaskRunner.startTasks();
     }
 
@@ -57,8 +59,8 @@ public class Tools {
      */
     static void complexCommandRunner(final String task, String command, final Gender gender) {
         final FileConfiguration c = pl.getConfig();
-
         Timer timer = new Timer();
+        tasksTimesExecuted.put(task, 0);
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
@@ -70,6 +72,14 @@ public class Tools {
                     if (!formattedDate.equals(hour)) {
                         continue;
                     }
+
+                    int timesExecuted = tasksTimesExecuted.get(task);
+
+                    if (c.contains("tasks." + task + ".executionLimit") && timesExecuted >= c.getInt("tasks." + task + ".executionLimit")) {
+                        continue;
+                    }
+
+                    tasksTimesExecuted.replace(task, ++timesExecuted);
 
                     Bukkit.getScheduler().scheduleSyncDelayedTask(pl, () -> Tools.executeCommand(task, command, gender), 50L);
                 }
@@ -116,6 +126,7 @@ public class Tools {
 
                 if(perm == null) {
                     Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(cmd, p));
+                    return;
                 }
 
                 if (!p.hasPermission(perm)) {

@@ -13,6 +13,11 @@ public class Main extends JavaPlugin implements Listener {
         plugin = this;
         registerCommands();
         Tools.initConfig();
+
+        if(!ConfigVerification.checkConfigurationFileValidity()) {
+            return;
+        }
+
         TaskRunner.startTasks();
         Tools.printDate();
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
