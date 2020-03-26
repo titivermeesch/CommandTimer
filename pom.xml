@@ -7,7 +7,7 @@
     <groupId>me.playbosswar.com</groupId>
     <artifactId>commandtimer</artifactId>
     <name>CommandTimer</name>
-    <version>4.0</version>
+    <version>4.0.1</version>
 
     <description>This plugin allows you to schedule commands that will be executed</description>
 
