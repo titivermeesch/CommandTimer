@@ -21,7 +21,7 @@ public class Tools {
         return ChatColor.translateAlternateColorCodes('&', str);
     }
     public static void sendConsole(String str) {
-        Bukkit.getConsoleSender().sendMessage(color(str));
+        Bukkit.getConsoleSender().sendMessage(color("&a[CommandTimer] " + str));
     }
 
     /**
@@ -49,6 +49,7 @@ public class Tools {
     static void reloadTasks() {
         Bukkit.getScheduler().cancelTasks(Main.getPlugin());
         pl.reloadConfig();
+        ConfigVerification.checkConfigurationFileValidity();
         TaskRunner.startTasks();
     }
 
