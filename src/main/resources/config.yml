@@ -6,7 +6,7 @@ tasks:
     commands:
       - say This message will only show up at a specific time.
     time:
-      - "13:49"
+      - "13:49:00"
     gender: console
   random_test_command:
     commands:
