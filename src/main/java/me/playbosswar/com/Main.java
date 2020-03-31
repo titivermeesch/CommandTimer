@@ -5,6 +5,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.Timer;
+
 public class Main extends JavaPlugin implements Listener {
     private static Plugin plugin;
 
@@ -31,6 +33,10 @@ public class Main extends JavaPlugin implements Listener {
 
     @Override
     public void onDisable() {
+        for(Timer t : Tools.timerList) {
+            t.cancel();
+        }
+
         saveDefaultConfig();
         plugin = null;
     }

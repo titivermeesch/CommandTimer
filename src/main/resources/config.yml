@@ -6,8 +6,15 @@ tasks:
     commands:
       - say This message will only show up at a specific time.
     time:
-      - "13:49"
+      - "13:49:00" # Use HH:mm:ss for real life time and HH:mm for minecraft time (useMinecraftTime: true)
     gender: console
+  command_minecraft_time:
+    commands:
+      - say This message will only show at a specific minecraft time
+    time:
+      - "15:00"
+    gender: console
+    useMinecraftTime: true
   random_test_command:
     commands:
       - say This message appears every 10 seconds with a chance of 50%
