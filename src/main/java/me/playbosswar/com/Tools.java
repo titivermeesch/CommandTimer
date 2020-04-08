@@ -106,7 +106,7 @@ public class Tools {
 
                             tasksTimesExecuted.replace(task, ++timesExecuted);
 
-                            Bukkit.getScheduler().scheduleSyncDelayedTask(pl, () -> Tools.executeCommand(task, command, gender), 50L);
+                            Bukkit.getScheduler().scheduleSyncDelayedTask(pl, () -> Tools.executeCommand(task, command, gender), 1L);
                         }
                     }
                 }
@@ -134,7 +134,7 @@ public class Tools {
 
                         tasksTimesExecuted.replace(task, ++timesExecuted);
 
-                        Bukkit.getScheduler().scheduleSyncDelayedTask(pl, () -> Tools.executeCommand(task, command, gender), 50L);
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(pl, () -> Tools.executeCommand(task, command, gender), 1L);
                     }
                 }
             }, 1L, 1000L);
