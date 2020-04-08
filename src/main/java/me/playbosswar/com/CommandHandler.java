@@ -10,6 +10,11 @@ import org.bukkit.entity.Player;
 public class CommandHandler implements CommandExecutor {
 
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
+        if(!sender.hasPermission("commandtimer.use")) {
+            sender.sendMessage("§cYou don't have the right permissions to do this");
+            return true;
+        }
+
         if (args.length == 1 ) {
             if(args[0].equals("reload")) {
                 Tools.reloadTasks();

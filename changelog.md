@@ -1,7 +1,11 @@
+# 4.3
+
+- Add missing commandtimer.use
+
 # 4.2
 
 - Add support for in-game time (along with real life time)
-- Fix issue with default checklist
+- Fix issue with default config
 - Fix issue with time commands being executed multiple times
 
 #4.1
