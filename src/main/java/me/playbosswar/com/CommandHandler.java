@@ -32,7 +32,7 @@ public class CommandHandler implements CommandExecutor {
 
                 World w = p.getWorld();
 
-                p.sendMessage("World time: " + Tools.calculateWorldTime(w) + " and world time raw is " + w.getTime());
+                p.sendMessage("World time: " + Tools.calculateWorldTime(w));
             }
 
             return true;
