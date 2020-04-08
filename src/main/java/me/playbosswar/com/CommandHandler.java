@@ -37,7 +37,10 @@ public class CommandHandler implements CommandExecutor {
 
             return true;
         }
-        sender.sendMessage(Tools.color("&cYour command is invalid."));
+
+        sender.sendMessage(Tools.color("&9&lThanks for using CommandTimer."));
+        sender.sendMessage(Tools.color("&6Please look on the plugin page for extra help"));
+        sender.sendMessage(Tools.color("&6Don't know where to start? Look in your server plugins folder and open the CommandTimer config.yml"));
         return true;
     }
 
