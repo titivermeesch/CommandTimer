@@ -1,5 +1,7 @@
 package me.playbosswar.com;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import me.playbosswar.com.genders.GenderHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -16,7 +18,7 @@ public class TaskRunner {
         final FileConfiguration c = p.getConfig();
 
         if (!c.contains("tasks")) {
-            Tools.sendConsole("[CommandTimer] No tasks found");
+            Tools.sendConsole("No tasks found");
             return;
         }
 

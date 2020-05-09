@@ -1,6 +1,12 @@
 # 4.3
 
 - Add missing commandtimer.use
+- Fix delayed commands when using time
+- Fix multiple command executions when using time
+- Change default command message
+- Allow time ranges like : [10:00:00-14:00:00]
+- Add minPlayers and maxPlayers
+- Configure main command alias (default /ct)
 
 # 4.2
 
