@@ -212,6 +212,19 @@ public class Tools {
         final String perm = c.getString("tasks." + task + ".permission");
         final boolean perUser = c.getBoolean("tasks." + task + ".perUser");
         final List<String> worlds = c.getStringList("tasks." + task + ".worlds");
+        final int playerCount = Bukkit.getOnlinePlayers().size();
+
+        if(c.contains("tasks." + task + ".minPlayers")) {
+            if(c.getInt("tasks." + task + ".minPlayers") > playerCount) {
+                return;
+            }
+        }
+
+        if(c.contains("tasks." + task + ".maxPlayers")) {
+            if(c.getInt("tasks." + task + ".maxPlayers") < playerCount) {
+                return;
+            }
+        }
 
         // Check if we are in a correct day.
         if (c.contains("tasks." + task + ".days") && !c.getStringList("tasks." + task + ".days").isEmpty()) {
