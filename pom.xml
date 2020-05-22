@@ -7,7 +7,7 @@
     <groupId>me.playbosswar.com</groupId>
     <artifactId>commandtimer</artifactId>
     <name>CommandTimer</name>
-    <version>4.3.1</version>
+    <version>5.0</version>
 
     <description>This plugin allows you to schedule commands that will be executed</description>
 
@@ -46,14 +46,12 @@
     </repositories>
 
     <dependencies>
-        <!-- Spigot API artifact -->
         <dependency>
             <groupId>com.destroystokyo.paper</groupId>
             <artifactId>paper-api</artifactId>
             <version>1.15.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
-        <!-- PAPI -->
         <dependency>
             <groupId>me.clip</groupId>
             <artifactId>placeholderapi</artifactId>

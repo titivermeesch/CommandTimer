@@ -1,7 +1,8 @@
 package me.playbosswar.com;
 
-import me.playbosswar.com.genders.GenderHandler.Gender;
 import me.playbosswar.com.hooks.PAPIHook;
+import me.playbosswar.com.utils.Gender;
+import me.playbosswar.com.utils.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
@@ -22,13 +23,7 @@ public class Tools {
     private static HashMap<String, Integer> tasksTimesExecuted = new HashMap<>();
     public static ArrayList<Timer> timerList = new ArrayList<>();
 
-    public static String color(String str) {
-        return ChatColor.translateAlternateColorCodes('&', str);
-    }
 
-    public static void sendConsole(String str) {
-        Bukkit.getConsoleSender().sendMessage(color("&a[CommandTimer] " + str));
-    }
 
     /**
      * Show current time & day
@@ -37,8 +32,8 @@ public class Tools {
         final LocalDate date = LocalDate.now();
         final DayOfWeek dow = date.getDayOfWeek();
         final String time = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"));
-        sendConsole("&aServer time :&e " + time);
-        sendConsole("&aServer day :&e " + dow);
+        Messages.sendConsole("&aServer time :&e " + time);
+        Messages.sendConsole("&aServer day :&e " + dow);
     }
 
     public static String charRemoveAt(String str, int p) {
@@ -63,20 +58,11 @@ public class Tools {
     }
 
     /**
-     * Load configuration file
-     */
-    public static void initConfig() {
-        pl.saveDefaultConfig();
-        pl.getConfig().options().copyDefaults(false);
-    }
-
-    /**
      * Reload all plugin tasks
      */
-    static void reloadTasks() {
+    public static void reloadTasks() {
         Bukkit.getScheduler().cancelTasks(Main.getPlugin());
         pl.reloadConfig();
-        ConfigVerification.checkConfigurationFileValidity();
         TaskRunner.startTasks();
     }
 

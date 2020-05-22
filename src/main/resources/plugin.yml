@@ -11,3 +11,6 @@ commands:
     usage: /<command>
     aliases: [cmt]
     description: List all commands
+  worldtime:
+    usage: /<command>
+    description: Show real time of current minecraft world
