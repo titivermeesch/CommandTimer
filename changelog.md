@@ -1,3 +1,8 @@
+# 4.3.1
+
+- Fix useMinecraftTime
+- Potential fix for Paper
+
 # 4.3
 
 - Add missing commandtimer.use

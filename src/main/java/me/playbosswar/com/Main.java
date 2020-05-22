@@ -43,7 +43,6 @@ public class Main extends JavaPlugin implements Listener {
 
     private void registerCommands() {
         getCommand("commandtimer").setExecutor(new Commands());
-        getCommand(getConfig().getString("command_alias")).setExecutor(new Commands());
     }
 
 

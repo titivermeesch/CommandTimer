@@ -9,4 +9,5 @@ softdepend:
 commands:
   commandtimer:
     usage: /<command>
+    aliases: [cmt]
     description: List all commands
