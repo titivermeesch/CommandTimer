@@ -17,7 +17,13 @@ public class Files {
 
     public static void createDataFolders() {
         File file = new File(pluginFolderPath + "/timers");
-        file.mkdir();
+        Boolean created = file.mkdir();
+
+        if(created) {
+            Messages.sendConsole("Data folder has been created");
+        } else {
+            Messages.sendConsole("We could not create the data folder. If it already exists ignore this.");
+        }
     }
 
     public static String getTimerFile(String name) {

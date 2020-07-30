@@ -30,11 +30,11 @@ public class Main extends JavaPlugin implements Listener {
         Tools.printDate();
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             Bukkit.getPluginManager().registerEvents(this, this);
-            Messages.sendConsole("&a[CommandTimer] &e CommandTimer hooked in PlaceholderAPI");
+            Messages.sendConsole("&eCommandTimer hooked in PlaceholderAPI");
         } else {
-            Messages.sendConsole("&a[CommandTimer] &e CommandTimer could not find PlaceholderAPI, placeholders will not work");
+            Messages.sendConsole("&eCommandTimer could not find PlaceholderAPI, placeholders will not work");
         }
-        Messages.sendConsole("&a[CommandTimer] &e" + getDescription().getVersion() + "&a loaded!");
+        Messages.sendConsole("&e" + getDescription().getVersion() + "&a loaded!");
     }
 
     @Override

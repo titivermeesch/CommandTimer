@@ -1,6 +1,7 @@
 package me.playbosswar.com.commands;
 
 import me.playbosswar.com.Tools;
+import me.playbosswar.com.utils.CommandParam;
 import me.playbosswar.com.utils.Files;
 import me.playbosswar.com.utils.Messages;
 import org.bukkit.command.Command;
@@ -35,6 +36,27 @@ public class MainCommand implements CommandExecutor {
             if(args[0].equals("create")) {
                 Files.createNewCommandTimerDataFile(p, args[1]);
                 return true;
+            }
+        }
+
+        // /cmt set <name> <param> <value>
+
+        if(args.length == 4) {
+            if(args[0].equals("set")) {
+                if(!Files.commandTimerFileExists(args[1])) {
+                    Messages.sendMessageToPlayer(p, "&cThis timer does not exist");
+                    return true;
+                }
+
+                CommandParam param = CommandParam.valueOf(args[1]);
+                Messages.sendMessageToPlayer(p, param.toString());
+
+                if(param.equals(null)) {
+                    Messages.sendMessageToPlayer(p, "&cThis param does not exist");
+                    return true;
+                }
+
+                
             }
         }
 

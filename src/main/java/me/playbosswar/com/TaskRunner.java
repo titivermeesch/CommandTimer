@@ -1,7 +1,6 @@
 package me.playbosswar.com;
 
 import me.playbosswar.com.utils.Gender;
-import me.playbosswar.com.utils.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.Plugin;
