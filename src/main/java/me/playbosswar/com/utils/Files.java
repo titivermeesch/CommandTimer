@@ -1,12 +1,14 @@
 package me.playbosswar.com.utils;
 
 import me.playbosswar.com.Main;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.*;
 import java.nio.file.FileAlreadyExistsException;
+import java.util.ArrayList;
 
 public class Files {
     static String pluginFolderPath = Main.getPlugin().getDataFolder().getPath();
@@ -157,6 +159,27 @@ public class Files {
                     System.out.println(o);
 
                     CommandTimer t = new CommandTimer((String) o.get("name"));
+
+                    t.setExecutionLimit((Integer) o.getOrDefault("executionLimit", -1));
+                    t.setExecutePerUser((Boolean) o.getOrDefault("executePerUser", false));
+                    t.setUseMinecraftTime((Boolean) o.getOrDefault("useMinecraftTime", false));
+                    t.setSeconds((Integer) o.getOrDefault("seconds", 5));
+                    t.setGender(Gender.valueOf((String) o.getOrDefault("gender", "OPERATOR")));
+                    t.setRandom((Float) o.getOrDefault("random", 1));
+                    t.setTimesExecuted(0);
+
+                    JSONArray commands = (JSONArray) o.getOrDefault("commands", new ArrayList<String>());
+                    t.setCommands(commands);
+
+                    JSONArray days = (JSONArray) o.getOrDefault("days", new ArrayList<String>());
+                    t.setDays(days);
+
+                    JSONArray times = (JSONArray) o.getOrDefault("times", new ArrayList<String>());
+                    t.setTimes(times);
+
+                    JSONArray worlds = (JSONArray) o.getOrDefault("worlds", new ArrayList<String>());
+                    t.setWorlds(worlds);
+
                     CommandsManager.addCommandTimer(t);
                 }
             }
