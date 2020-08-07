@@ -62,7 +62,6 @@ public class Tools {
     public static void reloadTasks() {
         Bukkit.getScheduler().cancelTasks(Main.getPlugin());
         pl.reloadConfig();
-        TaskRunner.startTasks();
     }
 
     static void scheduleHourRange(String hour, String task, String command, Gender gender, String worldName) {

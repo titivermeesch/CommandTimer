@@ -11,7 +11,7 @@ public class CommandTimer {
     private int seconds = 5;
     private ArrayList<String> times = new ArrayList<>();
     private Boolean useMinecraftTime = false;
-    private double random = 1;
+    private float random = 1;
     private Boolean executePerUser = false;
     private ArrayList<World> worlds = new ArrayList<>();
     private ArrayList<String> days = new ArrayList<>();
@@ -74,7 +74,7 @@ public class CommandTimer {
         return random;
     }
 
-    public void setRandom(double random) {
+    public void setRandom(float random) {
         this.random = random;
     }
 

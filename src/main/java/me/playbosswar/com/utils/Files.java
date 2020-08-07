@@ -1,80 +1,140 @@
 package me.playbosswar.com.utils;
 
 import me.playbosswar.com.Main;
-import org.bukkit.entity.Player;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.FileAlreadyExistsException;
 
 public class Files {
     static String pluginFolderPath = Main.getPlugin().getDataFolder().getPath();
 
+    /**
+     * Create folder to store all the timers in
+     */
     public static void createDataFolders() {
         File file = new File(pluginFolderPath + "/timers");
         Boolean created = file.mkdir();
 
-        if(created) {
+        if (created) {
             Messages.sendConsole("Data folder has been created");
         } else {
             Messages.sendConsole("We could not create the data folder. If it already exists ignore this.");
         }
     }
 
+    /**
+     * Returns timer json file
+     * @param name
+     * @return
+     */
     public static String getTimerFile(String name) {
         return pluginFolderPath + "/timers/" + name + ".json";
     }
 
+    /**
+     * Check if a file with name already exists
+     * @param name
+     * @return
+     */
     public static Boolean commandTimerFileExists(String name) {
         File file = new File(getTimerFile(name));
         return file.exists();
     }
 
-    public static void createNewCommandTimerDataFile(Player p, String name) {
+    /**
+     * Create a new data file to store timer data
+     * @param name
+     * @throws IOException
+     */
+    public static void createNewCommandTimerDataFile(String name) throws IOException {
         if (commandTimerFileExists(name)) {
-            Messages.sendMessageToPlayer(p, "&cThis name has already been used");
-            return;
+            throw new FileAlreadyExistsException(name);
         }
 
-        try {
-            FileWriter jsonFile = new FileWriter(getTimerFile(name));
-            JSONObject commandTimer = new JSONObject();
+        FileWriter jsonFile = new FileWriter(getTimerFile(name));
+        JSONObject commandTimer = new JSONObject();
 
-            commandTimer.put("name", name);
+        commandTimer.put("name", name);
 
-            jsonFile.write(commandTimer.toJSONString());
-            jsonFile.flush();
-
-            CommandTimer t = new CommandTimer(name);
-            CommandsManager.addCommandTimer(t);
-
-            Messages.sendMessageToPlayer(p, "Command &a" + t.getName() + " &fhas been create");
-        } catch (IOException e) {
-            Messages.sendMessageToPlayer(p, "&cSomething went wrong");
-            e.printStackTrace();
-        }
+        jsonFile.write(commandTimer.toJSONString());
+        jsonFile.flush();
     }
 
-    public static void removeExistingCommandTimer(Player p, String name) {
+    public static void removeExistingCommandTimer(String name) throws IOException {
         File file = new File(getTimerFile(name));
 
         if (!commandTimerFileExists(name)) {
-            Messages.sendMessageToPlayer(p, "&cThis command timer does not exist");
-            return;
+            throw new FileNotFoundException();
         }
 
-        if (file.delete()) {
-            CommandsManager.removeCommandTimer(name);
-            Messages.sendMessageToPlayer(p, "Deleted");
-            return;
-        }
+        Boolean deleted = file.delete();
 
-        Messages.sendMessageToPlayer(p, "&cSomething went wrong");
+        if(!deleted) {
+            throw new IOException();
+        }
+    }
+
+    public static void changeDataInFile(String timerName, String key, String value) throws IOException, ParseException {
+        String timerFile = getTimerFile(timerName);
+
+        Reader reader = new FileReader(timerFile);
+
+        JSONParser parser = new JSONParser();
+        JSONObject commandTimer = (JSONObject) parser.parse(reader);
+
+        commandTimer.put(key, value);
+
+        FileWriter jsonFile = new FileWriter(getTimerFile(timerName));
+        jsonFile.write(commandTimer.toJSONString());
+        jsonFile.flush();
+    }
+
+    public static void changeDataInFile(String timerName, String key, Integer value) throws IOException, ParseException {
+        String timerFile = getTimerFile(timerName);
+
+        Reader reader = new FileReader(timerFile);
+
+        JSONParser parser = new JSONParser();
+        JSONObject commandTimer = (JSONObject) parser.parse(reader);
+
+        commandTimer.put(key, value);
+
+        FileWriter jsonFile = new FileWriter(getTimerFile(timerName));
+        jsonFile.write(commandTimer.toJSONString());
+        jsonFile.flush();
+    }
+
+    public static void changeDataInFile(String timerName, String key, Boolean value) throws IOException, ParseException {
+        String timerFile = getTimerFile(timerName);
+
+        Reader reader = new FileReader(timerFile);
+
+        JSONParser parser = new JSONParser();
+        JSONObject commandTimer = (JSONObject) parser.parse(reader);
+
+        commandTimer.put(key, value);
+
+        FileWriter jsonFile = new FileWriter(getTimerFile(timerName));
+        jsonFile.write(commandTimer.toJSONString());
+        jsonFile.flush();
+    }
+
+    public static void changeDataInFile(String timerName, String key, Float value) throws IOException, ParseException {
+        String timerFile = getTimerFile(timerName);
+
+        Reader reader = new FileReader(timerFile);
+
+        JSONParser parser = new JSONParser();
+        JSONObject commandTimer = (JSONObject) parser.parse(reader);
+
+        commandTimer.put(key, value);
+
+        FileWriter jsonFile = new FileWriter(getTimerFile(timerName));
+        jsonFile.write(commandTimer.toJSONString());
+        jsonFile.flush();
     }
 
     public static void deserializeJsonFilesIntoCommandTimers() {
@@ -85,13 +145,16 @@ public class Files {
         try {
             if (directoryListing != null && directoryListing.length > 0) {
                 for (File file : directoryListing) {
-                    Messages.sendConsole("Loading command timer " + file.getName());
+                    Messages.sendConsole("Loading existing CommandTimer " + file.getName());
                     if (!file.exists() || !file.getName().contains("json")) {
                         continue;
                     }
 
                     FileReader fr = new FileReader(file.getPath());
                     JSONObject o = (JSONObject) jsonParser.parse(fr);
+
+                    System.out.println("Found data in file:");
+                    System.out.println(o);
 
                     CommandTimer t = new CommandTimer((String) o.get("name"));
                     CommandsManager.addCommandTimer(t);

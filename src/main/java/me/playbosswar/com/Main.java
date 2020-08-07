@@ -26,7 +26,8 @@ public class Main extends JavaPlugin implements Listener {
         saveDefaultConfig();
         getConfig().options().copyDefaults(true);
 
-        // TaskRunner.startTasks();
+        Files.deserializeJsonFilesIntoCommandTimers();
+
         Tools.printDate();
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             Bukkit.getPluginManager().registerEvents(this, this);
