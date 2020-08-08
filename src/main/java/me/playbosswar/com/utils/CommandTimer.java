@@ -3,6 +3,7 @@ package me.playbosswar.com.utils;
 import org.bukkit.World;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class CommandTimer {
     private String name;
@@ -11,12 +12,14 @@ public class CommandTimer {
     private int seconds = 5;
     private ArrayList<String> times = new ArrayList<>();
     private Boolean useMinecraftTime = false;
-    private float random = 1;
+    private double random = 1;
     private Boolean executePerUser = false;
     private ArrayList<World> worlds = new ArrayList<>();
     private ArrayList<String> days = new ArrayList<>();
     private int executionLimit = -1;
     private int timesExecuted = 0;
+
+    private Date lastExecuted = new Date();
 
     public CommandTimer(String name) {
         this.name = name;
@@ -74,7 +77,7 @@ public class CommandTimer {
         return random;
     }
 
-    public void setRandom(float random) {
+    public void setRandom(double random) {
         this.random = random;
     }
 
@@ -116,5 +119,13 @@ public class CommandTimer {
 
     public void setTimesExecuted(int timesExecuted) {
         this.timesExecuted = timesExecuted;
+    }
+
+    public Date getLastExecuted() {
+        return lastExecuted;
+    }
+
+    public void setLastExecuted(Date lastExecuted) {
+        this.lastExecuted = lastExecuted;
     }
 }

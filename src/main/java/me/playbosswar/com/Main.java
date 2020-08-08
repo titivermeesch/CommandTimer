@@ -4,6 +4,8 @@ import me.playbosswar.com.commands.MainCommand;
 import me.playbosswar.com.commands.WorldTimeCommand;
 import me.playbosswar.com.utils.Files;
 import me.playbosswar.com.utils.Messages;
+import me.tom.sparse.spigot.chat.menu.ChatMenu;
+import me.tom.sparse.spigot.chat.menu.ChatMenuAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
@@ -18,6 +20,7 @@ public class Main extends JavaPlugin implements Listener {
     public void onEnable() {
         plugin = this;
 
+        ChatMenuAPI.init(this);
         Files.createDataFolders();
 
         getCommand("worldtime").setExecutor(new WorldTimeCommand());
@@ -45,6 +48,7 @@ public class Main extends JavaPlugin implements Listener {
         }
 
         saveDefaultConfig();
+        ChatMenuAPI.disable();
         plugin = null;
     }
 

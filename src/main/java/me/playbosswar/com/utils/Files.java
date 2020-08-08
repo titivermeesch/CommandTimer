@@ -1,6 +1,8 @@
 package me.playbosswar.com.utils;
 
 import me.playbosswar.com.Main;
+import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -124,7 +126,7 @@ public class Files {
         jsonFile.flush();
     }
 
-    public static void changeDataInFile(String timerName, String key, Float value) throws IOException, ParseException {
+    public static void changeDataInFile(String timerName, String key, double value) throws IOException, ParseException {
         String timerFile = getTimerFile(timerName);
 
         Reader reader = new FileReader(timerFile);
@@ -143,7 +145,7 @@ public class Files {
         File dir = new File(pluginFolderPath + "/timers");
         File[] directoryListing = dir.listFiles();
         JSONParser jsonParser = new JSONParser();
-
+ 
         try {
             if (directoryListing != null && directoryListing.length > 0) {
                 for (File file : directoryListing) {
@@ -165,20 +167,25 @@ public class Files {
                     t.setUseMinecraftTime((Boolean) o.getOrDefault("useMinecraftTime", false));
                     t.setSeconds((Integer) o.getOrDefault("seconds", 5));
                     t.setGender(Gender.valueOf((String) o.getOrDefault("gender", "OPERATOR")));
-                    t.setRandom((Float) o.getOrDefault("random", 1));
+                    t.setRandom((Double) o.getOrDefault("random", 1.0));
                     t.setTimesExecuted(0);
 
-                    JSONArray commands = (JSONArray) o.getOrDefault("commands", new ArrayList<String>());
+                    ArrayList<String> commands = (ArrayList<String>) o.getOrDefault("commands", new ArrayList<String>());
                     t.setCommands(commands);
 
-                    JSONArray days = (JSONArray) o.getOrDefault("days", new ArrayList<String>());
+                    ArrayList<String> days = (ArrayList<String>) o.getOrDefault("days", new ArrayList<String>());
                     t.setDays(days);
 
-                    JSONArray times = (JSONArray) o.getOrDefault("times", new ArrayList<String>());
+                    ArrayList<String> times = (ArrayList<String>) o.getOrDefault("times", new ArrayList<String>());
                     t.setTimes(times);
 
-                    JSONArray worlds = (JSONArray) o.getOrDefault("worlds", new ArrayList<String>());
-                    t.setWorlds(worlds);
+                    ArrayList<String> worlds = (ArrayList<String>) o.getOrDefault("worlds", new ArrayList<String>());
+                    ArrayList<World> bukkitWorlds = new ArrayList<>();
+
+                    for(String world : worlds) {
+                        bukkitWorlds.add(Bukkit.getWorld(world));
+                    }
+                    t.setWorlds(bukkitWorlds);
 
                     CommandsManager.addCommandTimer(t);
                 }

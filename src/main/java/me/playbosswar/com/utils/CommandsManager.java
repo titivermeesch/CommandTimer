@@ -17,11 +17,22 @@ public class CommandsManager {
 
     public static void removeCommandTimer(CommandTimer t) { timers.remove(t); }
 
+    /**
+     * Find timer by name
+     * @param name
+     * @return
+     */
     public static CommandTimer getCommandTimer(String name) {
         for(CommandTimer t : timers) {
-            return t;
+            if(t.getName().equalsIgnoreCase(name)) {
+                return t;
+            }
         }
         return null;
+    }
+
+    public static ArrayList<CommandTimer> getAllTimers() {
+        return timers;
     }
 
     /**
@@ -128,7 +139,7 @@ public class CommandsManager {
         }
 
         if(param.equalsIgnoreCase("random")) {
-            float randomValue = Float.parseFloat(value);
+            double randomValue = Double.parseDouble(value);
 
             if(randomValue < 0 || randomValue > 1) {
                 Messages.sendMessageToPlayer(p, "&cPlease use a value between 0 and 1 included. 0 means never executed and 1 means always executed. You can pick a value between those as well.");

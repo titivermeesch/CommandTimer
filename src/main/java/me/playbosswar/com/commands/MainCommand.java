@@ -1,12 +1,16 @@
 package me.playbosswar.com.commands;
 
 import me.playbosswar.com.Tools;
+import me.playbosswar.com.utils.ChatMenus;
+import me.playbosswar.com.utils.CommandTimer;
 import me.playbosswar.com.utils.CommandsManager;
 import me.playbosswar.com.utils.Messages;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
 
 public class MainCommand implements CommandExecutor {
     @Override
@@ -31,21 +35,37 @@ public class MainCommand implements CommandExecutor {
             return true;
         }
 
+        if(args.length == 1) {
+            if(args[0].equalsIgnoreCase("list")) {
+                ArrayList<CommandTimer> timers = CommandsManager.getAllTimers();
+                Messages.sendMessageToPlayer(p, "Here is a list of all your timers:");
+                int i = 1;
+                for(CommandTimer timer : timers) {
+                    Messages.sendMessageToPlayer(p, i + ": " + timer.getName() + " (every " + timer.getSeconds() + " seconds)");
+                }
+                return true;
+            }
+        }
+
         if(args.length == 2) {
-            if(args[0].equals("create")) {
+            if(args[0].equalsIgnoreCase("create")) {
                 CommandsManager.createNewCommandTimer(p, args[1]);
                 return true;
             }
 
-            if(args[0].equals("remove") || args[0].equals("delete")) {
+            if(args[0].equalsIgnoreCase("remove") || args[0].equalsIgnoreCase("delete")) {
                 CommandsManager.deleteCommandtimer(p, args[1]);
                 return true;
             }
 
+            if(args[0].equalsIgnoreCase("info")) {
+                ChatMenus.openTimerMenu(p, args[1]);
+                return true;
+            }
         }
 
         if(args.length == 4) {
-            if(args[0].equals("set")) {
+            if(args[0].equalsIgnoreCase("set")) {
                 CommandsManager.changeCommandtimerData(p, args[1], args[2], args[3]);
                 return true;
             }
