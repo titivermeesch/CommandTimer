@@ -96,7 +96,7 @@ public class Files {
         jsonFile.flush();
     }
 
-    public static void changeDataInFile(String timerName, String key, Integer value) throws IOException, ParseException {
+    public static void changeDataInFile(String timerName, String key, int value) throws IOException, ParseException {
         String timerFile = getTimerFile(timerName);
 
         Reader reader = new FileReader(timerFile);
@@ -161,13 +161,16 @@ public class Files {
                     System.out.println(o);
 
                     CommandTimer t = new CommandTimer((String) o.get("name"));
-
-                    t.setExecutionLimit((Integer) o.getOrDefault("executionLimit", -1));
+                    t.setExecutionLimit((int) o.getOrDefault("executionLimit", -1));
                     t.setExecutePerUser((Boolean) o.getOrDefault("executePerUser", false));
                     t.setUseMinecraftTime((Boolean) o.getOrDefault("useMinecraftTime", false));
-                    t.setSeconds((Integer) o.getOrDefault("seconds", 5));
+
+                    long seconds = (long) o.getOrDefault("seconds", 5);
+
+                    t.setSeconds((int) seconds);
                     t.setGender(Gender.valueOf((String) o.getOrDefault("gender", "OPERATOR")));
                     t.setRandom((Double) o.getOrDefault("random", 1.0));
+
                     t.setTimesExecuted(0);
 
                     ArrayList<String> commands = (ArrayList<String>) o.getOrDefault("commands", new ArrayList<String>());

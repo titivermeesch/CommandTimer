@@ -41,6 +41,8 @@ public class CommandTimer {
         this.commands = commands;
     }
 
+    public void addCommand(String command) { commands.add(command); }
+
     public Gender getGender() {
         return gender;
     }

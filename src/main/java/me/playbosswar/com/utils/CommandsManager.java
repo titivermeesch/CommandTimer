@@ -54,6 +54,10 @@ public class CommandsManager {
         }
     }
 
+    public static void addCommandToTimer(Player p, CommandTimer timer, String command) {
+        timer.addCommand(command);
+    }
+
     /**
      * Delete existing Timer (file and instance)
      * @param p
