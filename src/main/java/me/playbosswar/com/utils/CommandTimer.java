@@ -2,8 +2,8 @@ package me.playbosswar.com.utils;
 
 import org.bukkit.World;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class CommandTimer {
     private String name;
@@ -14,12 +14,11 @@ public class CommandTimer {
     private Boolean useMinecraftTime = false;
     private double random = 1;
     private Boolean executePerUser = false;
-    private ArrayList<World> worlds = new ArrayList<>();
+    private ArrayList<String> worlds = new ArrayList<>();
     private ArrayList<String> days = new ArrayList<>();
     private int executionLimit = -1;
     private int timesExecuted = 0;
-
-    private Date lastExecuted = new Date();
+    private LocalTime lastExecuted = LocalTime.now();
 
     public CommandTimer(String name) {
         this.name = name;
@@ -41,7 +40,7 @@ public class CommandTimer {
         this.commands = commands;
     }
 
-    public void addCommand(String command) { commands.add(command); }
+    public void addCommand(String command) { this.commands.add(command); }
 
     public Gender getGender() {
         return gender;
@@ -67,6 +66,8 @@ public class CommandTimer {
         this.times = times;
     }
 
+    public void addTime(String time) { this.times.add(time); }
+
     public Boolean getUseMinecraftTime() {
         return useMinecraftTime;
     }
@@ -91,11 +92,11 @@ public class CommandTimer {
         this.executePerUser = executePerUser;
     }
 
-    public ArrayList<World> getWorlds() {
+    public ArrayList<String> getWorlds() {
         return worlds;
     }
 
-    public void setWorlds(ArrayList<World> worlds) {
+    public void setWorlds(ArrayList<String> worlds) {
         this.worlds = worlds;
     }
 
@@ -123,11 +124,11 @@ public class CommandTimer {
         this.timesExecuted = timesExecuted;
     }
 
-    public Date getLastExecuted() {
+    public LocalTime getLastExecuted() {
         return lastExecuted;
     }
 
-    public void setLastExecuted(Date lastExecuted) {
+    public void setLastExecuted(LocalTime lastExecuted) {
         this.lastExecuted = lastExecuted;
     }
 }

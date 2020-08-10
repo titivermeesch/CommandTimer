@@ -183,12 +183,8 @@ public class Files {
                     t.setTimes(times);
 
                     ArrayList<String> worlds = (ArrayList<String>) o.getOrDefault("worlds", new ArrayList<String>());
-                    ArrayList<World> bukkitWorlds = new ArrayList<>();
 
-                    for(String world : worlds) {
-                        bukkitWorlds.add(Bukkit.getWorld(world));
-                    }
-                    t.setWorlds(bukkitWorlds);
+                    t.setWorlds(worlds);
 
                     CommandsManager.addCommandTimer(t);
                 }

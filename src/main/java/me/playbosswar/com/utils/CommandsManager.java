@@ -58,6 +58,22 @@ public class CommandsManager {
         timer.addCommand(command);
     }
 
+    public static void removeCommandFromTimer(Player p, CommandTimer timer, int commandIndex) {
+        ArrayList<String> commands = timer.getCommands();
+        commands.remove(commandIndex);
+        timer.setCommands(commands);
+    }
+
+    public static void addTimeToTimer(Player p, CommandTimer timer, String time) {
+        timer.addTime(time);
+    }
+
+    public static void removeTimeFromTimer(Player p, CommandTimer timer, int timeIndex) {
+        ArrayList<String> times = timer.getTimes();
+        times.remove(timeIndex);
+        timer.setTimes(times);
+    }
+
     /**
      * Delete existing Timer (file and instance)
      * @param p

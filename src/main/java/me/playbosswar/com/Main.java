@@ -2,6 +2,7 @@ package me.playbosswar.com;
 
 import me.playbosswar.com.commands.MainCommand;
 import me.playbosswar.com.commands.WorldTimeCommand;
+import me.playbosswar.com.utils.CommandExecutor;
 import me.playbosswar.com.utils.Files;
 import me.playbosswar.com.utils.Messages;
 import me.tom.sparse.spigot.chat.menu.ChatMenu;
@@ -38,6 +39,7 @@ public class Main extends JavaPlugin implements Listener {
         } else {
             Messages.sendConsole("&eCommandTimer could not find PlaceholderAPI, placeholders will not work");
         }
+        CommandExecutor.startRunner();
         Messages.sendConsole("&e" + getDescription().getVersion() + "&a loaded!");
     }
 

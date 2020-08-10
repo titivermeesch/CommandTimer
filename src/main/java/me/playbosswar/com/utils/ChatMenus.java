@@ -49,57 +49,109 @@ public class ChatMenus {
         menu.add(genderSelector);
 
         menu.add(new TextElement("Execution chance: ", 5, 8));
-        NumberSliderElement executionSlider = new NumberSliderElement(100, 8, 20, 5);
+        double existingValue = timer.getRandom() * 20;
+        NumberSliderElement executionSlider = new NumberSliderElement(100, 8, 20, (int) existingValue);
         executionSlider.value.setChangeCallback(state -> {
-            int value = state.getCurrent() + 1;
+            double pourcentage = state.getCurrent() * 0.05;
 
-            double pourcentage = value * 0.05;
-            
             CommandsManager.changeCommandtimerData(p, timer.getName(), "random", pourcentage + "");
         });
         menu.add(executionSlider);
 
         menu.add(new TextElement("Execute for each user: ", 5, 9));
-        menu.add(new BooleanElement(150, 9, timer.getExecutePerUser()));
+        BooleanElement perUser = new BooleanElement(150, 9, timer.getExecutePerUser());
+        perUser.value.setChangeCallback(state -> CommandsManager.changeCommandtimerData(p, timer.getName(), "executePerUser", state.getCurrent().toString()));
+        menu.add(perUser);
 
         menu.add(new TextElement("Use Minecraft time: ", 5, 10));
-        menu.add(new BooleanElement(150, 10, timer.getUseMinecraftTime()));
+        BooleanElement useMinecraftTime = new BooleanElement(150, 10, timer.getUseMinecraftTime());
+        useMinecraftTime.value.setChangeCallback(state -> CommandsManager.changeCommandtimerData(p, timer.getName(), "useMinecraftTime", state.getCurrent().toString()));
+        menu.add(useMinecraftTime);
 
         menu.add(new ButtonElement(5, 12, Messages.colorize("&a&l[Commands]"), player -> {
             menu.close(player);
-            openCommandsMenu(player, timer);
+            openCommandsMenu(player, timer.getName());
         }));
-        menu.add(new ButtonElement(100, 12, Messages.colorize("&a&l[Hours]")));
+        menu.add(new ButtonElement(90, 12, Messages.colorize("&a&l[Hours]"), player -> {
+            menu.close(player);
+            openTimesMenu(player, timer.getName());
+        }));
 
+        menu.add(new ButtonElement(5, 15, Messages.colorize("&c[Close]"), menu::close));
 
         menu.openFor(p);
     }
 
-    public static void openCommandsMenu(Player p, CommandTimer timer) {
+    public static void openCommandsMenu(Player p, String timerName) {
+        CommandTimer timer = CommandsManager.getCommandTimer(timerName);
         ChatMenu menu = new ChatMenu().pauseChat();
 
         menu.add(new TextElement(Messages.colorize("&6&lTimer commands for: " + timer.getName()), 5, 1));
 
         int i = 3;
-        for(String command : timer.getCommands()) {
-            if(i < 17) {
-                menu.add(new TextElement(" - " + command, 5, i));
+        for (String command : timer.getCommands()) {
+            if (i < 17) {
+                int finalI = i;
+                menu.add(new ButtonElement(5, i, Messages.colorize("&4\u2718"), player -> {
+                    CommandsManager.removeCommandFromTimer(p, timer, finalI - 3);
+                    menu.close(p);
+                    openCommandsMenu(p, timerName);
+                }));
+                menu.add(new TextElement(command, 15, i));
                 i++;
             }
         }
 
-        InputElement commandInput = new InputElement(5, i, 200, "Enter new command");
+        InputElement commandInput = new InputElement(5, i + 1, 120, "Enter new command");
         commandInput.value.setChangeCallback(state -> {
             CommandsManager.addCommandToTimer(p, timer, state.getCurrent());
             menu.close(p);
-            menu.openFor(p);
+            openCommandsMenu(p, timerName);
         });
+
         menu.add(commandInput);
-        menu.add(new ButtonElement(5, i + 1, Messages.colorize("&c[Go back]"), player -> {
+        menu.add(new ButtonElement(5, i + 3, Messages.colorize("&c[Go back]"), player -> {
             menu.close(player);
             openTimerMenu(player, timer.getName());
         }));
-        menu.add(new ButtonElement(100, i + 1, Messages.colorize("&4[Close]"), menu::close));
+        menu.add(new ButtonElement(60, i + 3, Messages.colorize("&4[Close]"), menu::close));
+
+        menu.openFor(p);
+    }
+
+    public static void openTimesMenu(Player p, String timerName) {
+        CommandTimer timer = CommandsManager.getCommandTimer(timerName);
+        ChatMenu menu = new ChatMenu().pauseChat();
+
+        menu.add(new TextElement(Messages.colorize("&6&lTimer times for: " + timer.getName()), 5, 1));
+
+        int i = 3;
+        for (String time : timer.getTimes()) {
+            if (i < 17) {
+                int finalI = i;
+                menu.add(new ButtonElement(5, i, Messages.colorize("&4\u2718"), player -> {
+                    CommandsManager.removeTimeFromTimer(p, timer, finalI - 3);
+                    menu.close(p);
+                    openTimesMenu(p, timerName);
+                }));
+                menu.add(new TextElement(time, 15, i));
+                i++;
+            }
+        }
+
+        InputElement timeInput = new InputElement(5, i + 1, 120, "Enter new time");
+        timeInput.value.setChangeCallback(state -> {
+            CommandsManager.addTimeToTimer(p, timer, state.getCurrent());
+            menu.close(p);
+            openTimesMenu(p, timerName);
+        });
+
+        menu.add(timeInput);
+        menu.add(new ButtonElement(5, i + 3, Messages.colorize("&c[Go back]"), player -> {
+            menu.close(player);
+            openTimerMenu(player, timer.getName());
+        }));
+        menu.add(new ButtonElement(60, i + 3, Messages.colorize("&4[Close]"), menu::close));
 
         menu.openFor(p);
     }
