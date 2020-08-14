@@ -15,16 +15,19 @@ public class CommandsManager {
         timers.add(t);
     }
 
-    public static void removeCommandTimer(CommandTimer t) { timers.remove(t); }
+    public static void removeCommandTimer(CommandTimer t) {
+        timers.remove(t);
+    }
 
     /**
      * Find timer by name
+     *
      * @param name
      * @return
      */
     public static CommandTimer getCommandTimer(String name) {
-        for(CommandTimer t : timers) {
-            if(t.getName().equalsIgnoreCase(name)) {
+        for (CommandTimer t : timers) {
+            if (t.getName().equalsIgnoreCase(name)) {
                 return t;
             }
         }
@@ -37,6 +40,7 @@ public class CommandsManager {
 
     /**
      * Create a new Timer (file and instance)
+     *
      * @param p
      * @param name
      */
@@ -55,27 +59,48 @@ public class CommandsManager {
     }
 
     public static void addCommandToTimer(Player p, CommandTimer timer, String command) {
-        timer.addCommand(command);
+        try {
+            timer.addCommand(command);
+            Files.changeDataInFile(timer.getName(), "commands", timer.getCommands());
+        } catch (ParseException | IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void removeCommandFromTimer(Player p, CommandTimer timer, int commandIndex) {
-        ArrayList<String> commands = timer.getCommands();
-        commands.remove(commandIndex);
-        timer.setCommands(commands);
+        try {
+            ArrayList<String> commands = timer.getCommands();
+            commands.remove(commandIndex);
+            timer.setCommands(commands);
+            Files.changeDataInFile(timer.getName(), "commands", timer.getCommands());
+        } catch (ParseException | IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void addTimeToTimer(Player p, CommandTimer timer, String time) {
-        timer.addTime(time);
+        try {
+            timer.addTime(time);
+            Files.changeDataInFile(timer.getName(), "times", timer.getTimes());
+        } catch (ParseException | IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void removeTimeFromTimer(Player p, CommandTimer timer, int timeIndex) {
-        ArrayList<String> times = timer.getTimes();
-        times.remove(timeIndex);
-        timer.setTimes(times);
+        try {
+            ArrayList<String> times = timer.getTimes();
+            times.remove(timeIndex);
+            timer.setTimes(times);
+            Files.changeDataInFile(timer.getName(), "times", timer.getTimes());
+        } catch (ParseException | IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
      * Delete existing Timer (file and instance)
+     *
      * @param p
      * @param name
      */
@@ -85,7 +110,7 @@ public class CommandsManager {
             Files.removeExistingCommandTimer(name);
             removeCommandTimer(timer);
             Messages.sendMessageToPlayer(p, "Timer has been deleted");
-        } catch(FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             Messages.sendMessageToPlayer(p, "&cCould not find this Timer");
         } catch (IOException e) {
             e.printStackTrace();
@@ -96,15 +121,15 @@ public class CommandsManager {
     public static void changeCommandtimerData(Player p, String timerName, String param, String value) {
         CommandTimer timer = CommandsManager.getCommandTimer(timerName);
 
-        if(timer == null) {
+        if (timer == null) {
             Messages.sendMessageToPlayer(p, "&cCould not find timer");
             return;
         }
 
-        if(param.equalsIgnoreCase("gender")) {
+        if (param.equalsIgnoreCase("gender")) {
             Gender gender = Gender.valueOf(value.toUpperCase());
 
-            if(gender == null) {
+            if (gender == null) {
                 Messages.sendMessageToPlayer(p, "&cThis is not a valid gender, please use one of the following : operator/user/console");
                 return;
             }
@@ -120,10 +145,10 @@ public class CommandsManager {
             return;
         }
 
-        if(param.equalsIgnoreCase("seconds")) {
+        if (param.equalsIgnoreCase("seconds")) {
             int seconds = Integer.parseInt(value);
 
-            if(seconds < 1) {
+            if (seconds < 1) {
                 Messages.sendMessageToPlayer(p, "&cPlease use a value greater than 0");
                 return;
             }
@@ -140,8 +165,8 @@ public class CommandsManager {
             return;
         }
 
-        if(param.equalsIgnoreCase("useMinecraftTime")) {
-            if(!value.equalsIgnoreCase("true") && !value.equalsIgnoreCase("false")) {
+        if (param.equalsIgnoreCase("useMinecraftTime")) {
+            if (!value.equalsIgnoreCase("true") && !value.equalsIgnoreCase("false")) {
                 Messages.sendMessageToPlayer(p, "&cPlease use one of the following : true/false");
                 return;
             }
@@ -158,10 +183,10 @@ public class CommandsManager {
             return;
         }
 
-        if(param.equalsIgnoreCase("random")) {
+        if (param.equalsIgnoreCase("random")) {
             double randomValue = Double.parseDouble(value);
 
-            if(randomValue < 0 || randomValue > 1) {
+            if (randomValue < 0 || randomValue > 1) {
                 Messages.sendMessageToPlayer(p, "&cPlease use a value between 0 and 1 included. 0 means never executed and 1 means always executed. You can pick a value between those as well.");
                 return;
             }
@@ -179,8 +204,8 @@ public class CommandsManager {
             return;
         }
 
-        if(param.equalsIgnoreCase("executePerUser")) {
-            if(!value.equalsIgnoreCase("true") && !value.equalsIgnoreCase("false")) {
+        if (param.equalsIgnoreCase("executePerUser")) {
+            if (!value.equalsIgnoreCase("true") && !value.equalsIgnoreCase("false")) {
                 Messages.sendMessageToPlayer(p, "&cPlease use one of the following : true/false");
                 return;
             }
@@ -197,10 +222,10 @@ public class CommandsManager {
             return;
         }
 
-        if(param.equalsIgnoreCase("executionLimit")) {
+        if (param.equalsIgnoreCase("executionLimit")) {
             int limit = Integer.parseInt(value);
 
-            if(limit < -1) {
+            if (limit < -1) {
                 Messages.sendMessageToPlayer(p, "&cPlease use -1 to disable limit or any other value above it");
                 return;
             }

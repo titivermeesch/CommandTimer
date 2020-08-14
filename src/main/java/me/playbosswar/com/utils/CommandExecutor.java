@@ -92,6 +92,10 @@ public class CommandExecutor {
                         return;
                     }
 
+                    if(!Tools.randomCheck(timer.getRandom())) {
+                        return;
+                    }
+
                     Gender timerGender = timer.getGender();
 
                     if(timerGender.equals(Gender.CONSOLE)) {

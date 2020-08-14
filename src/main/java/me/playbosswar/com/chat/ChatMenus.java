@@ -1,11 +1,12 @@
-package me.playbosswar.com.utils;
+package me.playbosswar.com.chat;
 
+import me.playbosswar.com.utils.CommandTimer;
+import me.playbosswar.com.utils.CommandsManager;
+import me.playbosswar.com.utils.Gender;
+import me.playbosswar.com.utils.Messages;
 import me.tom.sparse.spigot.chat.menu.ChatMenu;
 import me.tom.sparse.spigot.chat.menu.element.*;
 import org.bukkit.entity.Player;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class ChatMenus {
     public static void openTimerMenu(Player p, String name) {
@@ -70,88 +71,18 @@ public class ChatMenus {
 
         menu.add(new ButtonElement(5, 12, Messages.colorize("&a&l[Commands]"), player -> {
             menu.close(player);
-            openCommandsMenu(player, timer.getName());
+            CommandsChatMenu.openCommandsMenu(player, timer.getName());
         }));
         menu.add(new ButtonElement(90, 12, Messages.colorize("&a&l[Hours]"), player -> {
             menu.close(player);
-            openTimesMenu(player, timer.getName());
+            TimesChatMenu.openTimesMenu(player, timer.getName());
+        }));
+        menu.add(new ButtonElement(170, 12, Messages.colorize("&a&l[Days]"), player -> {
+            menu.close(player);
+            DaysChatMenu.openDaysMenu(player, timer.getName());
         }));
 
         menu.add(new ButtonElement(5, 15, Messages.colorize("&c[Close]"), menu::close));
-
-        menu.openFor(p);
-    }
-
-    public static void openCommandsMenu(Player p, String timerName) {
-        CommandTimer timer = CommandsManager.getCommandTimer(timerName);
-        ChatMenu menu = new ChatMenu().pauseChat();
-
-        menu.add(new TextElement(Messages.colorize("&6&lTimer commands for: " + timer.getName()), 5, 1));
-
-        int i = 3;
-        for (String command : timer.getCommands()) {
-            if (i < 17) {
-                int finalI = i;
-                menu.add(new ButtonElement(5, i, Messages.colorize("&4\u2718"), player -> {
-                    CommandsManager.removeCommandFromTimer(p, timer, finalI - 3);
-                    menu.close(p);
-                    openCommandsMenu(p, timerName);
-                }));
-                menu.add(new TextElement(command, 15, i));
-                i++;
-            }
-        }
-
-        InputElement commandInput = new InputElement(5, i + 1, 120, "Enter new command");
-        commandInput.value.setChangeCallback(state -> {
-            CommandsManager.addCommandToTimer(p, timer, state.getCurrent());
-            menu.close(p);
-            openCommandsMenu(p, timerName);
-        });
-
-        menu.add(commandInput);
-        menu.add(new ButtonElement(5, i + 3, Messages.colorize("&c[Go back]"), player -> {
-            menu.close(player);
-            openTimerMenu(player, timer.getName());
-        }));
-        menu.add(new ButtonElement(60, i + 3, Messages.colorize("&4[Close]"), menu::close));
-
-        menu.openFor(p);
-    }
-
-    public static void openTimesMenu(Player p, String timerName) {
-        CommandTimer timer = CommandsManager.getCommandTimer(timerName);
-        ChatMenu menu = new ChatMenu().pauseChat();
-
-        menu.add(new TextElement(Messages.colorize("&6&lTimer times for: " + timer.getName()), 5, 1));
-
-        int i = 3;
-        for (String time : timer.getTimes()) {
-            if (i < 17) {
-                int finalI = i;
-                menu.add(new ButtonElement(5, i, Messages.colorize("&4\u2718"), player -> {
-                    CommandsManager.removeTimeFromTimer(p, timer, finalI - 3);
-                    menu.close(p);
-                    openTimesMenu(p, timerName);
-                }));
-                menu.add(new TextElement(time, 15, i));
-                i++;
-            }
-        }
-
-        InputElement timeInput = new InputElement(5, i + 1, 120, "Enter new time");
-        timeInput.value.setChangeCallback(state -> {
-            CommandsManager.addTimeToTimer(p, timer, state.getCurrent());
-            menu.close(p);
-            openTimesMenu(p, timerName);
-        });
-
-        menu.add(timeInput);
-        menu.add(new ButtonElement(5, i + 3, Messages.colorize("&c[Go back]"), player -> {
-            menu.close(player);
-            openTimerMenu(player, timer.getName());
-        }));
-        menu.add(new ButtonElement(60, i + 3, Messages.colorize("&4[Close]"), menu::close));
 
         menu.openFor(p);
     }

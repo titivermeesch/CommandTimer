@@ -61,7 +61,18 @@ public class Files {
         FileWriter jsonFile = new FileWriter(getTimerFile(name));
         JSONObject commandTimer = new JSONObject();
 
+        ArrayList<String> days = new ArrayList<>();
+
+        days.add("MONDAY");
+        days.add("TUESDAY");
+        days.add("WEDNESDAY");
+        days.add("THURSDAY");
+        days.add("FRIDAY");
+        days.add("SATURDAY");
+        days.add("SUNDAY");
+
         commandTimer.put("name", name);
+        commandTimer.put("days", days);
 
         jsonFile.write(commandTimer.toJSONString());
         jsonFile.flush();
@@ -120,6 +131,21 @@ public class Files {
         JSONObject commandTimer = (JSONObject) parser.parse(reader);
 
         commandTimer.put(key, value);
+
+        FileWriter jsonFile = new FileWriter(getTimerFile(timerName));
+        jsonFile.write(commandTimer.toJSONString());
+        jsonFile.flush();
+    }
+
+    public static void changeDataInFile(String timerName, String key, ArrayList<String> values) throws IOException, ParseException {
+        String timerFile = getTimerFile(timerName);
+
+        Reader reader = new FileReader(timerFile);
+
+        JSONParser parser = new JSONParser();
+        JSONObject commandTimer = (JSONObject) parser.parse(reader);
+
+        commandTimer.put(key, values);
 
         FileWriter jsonFile = new FileWriter(getTimerFile(timerName));
         jsonFile.write(commandTimer.toJSONString());

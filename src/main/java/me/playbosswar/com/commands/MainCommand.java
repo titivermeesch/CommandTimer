@@ -1,7 +1,7 @@
 package me.playbosswar.com.commands;
 
 import me.playbosswar.com.Tools;
-import me.playbosswar.com.utils.ChatMenus;
+import me.playbosswar.com.chat.ChatMenus;
 import me.playbosswar.com.utils.CommandTimer;
 import me.playbosswar.com.utils.CommandsManager;
 import me.playbosswar.com.utils.Messages;

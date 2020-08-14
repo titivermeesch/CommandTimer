@@ -299,7 +299,7 @@ public class Tools {
      * @param random - value between 0 and 1
      * @return boolean
      */
-    private static boolean randomCheck(double random) {
+    public static boolean randomCheck(double random) {
         final Random r = new Random();
         final float chance = r.nextFloat();
         return chance <= random;

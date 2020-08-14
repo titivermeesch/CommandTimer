@@ -22,6 +22,13 @@ public class CommandTimer {
 
     public CommandTimer(String name) {
         this.name = name;
+        this.days.add("MONDAY");
+        this.days.add("TUESDAY");
+        this.days.add("WEDNESDAY");
+        this.days.add("THURSDAY");
+        this.days.add("FRIDAY");
+        this.days.add("SATURDAY");
+        this.days.add("SUNDAY");
     }
 
     public String getName() {
