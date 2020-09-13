@@ -1,14 +1,15 @@
 package me.playbosswar.com;
 
-import me.playbosswar.com.genders.GenderHandler.Gender;
 import me.playbosswar.com.hooks.PAPIHook;
+import me.playbosswar.com.utils.Gender;
+import me.playbosswar.com.utils.Messages;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -21,13 +22,6 @@ public class Tools {
     private static HashMap<String, Integer> tasksTimesExecuted = new HashMap<>();
     public static ArrayList<Timer> timerList = new ArrayList<>();
 
-    public static String color(String str) {
-        return ChatColor.translateAlternateColorCodes('&', str);
-    }
-
-    public static void sendConsole(String str) {
-        Bukkit.getConsoleSender().sendMessage(color("&a[CommandTimer] " + str));
-    }
 
     /**
      * Show current time & day
@@ -36,8 +30,12 @@ public class Tools {
         final LocalDate date = LocalDate.now();
         final DayOfWeek dow = date.getDayOfWeek();
         final String time = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"));
-        sendConsole("&aServer time :&e " + time);
-        sendConsole("&aServer day :&e " + dow);
+        Messages.sendConsole("&aServer time :&e " + time);
+        Messages.sendConsole("&aServer day :&e " + dow);
+    }
+
+    public static String charRemoveAt(String str, int p) {
+        return str.substring(0, p) + str.substring(p + 1);
     }
 
     /**
@@ -49,7 +47,7 @@ public class Tools {
         long minutes = (gameTime % 1000) * 60 / 1000;
 
         if (hours == 0) hours = 12;
-        if(hours >= 24) hours -= 24;
+        if (hours >= 24) hours -= 24;
 
         String mm = "0" + minutes;
         mm = mm.substring(mm.length() - 2);
@@ -58,21 +56,53 @@ public class Tools {
     }
 
     /**
-     * Load configuration file
-     */
-    public static void initConfig() {
-        pl.saveDefaultConfig();
-        pl.getConfig().options().copyDefaults(false);
-    }
-
-    /**
      * Reload all plugin tasks
      */
-    static void reloadTasks() {
+    public static void reloadTasks() {
         Bukkit.getScheduler().cancelTasks(Main.getPlugin());
         pl.reloadConfig();
-        ConfigVerification.checkConfigurationFileValidity();
-        TaskRunner.startTasks();
+    }
+
+    static void scheduleHourRange(String hour, String task, String command, Gender gender, String worldName) {
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getPlugin(), () -> {
+            String minecraftTime = Tools.calculateWorldTime(Bukkit.getWorld(worldName));
+            String[] hourRange = charRemoveAt(charRemoveAt(hour, 0), hour.length() - 2).split("-");
+            final boolean useMinecraftTime = Main.getPlugin().getConfig().getBoolean("tasks." + task + ".useMinecraftTime");
+            final SimpleDateFormat timeFormat;
+
+            if (useMinecraftTime) {
+                timeFormat = new SimpleDateFormat("HH:mm");
+            } else {
+                timeFormat = new SimpleDateFormat("HH:mm:ss");
+            }
+
+            Date timeNow = null;
+            Date startRange = null;
+            Date endRange = null;
+
+            try {
+                if (useMinecraftTime) {
+                    timeNow = timeFormat.parse(minecraftTime);
+                } else {
+                    timeNow = timeFormat.parse(timeFormat.format(new Date()));
+                }
+
+                startRange = timeFormat.parse(hourRange[0]);
+                endRange = timeFormat.parse(hourRange[1]);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            assert timeNow != null;
+            assert startRange != null;
+            assert endRange != null;
+
+            if (!timeNow.after(startRange) || !timeNow.before(endRange)) {
+                return;
+            }
+
+            Tools.executeCommand(task, command, gender);
+        }, Main.getPlugin().getConfig().getInt("tasks." + task + ".seconds") * 20L, Main.getPlugin().getConfig().getInt("tasks." + task + ".seconds") * 20L);
     }
 
     /**
@@ -80,64 +110,77 @@ public class Tools {
      */
     static void complexCommandRunner(final String task, String command, final Gender gender) {
         final FileConfiguration c = pl.getConfig();
-        final boolean useMinecraftTime = c.getBoolean("tasks." + task + ".useMinecraftTime");
+        boolean useMinecraftTime = c.getBoolean("tasks." + task + ".useMinecraftTime");
         Timer timer = new Timer();
 
         timerList.add(timer);
         tasksTimesExecuted.put(task, 0);
 
-        if(useMinecraftTime) {
-            timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    for(String worldName : c.getStringList("tasks." + task + ".worlds")) {
-                        String minecraftTime = Tools.calculateWorldTime(Bukkit.getWorld(worldName));
+        if (useMinecraftTime) {
+            for (String worldName : c.getStringList("tasks." + task + ".worlds")) {
 
-                        for (final String hour : c.getStringList("tasks." + task + ".time")) {
+                for (final String hour : c.getStringList("tasks." + task + ".time")) {
+                    if (hour.contains("[")) {
+                        scheduleHourRange(hour, task, command, gender, worldName);
+                        return;
+                    }
+
+                    timer.schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            String minecraftTime = Tools.calculateWorldTime(Bukkit.getWorld(worldName));
+
                             if (!minecraftTime.equals(hour)) {
-                                continue;
+                                return;
                             }
 
                             int timesExecuted = tasksTimesExecuted.get(task);
 
                             if (c.contains("tasks." + task + ".executionLimit") && timesExecuted >= c.getInt("tasks." + task + ".executionLimit")) {
-                                continue;
+                                return;
                             }
 
                             tasksTimesExecuted.replace(task, ++timesExecuted);
 
-                            Bukkit.getScheduler().scheduleSyncDelayedTask(pl, () -> Tools.executeCommand(task, command, gender), 50L);
+                            if (c.contains("tasks." + task + ".seconds")) {
+                                Bukkit.getScheduler().scheduleSyncDelayedTask(pl, () -> Tools.executeCommand(task, command, gender), c.getInt("tasks." + task + ".seconds") * 20);
+                                return;
+                            }
+
+                            Bukkit.getScheduler().scheduleSyncDelayedTask(pl, () -> Tools.executeCommand(task, command, gender), 1L);
                         }
-                    }
+                    }, 1L, 900L);
                 }
-            }, 1L, 900L);
+            }
+        } else {
+            for (final String hour : c.getStringList("tasks." + task + ".time")) {
+                if (hour.contains("[")) {
+                    scheduleHourRange(hour, task, command, gender, "world");
+                    return;
+                }
 
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        final Date date = new Date();
+                        final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+                        final String formattedDate = dateFormat.format(date);
 
-        } else{
-            timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    final Date date = new Date();
-                    final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-                    final String formattedDate = dateFormat.format(date);
-
-                    for (final String hour : c.getStringList("tasks." + task + ".time")) {
                         if (!formattedDate.equals(hour)) {
-                            continue;
+                            return;
                         }
 
                         int timesExecuted = tasksTimesExecuted.get(task);
 
                         if (c.contains("tasks." + task + ".executionLimit") && timesExecuted >= c.getInt("tasks." + task + ".executionLimit")) {
-                            continue;
+                            return;
                         }
 
                         tasksTimesExecuted.replace(task, ++timesExecuted);
-
-                        Bukkit.getScheduler().scheduleSyncDelayedTask(pl, () -> Tools.executeCommand(task, command, gender), 50L);
+                        Tools.executeCommand(task, command, gender);
                     }
-                }
-            }, 1L, 1000L);
+                }, 1L, 1000L);
+            }
         }
     }
 
@@ -150,7 +193,21 @@ public class Tools {
         final String perm = c.getString("tasks." + task + ".permission");
         final boolean perUser = c.getBoolean("tasks." + task + ".perUser");
         final List<String> worlds = c.getStringList("tasks." + task + ".worlds");
+        final int playerCount = Bukkit.getOnlinePlayers().size();
 
+        if (c.contains("tasks." + task + ".minPlayers")) {
+            if (c.getInt("tasks." + task + ".minPlayers") > playerCount) {
+                return;
+            }
+        }
+
+        if (c.contains("tasks." + task + ".maxPlayers")) {
+            if (c.getInt("tasks." + task + ".maxPlayers") < playerCount) {
+                return;
+            }
+        }
+
+        // Check if we are in a correct day.
         if (c.contains("tasks." + task + ".days") && !c.getStringList("tasks." + task + ".days").isEmpty()) {
             final LocalDate date = LocalDate.now();
             final DayOfWeek dow = date.getDayOfWeek();
@@ -159,6 +216,7 @@ public class Tools {
             }
         }
 
+        // Don't execute command if random failed
         if (pl.getConfig().contains("tasks." + task + ".random")) {
             final double randomValue = c.getDouble("tasks." + task + ".random");
             if (!randomCheck(randomValue)) {
@@ -240,9 +298,13 @@ public class Tools {
      * @param random - value between 0 and 1
      * @return boolean
      */
-    private static boolean randomCheck(double random) {
+    public static boolean randomCheck(double random) {
         final Random r = new Random();
         final float chance = r.nextFloat();
         return chance <= random;
+    }
+
+    public static int getRandomInt(int min, int max) {
+        return (int) (Math.random() * (max - min + 1) + min);
     }
 }

@@ -1,5 +1,12 @@
 package me.playbosswar.com;
 
+import me.playbosswar.com.commands.MainCommand;
+import me.playbosswar.com.commands.WorldTimeCommand;
+import me.playbosswar.com.utils.CommandExecutor;
+import me.playbosswar.com.utils.Files;
+import me.playbosswar.com.utils.Messages;
+import me.tom.sparse.spigot.chat.menu.ChatMenu;
+import me.tom.sparse.spigot.chat.menu.ChatMenuAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
@@ -13,22 +20,27 @@ public class Main extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         plugin = this;
-        registerCommands();
-        Tools.initConfig();
 
-        if(!ConfigVerification.checkConfigurationFileValidity()) {
-            return;
-        }
+        ChatMenuAPI.init(this);
+        Files.createDataFolders();
 
-        TaskRunner.startTasks();
+        getCommand("worldtime").setExecutor(new WorldTimeCommand());
+        getCommand("commandtimer").setExecutor(new MainCommand());
+
+        saveDefaultConfig();
+        getConfig().options().copyDefaults(true);
+
+        Files.deserializeJsonFilesIntoCommandTimers();
+
         Tools.printDate();
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             Bukkit.getPluginManager().registerEvents(this, this);
-            Tools.sendConsole("&a[CommandTimer] &e CommandTimer hooked in PlaceholderAPI");
+            Messages.sendConsole("&eCommandTimer hooked in PlaceholderAPI");
         } else {
-            Tools.sendConsole("&a[CommandTimer] &e CommandTimer could not find PlaceholderAPI, placeholders will not work");
+            Messages.sendConsole("&eCommandTimer could not find PlaceholderAPI, placeholders will not work");
         }
-        Tools.sendConsole("&a[CommandTimer] &e" + getDescription().getVersion() + "&a loaded!");
+        CommandExecutor.startRunner();
+        Messages.sendConsole("&e" + getDescription().getVersion() + "&a loaded!");
     }
 
     @Override
@@ -38,13 +50,9 @@ public class Main extends JavaPlugin implements Listener {
         }
 
         saveDefaultConfig();
+        ChatMenuAPI.disable();
         plugin = null;
     }
-
-    private void registerCommands() {
-        getCommand("commandtimer").setExecutor(new CommandHandler());
-    }
-
 
     public static Plugin getPlugin() {
         return plugin;
