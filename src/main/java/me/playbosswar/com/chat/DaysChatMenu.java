@@ -9,6 +9,8 @@ import me.tom.sparse.spigot.chat.menu.element.ButtonElement;
 import me.tom.sparse.spigot.chat.menu.element.TextElement;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+
 public class DaysChatMenu {
     public static void openDaysMenu(Player p, String timerName) {
         CommandTimer timer = CommandsManager.getCommandTimer(timerName);
@@ -17,25 +19,39 @@ public class DaysChatMenu {
         menu.add(new TextElement(Messages.colorize("&6&lTimer days for: " + timer.getName()), 5, 1));
 
         menu.add(new TextElement(5,  3, "Monday"));
-        menu.add(new BooleanElement(100, 3, timer.getDays().contains("MONDAY")));
+        BooleanElement monday = new BooleanElement(100, 3, timer.getDays().contains("MONDAY"));
+        monday.value.setChangeCallback(s -> handleDayChange(timer, "MONDAY"));
+        menu.add(monday);
 
         menu.add(new TextElement(5,  4, "Tuesday"));
-        menu.add(new BooleanElement(100, 4, timer.getDays().contains("TUESDAY")));
+        BooleanElement tuesday = new BooleanElement(100, 4, timer.getDays().contains("TUESDAY"));
+        tuesday.value.setChangeCallback(s -> handleDayChange(timer, "TUESDAY"));
+        menu.add(tuesday);
 
         menu.add(new TextElement(5,  5, "Wednesday"));
-        menu.add(new BooleanElement(100, 5, timer.getDays().contains("WEDNESDAY")));
+        BooleanElement wednesday = new BooleanElement(100, 5, timer.getDays().contains("WEDNESDAY"));
+        wednesday.value.setChangeCallback(s -> handleDayChange(timer, "WEDNESDAY"));
+        menu.add(wednesday);
 
         menu.add(new TextElement(5,  6, "Thursday"));
-        menu.add(new BooleanElement(100, 6, timer.getDays().contains("THURSDAY")));
+        BooleanElement thursday = new BooleanElement(100, 6, timer.getDays().contains("THURSDAY"));
+        thursday.value.setChangeCallback(s -> handleDayChange(timer, "THURSDAY"));
+        menu.add(thursday);
 
         menu.add(new TextElement(5,  7, "Friday"));
-        menu.add(new BooleanElement(100, 7, timer.getDays().contains("FRIDAY")));
+        BooleanElement friday = new BooleanElement(100, 7, timer.getDays().contains("FRIDAY"));
+        friday.value.setChangeCallback(s -> handleDayChange(timer, "FRIDAY"));
+        menu.add(friday);
 
         menu.add(new TextElement(5,  8, "Saturday"));
-        menu.add(new BooleanElement(100, 8, timer.getDays().contains("SATURDAY")));
+        BooleanElement saturday = new BooleanElement(100, 8, timer.getDays().contains("SATURDAY"));
+        saturday.value.setChangeCallback(s -> handleDayChange(timer, "SATURDAY"));
+        menu.add(saturday);
 
         menu.add(new TextElement(5,  9, "Sunday"));
-        menu.add(new BooleanElement(100, 9, timer.getDays().contains("SUNDAY")));
+        BooleanElement sunday = new BooleanElement(100, 9, timer.getDays().contains("SUNDAY"));
+        sunday.value.setChangeCallback(s -> handleDayChange(timer, "SUNDAY"));
+        menu.add(sunday);
 
         menu.add(new ButtonElement(5, 11, Messages.colorize("&c[Go back]"), player -> {
             menu.close(player);
@@ -44,6 +60,17 @@ public class DaysChatMenu {
         menu.add(new ButtonElement(60, 11, Messages.colorize("&4[Close]"), menu::close));
 
         menu.openFor(p);
+    }
 
+    private static void handleDayChange(CommandTimer timer, String toggledDay) {
+        ArrayList<String> days = timer.getDays();
+
+        if(days.contains(toggledDay)) {
+            days.remove(toggledDay);
+        } else {
+            days.add(toggledDay);
+        }
+
+        timer.setDays(days);
     }
 }

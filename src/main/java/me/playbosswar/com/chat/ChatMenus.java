@@ -28,6 +28,13 @@ public class ChatMenus {
         });
         menu.add(secondsInc);
 
+        menu.add(new TextElement("Max Executions: ", 5, 4));
+        IncrementalElement executionsInc = new IncrementalElement(90, 4, -1, Integer.MAX_VALUE, timer.getExecutionLimit());
+        executionsInc.value.setChangeCallback(state -> {
+            CommandsManager.changeCommandtimerData(p, timer.getName(), "executionLimit", state.getCurrent().toString());
+        });
+        menu.add(executionsInc);
+
         String[] genders = new String[3];
 
         genders[0] = "CONSOLE";
@@ -51,7 +58,7 @@ public class ChatMenus {
 
         menu.add(new TextElement("Execution chance: ", 5, 8));
         double existingValue = timer.getRandom() * 20;
-        NumberSliderElement executionSlider = new NumberSliderElement(100, 8, 20, (int) existingValue);
+        NumberSliderElement executionSlider = new NumberSliderElement(100, 8, 21, (int) existingValue);
         executionSlider.value.setChangeCallback(state -> {
             double pourcentage = state.getCurrent() * 0.05;
 
@@ -69,20 +76,35 @@ public class ChatMenus {
         useMinecraftTime.value.setChangeCallback(state -> CommandsManager.changeCommandtimerData(p, timer.getName(), "useMinecraftTime", state.getCurrent().toString()));
         menu.add(useMinecraftTime);
 
-        menu.add(new ButtonElement(5, 12, Messages.colorize("&a&l[Commands]"), player -> {
+        menu.add(new TextElement("Permission: ", 5, 11));
+
+        InputElement permissionInput = new InputElement(90, 11, 100, timer.getRequiredPermission());
+        permissionInput.value.setChangeCallback(state -> {
+            timer.setRequiredPermission(state.getCurrent());
+        });
+
+        menu.add(permissionInput);
+
+
+        menu.add(new ButtonElement(5, 13, Messages.colorize("&a[Commands]"), player -> {
             menu.close(player);
             CommandsChatMenu.openCommandsMenu(player, timer.getName());
         }));
-        menu.add(new ButtonElement(90, 12, Messages.colorize("&a&l[Hours]"), player -> {
+        menu.add(new ButtonElement(63, 13, Messages.colorize("&6[Hours]"), player -> {
             menu.close(player);
             TimesChatMenu.openTimesMenu(player, timer.getName());
         }));
-        menu.add(new ButtonElement(170, 12, Messages.colorize("&a&l[Days]"), player -> {
+        menu.add(new ButtonElement(105, 13, Messages.colorize("&a[Days]"), player -> {
             menu.close(player);
             DaysChatMenu.openDaysMenu(player, timer.getName());
         }));
 
-        menu.add(new ButtonElement(5, 15, Messages.colorize("&c[Close]"), menu::close));
+        menu.add(new ButtonElement(140, 13, Messages.colorize("&6[Conditions]"), player -> {
+            menu.close(player);
+            ConditionsChatMenu.openConditionsMenu(player, timer.getName());
+        }));
+
+        menu.add(new ButtonElement(5, 16, Messages.colorize("&c[Close]"), menu::close));
 
         menu.openFor(p);
     }

@@ -1,15 +1,13 @@
 package me.playbosswar.com.utils;
 
 import me.playbosswar.com.Main;
-import org.bukkit.Bukkit;
-import org.bukkit.World;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.*;
 import java.nio.file.FileAlreadyExistsException;
+import java.time.LocalTime;
 import java.util.ArrayList;
 
 public class Files {
@@ -31,6 +29,7 @@ public class Files {
 
     /**
      * Returns timer json file
+     *
      * @param name
      * @return
      */
@@ -40,6 +39,7 @@ public class Files {
 
     /**
      * Check if a file with name already exists
+     *
      * @param name
      * @return
      */
@@ -50,6 +50,7 @@ public class Files {
 
     /**
      * Create a new data file to store timer data
+     *
      * @param name
      * @throws IOException
      */
@@ -87,7 +88,7 @@ public class Files {
 
         Boolean deleted = file.delete();
 
-        if(!deleted) {
+        if (!deleted) {
             throw new IOException();
         }
     }
@@ -171,11 +172,10 @@ public class Files {
         File dir = new File(pluginFolderPath + "/timers");
         File[] directoryListing = dir.listFiles();
         JSONParser jsonParser = new JSONParser();
- 
+
         try {
             if (directoryListing != null && directoryListing.length > 0) {
                 for (File file : directoryListing) {
-                    Messages.sendConsole("Loading existing CommandTimer " + file.getName());
                     if (!file.exists() || !file.getName().contains("json")) {
                         continue;
                     }
@@ -183,18 +183,24 @@ public class Files {
                     FileReader fr = new FileReader(file.getPath());
                     JSONObject o = (JSONObject) jsonParser.parse(fr);
 
-                    System.out.println("Found data in file:");
-                    System.out.println(o);
-
                     CommandTimer t = new CommandTimer((String) o.get("name"));
-                    t.setExecutionLimit((int) o.getOrDefault("executionLimit", -1));
+
+                    t.setExecutionLimit(((Number) o.getOrDefault("executionLimit", -1)).intValue());
+
                     t.setExecutePerUser((Boolean) o.getOrDefault("executePerUser", false));
+
                     t.setUseMinecraftTime((Boolean) o.getOrDefault("useMinecraftTime", false));
 
-                    long seconds = (long) o.getOrDefault("seconds", 5);
+                    t.setSelectRandomCommand((Boolean) o.getOrDefault("selectRandomCommand", false));
 
-                    t.setSeconds((int) seconds);
+                    t.setSeconds(((Number) o.getOrDefault("seconds", 5)).intValue());
+
+                    t.setMinPlayers(((Number) o.getOrDefault("minPlayers", -1)).intValue());
+
+                    t.setMaxPlayers(((Number) o.getOrDefault("maxPlayers", -1)).intValue());
+
                     t.setGender(Gender.valueOf((String) o.getOrDefault("gender", "OPERATOR")));
+
                     t.setRandom((Double) o.getOrDefault("random", 1.0));
 
                     t.setTimesExecuted(0);
@@ -209,10 +215,20 @@ public class Files {
                     t.setTimes(times);
 
                     ArrayList<String> worlds = (ArrayList<String>) o.getOrDefault("worlds", new ArrayList<String>());
-
                     t.setWorlds(worlds);
 
+                    String permission = (String) o.getOrDefault("requiredPermission", "");
+                    t.setRequiredPermission(permission);
+
+                    String lastExecuted = (String) o.getOrDefault("lastExecuted", "");
+
+                    if (!lastExecuted.equals("")) {
+                        LocalTime lastExecutedTime = LocalTime.parse(lastExecuted);
+                        t.setLastExecuted(lastExecutedTime);
+                    }
+
                     CommandsManager.addCommandTimer(t);
+                    Messages.sendConsole("Timer " + t.getName() + " has been loaded");
                 }
             }
         } catch (IOException | ParseException e) {

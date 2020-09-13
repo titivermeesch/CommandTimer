@@ -23,7 +23,6 @@ public class Tools {
     public static ArrayList<Timer> timerList = new ArrayList<>();
 
 
-
     /**
      * Show current time & day
      */
@@ -196,14 +195,14 @@ public class Tools {
         final List<String> worlds = c.getStringList("tasks." + task + ".worlds");
         final int playerCount = Bukkit.getOnlinePlayers().size();
 
-        if(c.contains("tasks." + task + ".minPlayers")) {
-            if(c.getInt("tasks." + task + ".minPlayers") > playerCount) {
+        if (c.contains("tasks." + task + ".minPlayers")) {
+            if (c.getInt("tasks." + task + ".minPlayers") > playerCount) {
                 return;
             }
         }
 
-        if(c.contains("tasks." + task + ".maxPlayers")) {
-            if(c.getInt("tasks." + task + ".maxPlayers") < playerCount) {
+        if (c.contains("tasks." + task + ".maxPlayers")) {
+            if (c.getInt("tasks." + task + ".maxPlayers") < playerCount) {
                 return;
             }
         }
@@ -303,5 +302,9 @@ public class Tools {
         final Random r = new Random();
         final float chance = r.nextFloat();
         return chance <= random;
+    }
+
+    public static int getRandomInt(int min, int max) {
+        return (int) (Math.random() * (max - min + 1) + min);
     }
 }

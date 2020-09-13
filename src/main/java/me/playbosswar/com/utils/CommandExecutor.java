@@ -4,8 +4,11 @@ import me.playbosswar.com.Main;
 import me.playbosswar.com.Tools;
 import me.playbosswar.com.hooks.PAPIHook;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.json.simple.parser.ParseException;
 
+import java.io.IOException;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -13,42 +16,74 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 
 public class CommandExecutor {
+    private static boolean debug = false;
+
     public static void startRunner() {
         BukkitRunnable timer = new BukkitRunnable() {
             @Override
             public void run() {
                 ArrayList<CommandTimer> timers = CommandsManager.getAllTimers();
 
-                for(CommandTimer timer : timers) {
+                for (CommandTimer timer : timers) {
+                    if (debug) {
+                        Messages.sendConsole("Checking if " + timer.getName() + " can be executed");
+                    }
+
                     DayOfWeek today = LocalDate.now().getDayOfWeek();
 
                     // Check if the command can be executed on this day
-                    if(timer.getDays().size() > 0 && !timer.getDays().contains(today)) {
-                        return;
+                    if (timer.getDays().size() > 0 && !timer.getDays().contains(today.toString())) {
+                        if (debug) {
+                            Messages.sendConsole("Command can not be executed today");
+                        }
+
+                        continue;
+                    }
+
+                    if (timer.getMinPlayers() != -1 && Bukkit.getOnlinePlayers().size() < timer.getMinPlayers()) {
+                        if (debug) {
+                            Messages.sendConsole("Timer has minPlayers limit which is not reached");
+                        }
+                        continue;
+                    }
+
+                    if (timer.getMaxPlayers() != -1 && Bukkit.getOnlinePlayers().size() > timer.getMaxPlayers()) {
+                        if (debug) {
+                            Messages.sendConsole("Timer has maxPlayers limit which went beyond limit");
+                        }
+                        continue;
                     }
 
                     // Check if the command can be executed at this time
-                    if(timer.getTimes().size() > 0) {
+                    if (timer.getTimes().size() > 0) {
+                        if (debug) {
+                            Messages.sendConsole("Timer is time related, checking if can be executed now");
+                        }
+
                         Boolean shouldBlock = true;
 
                         // Handle minecraft world time
-                        if(timer.getUseMinecraftTime()) {
-                            for(String worldName : timer.getWorlds()) {
+                        if (timer.getUseMinecraftTime()) {
+                            if (debug) {
+                                Messages.sendConsole("Timer is using minecraft time");
+                            }
+
+                            for (String worldName : timer.getWorlds()) {
                                 String minecraftTime = Tools.calculateWorldTime(Bukkit.getWorld(worldName));
 
-                                for(String time : timer.getTimes()) {
+                                for (String time : timer.getTimes()) {
                                     LocalTime current = LocalTime.parse(minecraftTime);
 
-                                    if(time.contains("[")) {
+                                    if (time.contains("[")) {
                                         String[] hourRange = Tools.charRemoveAt(Tools.charRemoveAt(time, 0), time.length() - 2).split("-");
 
                                         LocalTime startRange = LocalTime.parse(hourRange[0]);
                                         LocalTime endRange = LocalTime.parse(hourRange[1]);
 
-                                        if(current.isAfter(startRange) && current.isBefore(endRange)) {
+                                        if (current.isAfter(startRange) && current.isBefore(endRange)) {
                                             shouldBlock = false;
                                         }
-                                    } else if(minecraftTime.equals(time)) {
+                                    } else if (minecraftTime.equals(time)) {
                                         shouldBlock = false;
                                     }
                                 }
@@ -56,31 +91,35 @@ public class CommandExecutor {
                         }
 
                         // Handle real world time
-                        for(String time : timer.getTimes()) {
+                        for (String time : timer.getTimes()) {
                             LocalTime current = LocalTime.now();
 
-                            if(time.contains("[")) {
+                            if (time.contains("[")) {
                                 String[] hourRange = Tools.charRemoveAt(Tools.charRemoveAt(time, 0), time.length() - 2).split("-");
 
                                 LocalTime startRange = LocalTime.parse(hourRange[0]);
                                 LocalTime endRange = LocalTime.parse(hourRange[1]);
 
-                                if(current.isAfter(startRange) && current.isBefore(endRange)) {
+                                if (current.isAfter(startRange) && current.isBefore(endRange)) {
                                     shouldBlock = false;
                                 }
-                            } else if(current.equals(time)) {
+                            } else if (current.equals(time)) {
                                 shouldBlock = false;
                             }
                         }
 
-                        if(shouldBlock) {
-                            return;
+                        if (shouldBlock) {
+                            continue;
                         }
                     }
 
                     // If timer has already been executed to much
-                    if(timer.getExecutionLimit() != -1 && timer.getExecutionLimit() >= timer.getTimesExecuted()) {
-                        return;
+                    if (timer.getExecutionLimit() != -1 && timer.getExecutionLimit() <= timer.getTimesExecuted()) {
+                        if (debug) {
+                            Messages.sendConsole("Timer execution limit reached");
+                        }
+
+                        continue;
                     }
 
                     LocalTime lastTimeExecuted = timer.getLastExecuted();
@@ -88,23 +127,105 @@ public class CommandExecutor {
 
                     // If the last execution happened less that timer seconds ago
 
-                    if(secondsSinceLastExecution.getSeconds() < timer.getSeconds()) {
-                        return;
+                    if (secondsSinceLastExecution.getSeconds() < timer.getSeconds()) {
+                        if (debug) {
+                            Messages.sendConsole("Timer has been executed before");
+                        }
+
+                        continue;
                     }
 
-                    if(!Tools.randomCheck(timer.getRandom())) {
-                        return;
+                    if (!Tools.randomCheck(timer.getRandom())) {
+                        if (debug) {
+                            Messages.sendConsole("Timer has random value and didn't meet treshold");
+                        }
+
+                        continue;
                     }
 
                     Gender timerGender = timer.getGender();
+                    boolean selectRandomCommand = timer.isSelectRandomCommand();
+                    int selectedCommand = Tools.getRandomInt(0, timer.getCommands().size() - 1);
 
-                    if(timerGender.equals(Gender.CONSOLE)) {
-                        for(String command : timer.getCommands()) {
-                            Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command, null));
+                    if(debug && selectRandomCommand) {
+                        Messages.sendConsole("Timer has random command selection enabled");
+                    }
+
+                    if (timerGender.equals(Gender.CONSOLE)) {
+                        int i = 0;
+                        for (String command : timer.getCommands()) {
+
+                            if(selectRandomCommand && i != selectedCommand) {
+                                i++;
+                                continue;
+                            }
+
+                            if (timer.getExecutePerUser()) {
+                                for (Player p : Bukkit.getOnlinePlayers()) {
+                                    if (timer.getRequiredPermission() != "" && p.hasPermission(timer.getRequiredPermission())) {
+                                        Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command, p));
+                                    }
+                                }
+                            } else {
+                                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command, null));
+                            }
+
+                            i++;
+                        }
+                    } else if (timerGender.equals(Gender.PLAYER)) {
+                        int i = 0;
+                        for (String command : timer.getCommands()) {
+                            if(selectRandomCommand && i != selectedCommand) {
+                                i++;
+                                continue;
+                            }
+
+                            for (Player p : Bukkit.getOnlinePlayers()) {
+                                if (timer.getRequiredPermission() != "" && p.hasPermission(timer.getRequiredPermission())) {
+                                    p.performCommand(PAPIHook.parsePAPI(command, p));
+                                }
+                            }
+                            i++;
+                        }
+                    } else if (timerGender.equals(Gender.OPERATOR)) {
+                        int i = 0;
+                        for (String command : timer.getCommands()) {
+                            if(selectRandomCommand && i != selectedCommand) {
+                                i++;
+                                continue;
+                            }
+
+                            for (Player p : Bukkit.getOnlinePlayers()) {
+                                boolean isAlreadyOp = p.isOp();
+
+                                try {
+
+                                    if (!isAlreadyOp) {
+                                        p.setOp(true);
+                                    }
+
+                                    Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command, p));
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                } finally {
+                                    if (!isAlreadyOp) {
+                                        p.setOp(false);
+                                    }
+                                }
+                            }
+                            i++;
                         }
                     }
 
-                    timer.setLastExecuted(LocalTime.now());
+                    final LocalTime lastExecuted = LocalTime.now();
+
+                    timer.setLastExecuted(lastExecuted);
+                    timer.setTimesExecuted(timer.getTimesExecuted() + 1);
+                    try {
+                        Files.changeDataInFile(timer.getName(), "lastExecuted", lastExecuted.toString());
+                    } catch (IOException | ParseException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         };

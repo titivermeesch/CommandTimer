@@ -1,7 +1,5 @@
 package me.playbosswar.com.utils;
 
-import org.bukkit.World;
-
 import java.time.LocalTime;
 import java.util.ArrayList;
 
@@ -12,13 +10,17 @@ public class CommandTimer {
     private int seconds = 5;
     private ArrayList<String> times = new ArrayList<>();
     private Boolean useMinecraftTime = false;
-    private double random = 1;
+    private double random = 1.0;
     private Boolean executePerUser = false;
     private ArrayList<String> worlds = new ArrayList<>();
     private ArrayList<String> days = new ArrayList<>();
     private int executionLimit = -1;
     private int timesExecuted = 0;
     private LocalTime lastExecuted = LocalTime.now();
+    private String requiredPermission = "";
+    private int minPlayers = -1;
+    private int maxPlayers = -1;
+    private boolean selectRandomCommand = false;
 
     public CommandTimer(String name) {
         this.name = name;
@@ -47,7 +49,9 @@ public class CommandTimer {
         this.commands = commands;
     }
 
-    public void addCommand(String command) { this.commands.add(command); }
+    public void addCommand(String command) {
+        this.commands.add(command);
+    }
 
     public Gender getGender() {
         return gender;
@@ -73,7 +77,9 @@ public class CommandTimer {
         this.times = times;
     }
 
-    public void addTime(String time) { this.times.add(time); }
+    public void addTime(String time) {
+        this.times.add(time);
+    }
 
     public Boolean getUseMinecraftTime() {
         return useMinecraftTime;
@@ -137,5 +143,37 @@ public class CommandTimer {
 
     public void setLastExecuted(LocalTime lastExecuted) {
         this.lastExecuted = lastExecuted;
+    }
+
+    public String getRequiredPermission() {
+        return requiredPermission;
+    }
+
+    public void setRequiredPermission(String requiredPermission) {
+        this.requiredPermission = requiredPermission;
+    }
+
+    public int getMinPlayers() {
+        return minPlayers;
+    }
+
+    public void setMinPlayers(int minPlayers) {
+        this.minPlayers = minPlayers;
+    }
+
+    public int getMaxPlayers() {
+        return maxPlayers;
+    }
+
+    public void setMaxPlayers(int maxPlayers) {
+        this.maxPlayers = maxPlayers;
+    }
+
+    public boolean isSelectRandomCommand() {
+        return selectRandomCommand;
+    }
+
+    public void setSelectRandomCommand(boolean selectRandomCommand) {
+        this.selectRandomCommand = selectRandomCommand;
     }
 }

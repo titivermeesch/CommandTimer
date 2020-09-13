@@ -49,7 +49,7 @@ public class CommandsManager {
             Files.createNewCommandTimerDataFile(name);
             CommandTimer t = new CommandTimer(name);
             CommandsManager.addCommandTimer(t);
-            Messages.sendMessageToPlayer(p, "A new Timer has been created");
+            Messages.sendMessageToPlayer(p, "A new timer has been created");
         } catch (FileAlreadyExistsException e) {
             Messages.sendMessageToPlayer(p, "&cThis name is already used");
         } catch (IOException e) {
@@ -137,7 +137,7 @@ public class CommandsManager {
             timer.setGender(gender);
             try {
                 Files.changeDataInFile(timerName, "gender", gender.toString());
-                Messages.sendMessageToPlayer(p, "Timer gender has been updated");
+                Messages.sendMessageToPlayer(p, "Gender has been updated");
             } catch (IOException | ParseException e) {
                 e.printStackTrace();
                 Messages.sendFailedIO(p);
@@ -157,7 +157,7 @@ public class CommandsManager {
 
             try {
                 Files.changeDataInFile(timerName, "seconds", seconds);
-                Messages.sendMessageToPlayer(p, "Timer seconds have been updated");
+                Messages.sendMessageToPlayer(p, "Seconds has been updated");
             } catch (ParseException | IOException e) {
                 e.printStackTrace();
                 Messages.sendFailedIO(p);
@@ -175,7 +175,25 @@ public class CommandsManager {
 
             try {
                 Files.changeDataInFile(timerName, "useMinecraftTime", value.equalsIgnoreCase("true"));
-                Messages.sendMessageToPlayer(p, "Timer useMinecraftTime has been updated");
+                Messages.sendMessageToPlayer(p, "UseMinecraftTime has been updated");
+            } catch (ParseException | IOException e) {
+                Messages.sendFailedIO(p);
+                e.printStackTrace();
+            }
+            return;
+        }
+
+        if (param.equalsIgnoreCase("selectRandomCommand")) {
+            if (!value.equalsIgnoreCase("true") && !value.equalsIgnoreCase("false")) {
+                Messages.sendMessageToPlayer(p, "&cPlease use one of the following : true/false");
+                return;
+            }
+
+            timer.setSelectRandomCommand(value.equalsIgnoreCase("true"));
+
+            try {
+                Files.changeDataInFile(timerName, "selectRandomCommand", value.equalsIgnoreCase("true"));
+                Messages.sendMessageToPlayer(p, "SelectRandomCommand has been updated");
             } catch (ParseException | IOException e) {
                 Messages.sendFailedIO(p);
                 e.printStackTrace();
@@ -195,7 +213,7 @@ public class CommandsManager {
 
             try {
                 Files.changeDataInFile(timerName, "random", randomValue);
-                Messages.sendMessageToPlayer(p, "Timer random has been updated");
+                Messages.sendMessageToPlayer(p, "Random has been updated");
             } catch (ParseException | IOException e) {
                 e.printStackTrace();
                 Messages.sendFailedIO(p);
@@ -214,7 +232,7 @@ public class CommandsManager {
 
             try {
                 Files.changeDataInFile(timerName, "executePerUser", value.equalsIgnoreCase("true"));
-                Messages.sendMessageToPlayer(p, "Timer executePerUser has been updated");
+                Messages.sendMessageToPlayer(p, "ExecutePerUser has been updated");
             } catch (ParseException | IOException e) {
                 e.printStackTrace();
                 Messages.sendFailedIO(p);
@@ -234,6 +252,45 @@ public class CommandsManager {
 
             try {
                 Files.changeDataInFile(timerName, "executionLimit", limit);
+                Messages.sendMessageToPlayer(p, "ExecutionLimit has been updated");
+            } catch (ParseException | IOException e) {
+                e.printStackTrace();
+                Messages.sendFailedIO(p);
+            }
+        }
+
+        if (param.equalsIgnoreCase("minPlayers")) {
+            int limit = Integer.parseInt(value);
+
+            if (limit < -1) {
+                Messages.sendMessageToPlayer(p, "&cPlease use -1 to disable limit or any other value above it");
+                return;
+            }
+
+            timer.setMinPlayers(limit);
+
+            try {
+                Files.changeDataInFile(timerName, "minPlayers", limit);
+                Messages.sendMessageToPlayer(p, "MinPlayers has been updated");
+            } catch (ParseException | IOException e) {
+                e.printStackTrace();
+                Messages.sendFailedIO(p);
+            }
+        }
+
+        if (param.equalsIgnoreCase("maxPlayers")) {
+            int limit = Integer.parseInt(value);
+
+            if (limit < -1) {
+                Messages.sendMessageToPlayer(p, "&cPlease use -1 to disable limit or any other value above it");
+                return;
+            }
+
+            timer.setMaxPlayers(limit);
+
+            try {
+                Files.changeDataInFile(timerName, "maxPlayers", limit);
+                Messages.sendMessageToPlayer(p, "MaxPlayers has been updated");
             } catch (ParseException | IOException e) {
                 e.printStackTrace();
                 Messages.sendFailedIO(p);
