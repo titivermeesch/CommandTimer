@@ -87,6 +87,7 @@ public class MainCommand implements CommandExecutor {
             }
         }
 
+        Messages.sendMessageToPlayer(p, "&6/cmt list : See all your created timers");
         Messages.sendMessageToPlayer(p, "&6/cmt create <name> : Create a new timer");
         Messages.sendMessageToPlayer(p, "&6/cmt remove <name> : Remove an existing timer");
         Messages.sendMessageToPlayer(p, "&6/cmt info <name> : Get information and configure a timer");
