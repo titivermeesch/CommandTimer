@@ -13,6 +13,7 @@ import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class CommandExecutor {
@@ -92,7 +93,7 @@ public class CommandExecutor {
 
                         // Handle real world time
                         for (String time : timer.getTimes()) {
-                            LocalTime current = LocalTime.now();
+                            LocalTime current = LocalTime.now().withNano(0);
 
                             if (time.contains("[")) {
                                 String[] hourRange = Tools.charRemoveAt(Tools.charRemoveAt(time, 0), time.length() - 2).split("-");
@@ -103,7 +104,16 @@ public class CommandExecutor {
                                 if (current.isAfter(startRange) && current.isBefore(endRange)) {
                                     shouldBlock = false;
                                 }
-                            } else if (current.equals(time)) {
+                            }
+
+                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+
+                            if(debug) {
+                                Messages.sendConsole("Time for timer is: " + time);
+                                Messages.sendConsole("Current time is: " + current.format(formatter));
+                            }
+
+                            if (current.format(formatter).equals(time)) {
                                 shouldBlock = false;
                             }
                         }

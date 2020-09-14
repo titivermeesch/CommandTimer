@@ -1,3 +1,19 @@
+# 5.0.1
+
+- Fix timers directory creation error
+- Fix issue with time related timers
+
+# 5.0
+
+- Intuitive chat menu to handle all configuration
+- PaperSpigot support
+- Server restart support
+- Placeholders
+- Instantly execute a timer
+- Pick random command from list
+- Several bug fixes
+- Huge performance improvements
+
 # 4.3.1
 
 - Fix useMinecraftTime
