@@ -22,13 +22,14 @@ public class Main extends JavaPlugin implements Listener {
         plugin = this;
 
         ChatMenuAPI.init(this);
-        Files.createDataFolders();
 
         getCommand("worldtime").setExecutor(new WorldTimeCommand());
         getCommand("commandtimer").setExecutor(new MainCommand());
 
         saveDefaultConfig();
         getConfig().options().copyDefaults(true);
+
+        Files.createDataFolders();
 
         Files.deserializeJsonFilesIntoCommandTimers();
 
