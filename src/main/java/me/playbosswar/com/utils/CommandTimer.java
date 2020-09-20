@@ -113,6 +113,10 @@ public class CommandTimer {
         this.worlds = worlds;
     }
 
+    public void addWorld(String world) {
+        this.worlds.add(world);
+    }
+
     public ArrayList<String> getDays() {
         return days;
     }

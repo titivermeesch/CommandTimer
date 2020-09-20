@@ -98,10 +98,13 @@ public class ChatMenus {
             menu.close(player);
             DaysChatMenu.openDaysMenu(player, timer.getName());
         }));
-
         menu.add(new ButtonElement(140, 13, Messages.colorize("&6[Conditions]"), player -> {
             menu.close(player);
             ConditionsChatMenu.openConditionsMenu(player, timer.getName());
+        }));
+        menu.add(new ButtonElement(5, 14, Messages.colorize("&a[Worlds]"), player -> {
+            menu.close(player);
+            WorldsMenu.openWorldsMenu(player, timer.getName());
         }));
 
         menu.add(new ButtonElement(5, 16, Messages.colorize("&c[Close]"), menu::close));

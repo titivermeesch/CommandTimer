@@ -1,3 +1,7 @@
+# 5.0.4
+
+- Add missing "Worlds button"  in menu
+
 # 5.0.3
 
 - Fix crash on 1.8 servers
