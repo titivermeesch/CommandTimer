@@ -1,5 +1,6 @@
 package me.tom.sparse.spigot.chat.menu.element;
 
+import com.cryptomorin.xseries.XSound;
 import me.tom.sparse.spigot.chat.menu.IElementContainer;
 import me.tom.sparse.spigot.chat.util.State;
 import me.tom.sparse.spigot.chat.util.Text;
@@ -17,7 +18,7 @@ public abstract class Element
 	protected int x, y;
 
 	@Nullable
-	protected Sound clickSound  = Sound.UI_BUTTON_CLICK;
+	protected Sound clickSound  = XSound.UI_BUTTON_CLICK.parseSound();
 	protected float clickVolume = 0.5f;
 	protected float clickPitch  = 1;
 	
