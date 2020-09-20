@@ -21,12 +21,41 @@ public class ChatMenus {
 
         menu.add(new TextElement(Messages.colorize("&6&lTimer: " + timer.getName()), 5, 1));
 
-        menu.add(new TextElement("Seconds: ", 5, 3));
-        IncrementalElement secondsInc = new IncrementalElement(60, 3, 1, Integer.MAX_VALUE, timer.getSeconds());
+        menu.add(new TextElement("Seconds:", 5, 3));
+
+        if(timer.getSeconds() > 3600) {
+            menu.add(new ButtonElement(52, 3, "§c[-1h]", player -> {
+                CommandsManager.changeCommandtimerData(p, timer.getName(), "seconds", timer.getSeconds() - 3600 + "");
+                menu.close(player);
+                ChatMenus.openTimerMenu(player, timer.getName());
+            }));
+        }
+
+        if(timer.getSeconds() > 60) {
+            menu.add(new ButtonElement(81, 3, "§c[-1m]", player -> {
+                CommandsManager.changeCommandtimerData(p, timer.getName(), "seconds", timer.getSeconds() - 60 + "");
+                menu.close(player);
+                ChatMenus.openTimerMenu(player, timer.getName());
+            }));
+        }
+
+        IncrementalElement secondsInc = new IncrementalElement(115, 3, 1, Integer.MAX_VALUE, timer.getSeconds());
         secondsInc.value.setChangeCallback(state -> {
             CommandsManager.changeCommandtimerData(p, timer.getName(), "seconds", state.getCurrent().toString());
         });
         menu.add(secondsInc);
+
+        menu.add(new ButtonElement(185, 3, "§a[+1m]", player -> {
+            CommandsManager.changeCommandtimerData(p, timer.getName(), "seconds", timer.getSeconds() + 60 + "");
+            menu.close(player);
+            ChatMenus.openTimerMenu(player, timer.getName());
+        }));
+
+        menu.add(new ButtonElement(215, 3, "§a[+1h]", player -> {
+            CommandsManager.changeCommandtimerData(p, timer.getName(), "seconds", timer.getSeconds() + 3600 + "");
+            menu.close(player);
+            ChatMenus.openTimerMenu(player, timer.getName());
+        }));
 
         menu.add(new TextElement("Max Executions: ", 5, 4));
         IncrementalElement executionsInc = new IncrementalElement(90, 4, -1, Integer.MAX_VALUE, timer.getExecutionLimit());
