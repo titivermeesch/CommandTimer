@@ -98,6 +98,26 @@ public class CommandsManager {
         }
     }
 
+    public static void removeWorldFromTimer(Player p, CommandTimer timer, int worldIndex) {
+        try {
+            ArrayList<String> worlds = timer.getWorlds();
+            worlds.remove(worldIndex);
+            timer.setWorlds(worlds);
+            Files.changeDataInFile(timer.getName(), "worlds", timer.getWorlds());
+        } catch (ParseException | IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void addWorldToTimer(Player p, CommandTimer timer, String world) {
+        try {
+            timer.addWorld(world);
+            Files.changeDataInFile(timer.getName(), "worlds", timer.getWorlds());
+        } catch (ParseException | IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * Delete existing Timer (file and instance)
      *
