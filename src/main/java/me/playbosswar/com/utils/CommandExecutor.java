@@ -17,7 +17,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class CommandExecutor {
-    private static boolean debug = false;
+    private static final boolean debug = Main.getPlugin().getConfig().getBoolean("debug");
 
     public static void startRunner() {
         BukkitRunnable timer = new BukkitRunnable() {
