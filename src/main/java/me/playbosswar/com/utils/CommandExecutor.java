@@ -93,15 +93,27 @@ public class CommandExecutor {
 
                         // Handle real world time
                         for (String time : timer.getTimes()) {
+                            if(debug) {
+                                Messages.sendConsole("Found time " + time + ", checking if execution is needed");
+                            }
+
                             LocalTime current = LocalTime.now().withNano(0);
 
                             if (time.contains("[")) {
+                                if(debug) {
+                                    Messages.sendConsole("Found time range");
+                                }
+
                                 String[] hourRange = Tools.charRemoveAt(Tools.charRemoveAt(time, 0), time.length() - 2).split("-");
 
                                 LocalTime startRange = LocalTime.parse(hourRange[0]);
                                 LocalTime endRange = LocalTime.parse(hourRange[1]);
 
                                 if (current.isAfter(startRange) && current.isBefore(endRange)) {
+                                    if(debug) {
+                                        Messages.sendConsole("Time is in range, continue processing...");
+                                    }
+
                                     shouldBlock = false;
                                 }
                             }
@@ -114,11 +126,18 @@ public class CommandExecutor {
                             }
 
                             if (current.format(formatter).equals(time)) {
+                                if(debug) {
+                                    Messages.sendConsole("Times are equal, continue processing...");
+                                }
+
                                 shouldBlock = false;
                             }
                         }
 
                         if (shouldBlock) {
+                            if(debug) {
+                                Messages.sendConsole("Times are not equal, skipping");
+                            }
                             continue;
                         }
                     }
@@ -191,7 +210,7 @@ public class CommandExecutor {
                             }
 
                             for (Player p : Bukkit.getOnlinePlayers()) {
-                                if (timer.getRequiredPermission() != "" && p.hasPermission(timer.getRequiredPermission())) {
+                                if (!timer.getRequiredPermission().equals("") && p.hasPermission(timer.getRequiredPermission())) {
                                     p.performCommand(PAPIHook.parsePAPI(command, p));
                                 }
                             }
@@ -214,6 +233,7 @@ public class CommandExecutor {
                                         p.setOp(true);
                                     }
 
+                                    p.performCommand(PAPIHook.parsePAPI(command, p));
                                     Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command, p));
                                 } catch (Exception e) {
                                     e.printStackTrace();
