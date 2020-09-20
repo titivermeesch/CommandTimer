@@ -1,3 +1,7 @@
+# 5.0.3
+
+- Fix crash on 1.8 servers
+
 # 5.0.2
 
 - Gender operator would execute command in console instead of player
