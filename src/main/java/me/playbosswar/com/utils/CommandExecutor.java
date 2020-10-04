@@ -17,13 +17,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class CommandExecutor {
-    private static boolean debug = false;
+    private static final boolean debug = Main.getPlugin().getConfig().getBoolean("debug");
 
     public static void startRunner() {
         BukkitRunnable timer = new BukkitRunnable() {
             @Override
             public void run() {
-                ArrayList<CommandTimer> timers = CommandsManager.getAllTimers();
+                ArrayList<CommandTimer> timers = TimerManager.getAllTimers();
 
                 for (CommandTimer timer : timers) {
                     if (debug) {
@@ -234,7 +234,6 @@ public class CommandExecutor {
                                     }
 
                                     p.performCommand(PAPIHook.parsePAPI(command, p));
-                                    Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command, p));
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 } finally {
@@ -251,11 +250,6 @@ public class CommandExecutor {
 
                     timer.setLastExecuted(lastExecuted);
                     timer.setTimesExecuted(timer.getTimesExecuted() + 1);
-                    try {
-                        Files.changeDataInFile(timer.getName(), "lastExecuted", lastExecuted.toString());
-                    } catch (IOException | ParseException e) {
-                        e.printStackTrace();
-                    }
                 }
             }
         };

@@ -1,7 +1,7 @@
 package me.playbosswar.com.chat;
 
 import me.playbosswar.com.utils.CommandTimer;
-import me.playbosswar.com.utils.CommandsManager;
+import me.playbosswar.com.utils.TimerManager;
 import me.playbosswar.com.utils.Gender;
 import me.playbosswar.com.utils.Messages;
 import me.tom.sparse.spigot.chat.menu.ChatMenu;
@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 
 public class ChatMenus {
     public static void openTimerMenu(Player p, String name) {
-        CommandTimer timer = CommandsManager.getCommandTimer(name);
+        CommandTimer timer = TimerManager.getCommandTimer(name);
 
         if (timer == null) {
             Messages.sendMessageToPlayer(p, "&cWe could not find this timer");
@@ -21,17 +21,46 @@ public class ChatMenus {
 
         menu.add(new TextElement(Messages.colorize("&6&lTimer: " + timer.getName()), 5, 1));
 
-        menu.add(new TextElement("Seconds: ", 5, 3));
-        IncrementalElement secondsInc = new IncrementalElement(60, 3, 1, Integer.MAX_VALUE, timer.getSeconds());
+        menu.add(new TextElement("Seconds:", 5, 3));
+
+        if(timer.getSeconds() > 3600) {
+            menu.add(new ButtonElement(52, 3, "§c[-1h]", player -> {
+                TimerManager.changeCommandtimerData(p, timer.getName(), "seconds", timer.getSeconds() - 3600 + "");
+                menu.close(player);
+                ChatMenus.openTimerMenu(player, timer.getName());
+            }));
+        }
+
+        if(timer.getSeconds() > 60) {
+            menu.add(new ButtonElement(81, 3, "§c[-1m]", player -> {
+                TimerManager.changeCommandtimerData(p, timer.getName(), "seconds", timer.getSeconds() - 60 + "");
+                menu.close(player);
+                ChatMenus.openTimerMenu(player, timer.getName());
+            }));
+        }
+
+        IncrementalElement secondsInc = new IncrementalElement(115, 3, 1, Integer.MAX_VALUE, timer.getSeconds());
         secondsInc.value.setChangeCallback(state -> {
-            CommandsManager.changeCommandtimerData(p, timer.getName(), "seconds", state.getCurrent().toString());
+            TimerManager.changeCommandtimerData(p, timer.getName(), "seconds", state.getCurrent().toString());
         });
         menu.add(secondsInc);
+
+        menu.add(new ButtonElement(185, 3, "§a[+1m]", player -> {
+            TimerManager.changeCommandtimerData(p, timer.getName(), "seconds", timer.getSeconds() + 60 + "");
+            menu.close(player);
+            ChatMenus.openTimerMenu(player, timer.getName());
+        }));
+
+        menu.add(new ButtonElement(215, 3, "§a[+1h]", player -> {
+            TimerManager.changeCommandtimerData(p, timer.getName(), "seconds", timer.getSeconds() + 3600 + "");
+            menu.close(player);
+            ChatMenus.openTimerMenu(player, timer.getName());
+        }));
 
         menu.add(new TextElement("Max Executions: ", 5, 4));
         IncrementalElement executionsInc = new IncrementalElement(90, 4, -1, Integer.MAX_VALUE, timer.getExecutionLimit());
         executionsInc.value.setChangeCallback(state -> {
-            CommandsManager.changeCommandtimerData(p, timer.getName(), "executionLimit", state.getCurrent().toString());
+            TimerManager.changeCommandtimerData(p, timer.getName(), "executionLimit", state.getCurrent().toString());
         });
         menu.add(executionsInc);
 
@@ -52,7 +81,7 @@ public class ChatMenus {
         menu.add(new TextElement("Gender: ", 5, 5));
         VerticalSelectorElement genderSelector = new VerticalSelectorElement(50, 5, defaultIndex, genders);
         genderSelector.value.setChangeCallback(state -> {
-            CommandsManager.changeCommandtimerData(p, timer.getName(), "gender", genders[state.getCurrent()]);
+            TimerManager.changeCommandtimerData(p, timer.getName(), "gender", genders[state.getCurrent()]);
         });
         menu.add(genderSelector);
 
@@ -62,18 +91,18 @@ public class ChatMenus {
         executionSlider.value.setChangeCallback(state -> {
             double pourcentage = state.getCurrent() * 0.05;
 
-            CommandsManager.changeCommandtimerData(p, timer.getName(), "random", pourcentage + "");
+            TimerManager.changeCommandtimerData(p, timer.getName(), "random", pourcentage + "");
         });
         menu.add(executionSlider);
 
         menu.add(new TextElement("Execute for each user: ", 5, 9));
         BooleanElement perUser = new BooleanElement(150, 9, timer.getExecutePerUser());
-        perUser.value.setChangeCallback(state -> CommandsManager.changeCommandtimerData(p, timer.getName(), "executePerUser", state.getCurrent().toString()));
+        perUser.value.setChangeCallback(state -> TimerManager.changeCommandtimerData(p, timer.getName(), "executePerUser", state.getCurrent().toString()));
         menu.add(perUser);
 
         menu.add(new TextElement("Use Minecraft time: ", 5, 10));
         BooleanElement useMinecraftTime = new BooleanElement(150, 10, timer.getUseMinecraftTime());
-        useMinecraftTime.value.setChangeCallback(state -> CommandsManager.changeCommandtimerData(p, timer.getName(), "useMinecraftTime", state.getCurrent().toString()));
+        useMinecraftTime.value.setChangeCallback(state -> TimerManager.changeCommandtimerData(p, timer.getName(), "useMinecraftTime", state.getCurrent().toString()));
         menu.add(useMinecraftTime);
 
         menu.add(new TextElement("Permission: ", 5, 11));

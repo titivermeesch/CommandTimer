@@ -11,7 +11,6 @@ public class PAPIHook {
             return str;
         }
 
-        new PAPIPlaceholders(Main.getPlugin()).register();
         return PlaceholderAPI.setPlaceholders(p, str);
     }
 }

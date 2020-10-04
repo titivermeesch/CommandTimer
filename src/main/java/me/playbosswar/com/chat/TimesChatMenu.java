@@ -1,7 +1,7 @@
 package me.playbosswar.com.chat;
 
 import me.playbosswar.com.utils.CommandTimer;
-import me.playbosswar.com.utils.CommandsManager;
+import me.playbosswar.com.utils.TimerManager;
 import me.playbosswar.com.utils.Messages;
 import me.tom.sparse.spigot.chat.menu.ChatMenu;
 import me.tom.sparse.spigot.chat.menu.element.ButtonElement;
@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 
 public class TimesChatMenu {
     public static void openTimesMenu(Player p, String timerName) {
-        CommandTimer timer = CommandsManager.getCommandTimer(timerName);
+        CommandTimer timer = TimerManager.getCommandTimer(timerName);
         ChatMenu menu = new ChatMenu().pauseChat();
 
         menu.add(new TextElement(Messages.colorize("&6&lTimer times for: " + timer.getName()), 5, 1));
@@ -21,7 +21,7 @@ public class TimesChatMenu {
             if (i < 17) {
                 int finalI = i;
                 menu.add(new ButtonElement(5, i, Messages.colorize("&4\u2718"), player -> {
-                    CommandsManager.removeTimeFromTimer(p, timer, finalI - 3);
+                    TimerManager.removeTimeFromTimer(p, timer, finalI - 3);
                     menu.close(p);
                     openTimesMenu(p, timerName);
                 }));
@@ -32,7 +32,7 @@ public class TimesChatMenu {
 
         InputElement timeInput = new InputElement(5, i + 1, 120, "Enter new time");
         timeInput.value.setChangeCallback(state -> {
-            CommandsManager.addTimeToTimer(p, timer, state.getCurrent());
+            TimerManager.addTimeToTimer(p, timer, state.getCurrent());
             menu.close(p);
             openTimesMenu(p, timerName);
         });

@@ -7,7 +7,7 @@
     <groupId>me.playbosswar.com</groupId>
     <artifactId>commandtimer</artifactId>
     <name>CommandTimer</name>
-    <version>5.0.4</version>
+    <version>5.1</version>
 
     <description>This plugin allows you to schedule commands that will be executed</description>
 
@@ -54,12 +54,10 @@
     </build>
 
     <repositories>
-        <!-- Spigot Maven repo -->
         <repository>
             <id>papermc</id>
             <url>https://papermc.io/repo/repository/maven-public/</url>
         </repository>
-        <!-- PAPI repository -->
         <repository>
             <id>placeholderapi</id>
             <url>http://repo.extendedclip.com/content/repositories/placeholderapi/</url>

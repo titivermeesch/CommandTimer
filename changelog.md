@@ -1,3 +1,12 @@
+# 5.1
+
+- Have seconds and minutes as option instead of only seconds
+- Debug mode is toggleable
+- Fix double execution when gender is operator
+- Don't save execution count between server restarts
+- Fix reload issues
+- Potential fix for wrong placeholder values
+
 # 5.0.4
 
 - Add missing "Worlds button"  in menu

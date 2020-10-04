@@ -1,5 +1,6 @@
 package me.playbosswar.com.utils;
 
+import me.playbosswar.com.Tools;
 import org.bukkit.entity.Player;
 import org.json.simple.parser.ParseException;
 
@@ -7,8 +8,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.util.ArrayList;
+import java.util.Timer;
 
-public class CommandsManager {
+public class TimerManager {
     private static ArrayList<CommandTimer> timers = new ArrayList<>();
 
     public static void addCommandTimer(CommandTimer t) {
@@ -38,6 +40,13 @@ public class CommandsManager {
         return timers;
     }
 
+    public static void cancelAllTimers() {
+        for (Timer t : Tools.timerList) {
+            t.cancel();
+        }
+        timers.clear();
+    }
+
     /**
      * Create a new Timer (file and instance)
      *
@@ -48,7 +57,7 @@ public class CommandsManager {
         try {
             Files.createNewCommandTimerDataFile(name);
             CommandTimer t = new CommandTimer(name);
-            CommandsManager.addCommandTimer(t);
+            TimerManager.addCommandTimer(t);
             Messages.sendMessageToPlayer(p, "A new timer has been created");
         } catch (FileAlreadyExistsException e) {
             Messages.sendMessageToPlayer(p, "&cThis name is already used");
@@ -139,7 +148,7 @@ public class CommandsManager {
     }
 
     public static void changeCommandtimerData(Player p, String timerName, String param, String value) {
-        CommandTimer timer = CommandsManager.getCommandTimer(timerName);
+        CommandTimer timer = TimerManager.getCommandTimer(timerName);
 
         if (timer == null) {
             Messages.sendMessageToPlayer(p, "&cCould not find timer");
