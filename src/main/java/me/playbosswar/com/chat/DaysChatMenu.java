@@ -1,7 +1,7 @@
 package me.playbosswar.com.chat;
 
 import me.playbosswar.com.utils.CommandTimer;
-import me.playbosswar.com.utils.CommandsManager;
+import me.playbosswar.com.utils.TimerManager;
 import me.playbosswar.com.utils.Messages;
 import me.tom.sparse.spigot.chat.menu.ChatMenu;
 import me.tom.sparse.spigot.chat.menu.element.BooleanElement;
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 public class DaysChatMenu {
     public static void openDaysMenu(Player p, String timerName) {
-        CommandTimer timer = CommandsManager.getCommandTimer(timerName);
+        CommandTimer timer = TimerManager.getCommandTimer(timerName);
         ChatMenu menu = new ChatMenu().pauseChat();
 
         menu.add(new TextElement(Messages.colorize("&6&lTimer days for: " + timer.getName()), 5, 1));

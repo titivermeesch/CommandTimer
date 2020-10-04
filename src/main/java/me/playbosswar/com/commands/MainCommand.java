@@ -3,7 +3,7 @@ package me.playbosswar.com.commands;
 import me.playbosswar.com.Tools;
 import me.playbosswar.com.chat.ChatMenus;
 import me.playbosswar.com.utils.CommandTimer;
-import me.playbosswar.com.utils.CommandsManager;
+import me.playbosswar.com.utils.TimerManager;
 import me.playbosswar.com.utils.Messages;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -36,7 +36,7 @@ public class MainCommand implements CommandExecutor {
             }
 
             if (args[0].equalsIgnoreCase("list")) {
-                ArrayList<CommandTimer> timers = CommandsManager.getAllTimers();
+                ArrayList<CommandTimer> timers = TimerManager.getAllTimers();
 
                 if (timers.size() == 0) {
                     Messages.sendMessageToPlayer(p, "You don't have timers yet.");
@@ -57,12 +57,12 @@ public class MainCommand implements CommandExecutor {
 
         if (args.length == 2) {
             if (args[0].equalsIgnoreCase("create")) {
-                CommandsManager.createNewCommandTimer(p, args[1]);
+                TimerManager.createNewCommandTimer(p, args[1]);
                 return true;
             }
 
             if (args[0].equalsIgnoreCase("remove") || args[0].equalsIgnoreCase("delete")) {
-                CommandsManager.deleteCommandtimer(p, args[1]);
+                TimerManager.deleteCommandtimer(p, args[1]);
                 return true;
             }
 
@@ -72,7 +72,7 @@ public class MainCommand implements CommandExecutor {
             }
 
             if (args[0].equalsIgnoreCase("execute")) {
-                CommandTimer timer = CommandsManager.getCommandTimer(args[1]);
+                CommandTimer timer = TimerManager.getCommandTimer(args[1]);
                 LocalTime time = LocalTime.now();
                 LocalTime newTime = time.minusSeconds(timer.getSeconds());
                 timer.setLastExecuted(newTime);
@@ -82,7 +82,7 @@ public class MainCommand implements CommandExecutor {
 
         if (args.length == 4) {
             if (args[0].equalsIgnoreCase("set")) {
-                CommandsManager.changeCommandtimerData(p, args[1], args[2], args[3]);
+                TimerManager.changeCommandtimerData(p, args[1], args[2], args[3]);
                 return true;
             }
         }

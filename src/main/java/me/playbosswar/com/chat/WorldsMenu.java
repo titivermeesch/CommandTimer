@@ -1,7 +1,7 @@
 package me.playbosswar.com.chat;
 
 import me.playbosswar.com.utils.CommandTimer;
-import me.playbosswar.com.utils.CommandsManager;
+import me.playbosswar.com.utils.TimerManager;
 import me.playbosswar.com.utils.Messages;
 import me.tom.sparse.spigot.chat.menu.ChatMenu;
 import me.tom.sparse.spigot.chat.menu.element.ButtonElement;
@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 
 public class WorldsMenu {
     public static void openWorldsMenu(Player p, String timerName) {
-        CommandTimer timer = CommandsManager.getCommandTimer(timerName);
+        CommandTimer timer = TimerManager.getCommandTimer(timerName);
         ChatMenu menu = new ChatMenu().pauseChat();
 
         menu.add(new TextElement(Messages.colorize("&6&lTimer worlds for: " + timer.getName()), 5, 1));
@@ -25,7 +25,7 @@ public class WorldsMenu {
             if (i < 17) {
                 int finalI = i;
                 menu.add(new ButtonElement(5, i, Messages.colorize("&4\u2718"), player -> {
-                    CommandsManager.removeWorldFromTimer(p, timer, finalI - 3);
+                    TimerManager.removeWorldFromTimer(p, timer, finalI - 3);
                     menu.close(p);
                     openWorldsMenu(p, timerName);
                 }));
@@ -36,7 +36,7 @@ public class WorldsMenu {
 
         InputElement commandInput = new InputElement(5, i + 3, 120, "Enter new world");
         commandInput.value.setChangeCallback(state -> {
-            CommandsManager.addWorldToTimer(p, timer, state.getCurrent());
+            TimerManager.addWorldToTimer(p, timer, state.getCurrent());
             menu.close(p);
             openWorldsMenu(p, timerName);
         });

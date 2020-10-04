@@ -2,7 +2,7 @@ package me.playbosswar.com.hooks;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.playbosswar.com.utils.CommandTimer;
-import me.playbosswar.com.utils.CommandsManager;
+import me.playbosswar.com.utils.TimerManager;
 import me.playbosswar.com.utils.Messages;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -52,7 +52,7 @@ public class PAPIPlaceholders extends PlaceholderExpansion {
         String commandName = identifierParts[0];
         String commandField = identifierParts[1];
 
-        CommandTimer timer = CommandsManager.getCommandTimer(commandName);
+        CommandTimer timer = TimerManager.getCommandTimer(commandName);
 
         if(timer == null) {
             Messages.sendConsole("Tried to use PAPI placeholder for unknown command: %commandtimer_" + identifier);

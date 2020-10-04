@@ -86,7 +86,7 @@ public class Files {
             throw new FileNotFoundException();
         }
 
-        Boolean deleted = file.delete();
+        boolean deleted = file.delete();
 
         if (!deleted) {
             throw new IOException();
@@ -227,7 +227,7 @@ public class Files {
                         t.setLastExecuted(lastExecutedTime);
                     }
 
-                    CommandsManager.addCommandTimer(t);
+                    TimerManager.addCommandTimer(t);
                     Messages.sendConsole("Timer " + t.getName() + " has been loaded");
                 }
             }

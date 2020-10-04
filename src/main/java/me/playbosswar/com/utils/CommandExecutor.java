@@ -23,7 +23,7 @@ public class CommandExecutor {
         BukkitRunnable timer = new BukkitRunnable() {
             @Override
             public void run() {
-                ArrayList<CommandTimer> timers = CommandsManager.getAllTimers();
+                ArrayList<CommandTimer> timers = TimerManager.getAllTimers();
 
                 for (CommandTimer timer : timers) {
                     if (debug) {

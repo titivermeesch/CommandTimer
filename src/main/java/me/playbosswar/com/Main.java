@@ -2,17 +2,14 @@ package me.playbosswar.com;
 
 import me.playbosswar.com.commands.MainCommand;
 import me.playbosswar.com.commands.WorldTimeCommand;
-import me.playbosswar.com.utils.CommandExecutor;
-import me.playbosswar.com.utils.Files;
-import me.playbosswar.com.utils.Messages;
-import me.tom.sparse.spigot.chat.menu.ChatMenu;
+import me.playbosswar.com.utils.*;
 import me.tom.sparse.spigot.chat.menu.ChatMenuAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.Timer;
+import java.io.IOException;
 
 public class Main extends JavaPlugin implements Listener {
     private static Plugin plugin;
@@ -22,37 +19,54 @@ public class Main extends JavaPlugin implements Listener {
         plugin = this;
 
         ChatMenuAPI.init(this);
-
-        getCommand("worldtime").setExecutor(new WorldTimeCommand());
-        getCommand("commandtimer").setExecutor(new MainCommand());
-
-        saveDefaultConfig();
-        getConfig().options().copyDefaults(true);
+        this.loadConfig();
+        this.registerCommands();
 
         Files.createDataFolders();
-
         Files.deserializeJsonFilesIntoCommandTimers();
 
-        Tools.printDate();
-        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
-            Bukkit.getPluginManager().registerEvents(this, this);
-            Messages.sendConsole("&eCommandTimer hooked in PlaceholderAPI");
-        } else {
-            Messages.sendConsole("&eCommandTimer could not find PlaceholderAPI, placeholders will not work");
+        try {
+            Metrics metrics = new Metrics(this);
+            metrics.start();
+            Messages.sendConsole("Hooked into Metrics");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
+        this.loadPAPI();
+
+
+        Tools.printDate();
         CommandExecutor.startRunner();
         Messages.sendConsole("&e" + getDescription().getVersion() + "&a loaded!");
     }
 
     @Override
     public void onDisable() {
-        for(Timer t : Tools.timerList) {
-            t.cancel();
-        }
+        TimerManager.cancelAllTimers();
 
         saveDefaultConfig();
         ChatMenuAPI.disable();
         plugin = null;
+    }
+
+    public void registerCommands() {
+        getCommand("worldtime").setExecutor(new WorldTimeCommand());
+        getCommand("commandtimer").setExecutor(new MainCommand());
+    }
+
+    public void loadConfig() {
+        saveDefaultConfig();
+        getConfig().options().copyDefaults(true);
+    }
+
+    public void loadPAPI() {
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            Bukkit.getPluginManager().registerEvents(this, this);
+            Messages.sendConsole("&eCommandTimer hooked in PlaceholderAPI");
+        } else {
+            Messages.sendConsole("&eCommandTimer could not find PlaceholderAPI, placeholders will not work");
+        }
     }
 
     public static Plugin getPlugin() {

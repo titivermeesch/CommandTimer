@@ -1,3 +1,8 @@
+# 5.1
+
+- Have seconds and minutes as option instead of only seconds
+- debug mode is toggleable
+
 # 5.0.4
 
 - Add missing "Worlds button"  in menu
