@@ -2,6 +2,7 @@ package me.playbosswar.com;
 
 import me.playbosswar.com.commands.MainCommand;
 import me.playbosswar.com.commands.WorldTimeCommand;
+import me.playbosswar.com.hooks.PAPIPlaceholders;
 import me.playbosswar.com.utils.*;
 import me.tom.sparse.spigot.chat.menu.ChatMenuAPI;
 import org.bukkit.Bukkit;
@@ -27,8 +28,12 @@ public class Main extends JavaPlugin implements Listener {
 
         try {
             Metrics metrics = new Metrics(this);
-            metrics.start();
+            boolean started = metrics.start();
             Messages.sendConsole("Hooked into Metrics");
+
+            if(started) {
+                Messages.sendConsole("Metrics started");
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -62,6 +67,7 @@ public class Main extends JavaPlugin implements Listener {
 
     public void loadPAPI() {
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            new PAPIPlaceholders(Main.getPlugin()).register();
             Bukkit.getPluginManager().registerEvents(this, this);
             Messages.sendConsole("&eCommandTimer hooked in PlaceholderAPI");
         } else {

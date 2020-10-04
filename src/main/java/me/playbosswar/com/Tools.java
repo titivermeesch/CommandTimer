@@ -1,8 +1,7 @@
 package me.playbosswar.com;
 
 import me.playbosswar.com.hooks.PAPIHook;
-import me.playbosswar.com.utils.Gender;
-import me.playbosswar.com.utils.Messages;
+import me.playbosswar.com.utils.*;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -59,8 +58,10 @@ public class Tools {
      * Reload all plugin tasks
      */
     public static void reloadTasks() {
-        Bukkit.getScheduler().cancelTasks(Main.getPlugin());
+        TimerManager.cancelAllTimers();
         pl.reloadConfig();
+        Files.deserializeJsonFilesIntoCommandTimers();
+        CommandExecutor.startRunner();
     }
 
     static void scheduleHourRange(String hour, String task, String command, Gender gender, String worldName) {

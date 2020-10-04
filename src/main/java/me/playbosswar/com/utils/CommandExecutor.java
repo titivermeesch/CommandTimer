@@ -234,7 +234,6 @@ public class CommandExecutor {
                                     }
 
                                     p.performCommand(PAPIHook.parsePAPI(command, p));
-                                    Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command, p));
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 } finally {
@@ -251,11 +250,6 @@ public class CommandExecutor {
 
                     timer.setLastExecuted(lastExecuted);
                     timer.setTimesExecuted(timer.getTimesExecuted() + 1);
-                    try {
-                        Files.changeDataInFile(timer.getName(), "lastExecuted", lastExecuted.toString());
-                    } catch (IOException | ParseException e) {
-                        e.printStackTrace();
-                    }
                 }
             }
         };

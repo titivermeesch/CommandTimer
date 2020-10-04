@@ -44,6 +44,7 @@ public class TimerManager {
         for (Timer t : Tools.timerList) {
             t.cancel();
         }
+        timers.clear();
     }
 
     /**
