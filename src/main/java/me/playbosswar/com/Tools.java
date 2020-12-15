@@ -51,7 +51,12 @@ public class Tools {
         String mm = "0" + minutes;
         mm = mm.substring(mm.length() - 2);
 
-        return hours + ":" + mm;
+        String realHours = String.valueOf(hours);
+        if(hours < 10) {
+            realHours = "0" + realHours;
+        }
+
+        return realHours + ":" + mm;
     }
 
     /**
