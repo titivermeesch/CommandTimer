@@ -4,6 +4,7 @@ import me.playbosswar.com.Main;
 import me.playbosswar.com.Tools;
 import me.playbosswar.com.hooks.PAPIHook;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.json.simple.parser.ParseException;
@@ -70,7 +71,13 @@ public class CommandExecutor {
                             }
 
                             for (String worldName : timer.getWorlds()) {
-                                String minecraftTime = Tools.calculateWorldTime(Bukkit.getWorld(worldName));
+                                World world = Bukkit.getWorld(worldName == null ? "world" : worldName);
+                                assert world != null;
+                                String minecraftTime = Tools.calculateWorldTime(world);
+
+                                if(debug) {
+                                    Messages.sendConsole("Current minecraft time is " + minecraftTime);
+                                }
 
                                 for (String time : timer.getTimes()) {
                                     LocalTime current = LocalTime.parse(minecraftTime);

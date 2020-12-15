@@ -1,6 +1,6 @@
-package me.tom.sparse.spigot.chat.util;
+package me.playbosswar.com.chat.api.util;
 
-import me.tom.sparse.spigot.chat.menu.ChatMenuAPI;
+import me.playbosswar.com.chat.api.menu.ChatMenuAPI;
 
 import java.util.Arrays;
 

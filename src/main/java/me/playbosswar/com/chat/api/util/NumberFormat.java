@@ -1,4 +1,4 @@
-package me.tom.sparse.spigot.chat.util;
+package me.playbosswar.com.chat.api.util;
 
 public interface NumberFormat
 {

@@ -1,10 +1,10 @@
-package me.tom.sparse.spigot.chat.menu;
+package me.playbosswar.com.chat.api.menu;
 
 import io.netty.util.internal.ConcurrentSet;
-import me.tom.sparse.spigot.chat.menu.element.ButtonElement;
-import me.tom.sparse.spigot.chat.menu.element.Element;
-import me.tom.sparse.spigot.chat.protocol.PlayerChatIntercept;
-import me.tom.sparse.spigot.chat.util.Text;
+import me.playbosswar.com.chat.api.menu.element.ButtonElement;
+import me.playbosswar.com.chat.api.menu.element.Element;
+import me.playbosswar.com.chat.api.protocol.PlayerChatIntercept;
+import me.playbosswar.com.chat.api.util.Text;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.entity.Player;
 

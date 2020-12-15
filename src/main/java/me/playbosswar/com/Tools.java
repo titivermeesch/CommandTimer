@@ -51,7 +51,12 @@ public class Tools {
         String mm = "0" + minutes;
         mm = mm.substring(mm.length() - 2);
 
-        return hours + ":" + mm;
+        String realHours = String.valueOf(hours);
+        if(hours < 10) {
+            realHours = "0" + realHours;
+        }
+
+        return realHours + ":" + mm;
     }
 
     /**
@@ -307,5 +312,15 @@ public class Tools {
 
     public static int getRandomInt(int min, int max) {
         return (int) (Math.random() * (max - min + 1) + min);
+    }
+
+    public static String getTimeString(int seconds) {
+        int h = seconds / 3600;
+        int m = (seconds % 3600) / 60;
+        int s = seconds % 60;
+        String sh = (h > 0 ? h + " " + "h" : "");
+        String sm = (m < 10 && m > 0 && h > 0 ? "0" : "") + (m > 0 ? (h > 0 && s == 0 ? String.valueOf(m) : m + " " + "min") : "");
+        String ss = (s == 0 && (h > 0 || m > 0) ? "" : (s < 10 && (h > 0 || m > 0) ? "0" : "") + s + " " + "sec");
+        return sh + (h > 0 ? " " : "") + sm + (m > 0 ? " " : "") + ss;
     }
 }

@@ -1,8 +1,8 @@
-package me.tom.sparse.spigot.chat.menu.element;
+package me.playbosswar.com.chat.api.menu.element;
 
-import me.tom.sparse.spigot.chat.menu.ChatMenuAPI;
-import me.tom.sparse.spigot.chat.menu.IElementContainer;
-import me.tom.sparse.spigot.chat.util.Text;
+import me.playbosswar.com.chat.api.menu.ChatMenuAPI;
+import me.playbosswar.com.chat.api.menu.IElementContainer;
+import me.playbosswar.com.chat.api.util.Text;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;

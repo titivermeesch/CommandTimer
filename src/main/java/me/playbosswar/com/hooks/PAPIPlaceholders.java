@@ -1,6 +1,7 @@
 package me.playbosswar.com.hooks;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import me.playbosswar.com.Tools;
 import me.playbosswar.com.utils.CommandTimer;
 import me.playbosswar.com.utils.TimerManager;
 import me.playbosswar.com.utils.Messages;
@@ -63,11 +64,24 @@ public class PAPIPlaceholders extends PlaceholderExpansion {
             return timer.getSeconds() + "";
         }
 
+        if(commandField.equalsIgnoreCase("secondsFormat")) {
+            return Tools.getTimeString(timer.getSeconds());
+        }
+
         if(commandField.equalsIgnoreCase("nextExecution")) {
             LocalTime now = LocalTime.now();
             LocalTime lastExecution = timer.getLastExecuted();
             long difference = lastExecution.until(now, ChronoUnit.SECONDS);
             return timer.getSeconds() - difference + "";
+        }
+
+        if(commandField.equalsIgnoreCase("nextExecutionFormat")) {
+            LocalTime now = LocalTime.now();
+            LocalTime lastExecution = timer.getLastExecuted();
+            long difference = lastExecution.until(now, ChronoUnit.SECONDS);
+            long timeLeft = timer.getSeconds() - difference;
+
+            return Tools.getTimeString((int) timeLeft);
         }
 
         return null;

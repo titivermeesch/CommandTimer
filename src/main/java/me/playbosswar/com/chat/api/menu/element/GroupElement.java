@@ -1,7 +1,7 @@
-package me.tom.sparse.spigot.chat.menu.element;
+package me.playbosswar.com.chat.api.menu.element;
 
-import me.tom.sparse.spigot.chat.menu.IElementContainer;
-import me.tom.sparse.spigot.chat.util.Text;
+import me.playbosswar.com.chat.api.menu.IElementContainer;
+import me.playbosswar.com.chat.api.util.Text;
 import org.bukkit.entity.Player;
 
 import org.jetbrains.annotations.NotNull;

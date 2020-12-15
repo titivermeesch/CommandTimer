@@ -4,8 +4,8 @@ import me.playbosswar.com.utils.CommandTimer;
 import me.playbosswar.com.utils.TimerManager;
 import me.playbosswar.com.utils.Gender;
 import me.playbosswar.com.utils.Messages;
-import me.tom.sparse.spigot.chat.menu.ChatMenu;
-import me.tom.sparse.spigot.chat.menu.element.*;
+import me.playbosswar.com.chat.api.menu.ChatMenu;
+import me.playbosswar.com.chat.api.menu.element.*;
 import org.bukkit.entity.Player;
 
 public class ChatMenus {

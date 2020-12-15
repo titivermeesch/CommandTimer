@@ -81,6 +81,10 @@ public class CommandTimer {
         this.times.add(time);
     }
 
+    public void removeTime(int index) {
+        this.times.remove(index);
+    }
+
     public Boolean getUseMinecraftTime() {
         return useMinecraftTime;
     }

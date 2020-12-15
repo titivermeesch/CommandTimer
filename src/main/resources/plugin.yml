@@ -3,8 +3,8 @@ name: "${project.name}"
 version: "${project.version}"
 description: "${project.description}"
 author: PlayBossWar
-softdepend:
-  - PlaceholderAPI
+api-version: 1.13
+softdepend: [PlaceholderAPI]
 
 commands:
   commandtimer:
