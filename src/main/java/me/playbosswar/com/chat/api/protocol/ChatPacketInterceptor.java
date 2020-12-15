@@ -1,4 +1,4 @@
-package me.tom.sparse.spigot.chat.protocol;
+package me.playbosswar.com.chat.api.protocol;
 
 import com.google.gson.Gson;
 import io.netty.channel.Channel;
@@ -6,11 +6,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Field;
@@ -71,19 +67,6 @@ public class ChatPacketInterceptor implements Listener {
 
     public void disable() {
         chats.keySet().forEach(this::removeIntercept);
-    }
-
-    @EventHandler
-    public void onPlayerQuit(PlayerQuitEvent e) {
-        PlayerChatIntercept chat = chats.remove(e.getPlayer());
-		if (chat != null) {
-			removeIntercept(chat.player);
-		}
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onPlayerJoin(PlayerJoinEvent e) {
-        getChat(e.getPlayer());
     }
 
     private void removeIntercept(Player player) {

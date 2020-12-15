@@ -1,6 +1,6 @@
-package me.tom.sparse.spigot.chat.menu;
+package me.playbosswar.com.chat.api.menu;
 
-import me.tom.sparse.spigot.chat.menu.element.Element;
+import me.playbosswar.com.chat.api.menu.element.Element;
 import org.bukkit.entity.Player;
 
 import java.util.List;

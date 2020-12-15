@@ -1,4 +1,4 @@
-package me.tom.sparse.spigot.chat.protocol;
+package me.playbosswar.com.chat.api.protocol;
 
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;

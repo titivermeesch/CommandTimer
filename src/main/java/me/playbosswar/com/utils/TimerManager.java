@@ -98,9 +98,7 @@ public class TimerManager {
 
     public static void removeTimeFromTimer(Player p, CommandTimer timer, int timeIndex) {
         try {
-            ArrayList<String> times = timer.getTimes();
-            times.remove(timeIndex);
-            timer.setTimes(times);
+            timer.removeTime(timeIndex);
             Files.changeDataInFile(timer.getName(), "times", timer.getTimes());
         } catch (ParseException | IOException e) {
             e.printStackTrace();

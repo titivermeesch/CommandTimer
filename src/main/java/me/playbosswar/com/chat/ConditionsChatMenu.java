@@ -3,10 +3,10 @@ package me.playbosswar.com.chat;
 import me.playbosswar.com.utils.CommandTimer;
 import me.playbosswar.com.utils.TimerManager;
 import me.playbosswar.com.utils.Messages;
-import me.tom.sparse.spigot.chat.menu.ChatMenu;
-import me.tom.sparse.spigot.chat.menu.element.ButtonElement;
-import me.tom.sparse.spigot.chat.menu.element.IncrementalElement;
-import me.tom.sparse.spigot.chat.menu.element.TextElement;
+import me.playbosswar.com.chat.api.menu.ChatMenu;
+import me.playbosswar.com.chat.api.menu.element.ButtonElement;
+import me.playbosswar.com.chat.api.menu.element.IncrementalElement;
+import me.playbosswar.com.chat.api.menu.element.TextElement;
 import org.bukkit.entity.Player;
 
 public class ConditionsChatMenu {

@@ -4,13 +4,11 @@ import me.playbosswar.com.commands.MainCommand;
 import me.playbosswar.com.commands.WorldTimeCommand;
 import me.playbosswar.com.hooks.PAPIPlaceholders;
 import me.playbosswar.com.utils.*;
-import me.tom.sparse.spigot.chat.menu.ChatMenuAPI;
+import me.playbosswar.com.chat.api.menu.ChatMenuAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.io.IOException;
 
 public class Main extends JavaPlugin implements Listener {
     private static Plugin plugin;
@@ -26,16 +24,11 @@ public class Main extends JavaPlugin implements Listener {
         Files.createDataFolders();
         Files.deserializeJsonFilesIntoCommandTimers();
 
-        try {
-            Metrics metrics = new Metrics(this);
-            boolean started = metrics.start();
-            Messages.sendConsole("Hooked into Metrics");
+        Metrics metrics = new Metrics(Main.getPlugin(), 9657);
+        Messages.sendConsole("Starting metrics...");
 
-            if(started) {
-                Messages.sendConsole("Metrics started");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        if(metrics.isEnabled()) {
+            Messages.sendConsole("Metrics loaded");
         }
 
         this.loadPAPI();

@@ -3,6 +3,8 @@
 - Compiled against 1.16.4
 - Fix bug with minecraft time
 - Fix bug with normal time
+- Updated to latest PAPI build
+- Add secondsFormat and nextExecutionFormat to show correct information
 
 # 5.1
 

@@ -1,9 +1,9 @@
-package me.tom.sparse.spigot.chat.menu.element;
+package me.playbosswar.com.chat.api.menu.element;
 
 import com.cryptomorin.xseries.XSound;
-import me.tom.sparse.spigot.chat.menu.IElementContainer;
-import me.tom.sparse.spigot.chat.util.State;
-import me.tom.sparse.spigot.chat.util.Text;
+import me.playbosswar.com.chat.api.menu.IElementContainer;
+import me.playbosswar.com.chat.api.util.State;
+import me.playbosswar.com.chat.api.util.Text;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
