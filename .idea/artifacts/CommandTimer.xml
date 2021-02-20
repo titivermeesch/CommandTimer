@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="CommandTimer">
+    <output-path>$USER_HOME$/Documents/mc-server/plugins</output-path>
+    <root id="archive" name="CommandTimer.jar">
+      <element id="module-output" name="CommandTimer" />
+    </root>
+  </artifact>
+</component>
