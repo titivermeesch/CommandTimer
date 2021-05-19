@@ -25,4 +25,8 @@ public class ItemGeneratorHelpers {
 
         return item;
     }
+
+    public static ItemStack getBackItem() {
+        return generateItem("§cBack", XMaterial.REDSTONE);
+    }
 }

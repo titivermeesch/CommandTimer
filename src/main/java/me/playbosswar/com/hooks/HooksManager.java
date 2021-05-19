@@ -13,7 +13,7 @@ import java.util.List;
  * Main manager that handles all external API's
  */
 public class HooksManager implements Listener {
-    private List<HookTypes> loadedHooks = new ArrayList<>();
+    private List<HookType> loadedHooks = new ArrayList<>();
 
     public HooksManager() {
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
@@ -26,6 +26,10 @@ public class HooksManager implements Listener {
         new PAPIPlaceholders(Main.getPlugin()).register();
         Bukkit.getPluginManager().registerEvents(this, plugin);
         Messages.sendConsole("&eCommandTimer hooked in PlaceholderAPI");
-        loadedHooks.add(HookTypes.PAPI);
+        loadedHooks.add(HookType.PAPI);
     }
+
+    public boolean isHookEnabled(HookType hookType) { return loadedHooks.contains(hookType); }
+
+    public List<HookType> getLoadedHooks() { return loadedHooks; }
 }

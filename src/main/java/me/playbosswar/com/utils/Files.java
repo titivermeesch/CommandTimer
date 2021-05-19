@@ -1,6 +1,8 @@
 package me.playbosswar.com.utils;
 
+import com.google.gson.Gson;
 import me.playbosswar.com.Main;
+import me.playbosswar.com.tasks.Task;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -9,6 +11,7 @@ import java.io.*;
 import java.nio.file.FileAlreadyExistsException;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Files {
     static String pluginFolderPath = Main.getPlugin().getDataFolder().getPath();
@@ -33,7 +36,7 @@ public class Files {
      * @param name
      * @return
      */
-    public static String getTimerFile(String name) {
+    public static String getTaskFile(String name) {
         return pluginFolderPath + "/timers/" + name + ".json";
     }
 
@@ -43,8 +46,8 @@ public class Files {
      * @param name
      * @return
      */
-    public static Boolean commandTimerFileExists(String name) {
-        File file = new File(getTimerFile(name));
+    public static Boolean taskFileExists(String name) {
+        File file = new File(getTaskFile(name));
         return file.exists();
     }
 
@@ -54,12 +57,12 @@ public class Files {
      * @param name
      * @throws IOException
      */
-    public static void createNewCommandTimerDataFile(String name) throws IOException {
-        if (commandTimerFileExists(name)) {
+    public static void createNewTaskFile(String name) throws IOException {
+        if (taskFileExists(name)) {
             throw new FileAlreadyExistsException(name);
         }
 
-        FileWriter jsonFile = new FileWriter(getTimerFile(name));
+        FileWriter jsonFile = new FileWriter(getTaskFile(name));
         JSONObject commandTimer = new JSONObject();
 
         ArrayList<String> days = new ArrayList<>();
@@ -80,9 +83,9 @@ public class Files {
     }
 
     public static void removeExistingCommandTimer(String name) throws IOException {
-        File file = new File(getTimerFile(name));
+        File file = new File(getTaskFile(name));
 
-        if (!commandTimerFileExists(name)) {
+        if (!taskFileExists(name)) {
             throw new FileNotFoundException();
         }
 
@@ -94,7 +97,7 @@ public class Files {
     }
 
     public static void changeDataInFile(String timerName, String key, String value) throws IOException, ParseException {
-        String timerFile = getTimerFile(timerName);
+        String timerFile = getTaskFile(timerName);
 
         Reader reader = new FileReader(timerFile);
 
@@ -103,13 +106,13 @@ public class Files {
 
         commandTimer.put(key, value);
 
-        FileWriter jsonFile = new FileWriter(getTimerFile(timerName));
+        FileWriter jsonFile = new FileWriter(getTaskFile(timerName));
         jsonFile.write(commandTimer.toJSONString());
         jsonFile.flush();
     }
 
     public static void changeDataInFile(String timerName, String key, int value) throws IOException, ParseException {
-        String timerFile = getTimerFile(timerName);
+        String timerFile = getTaskFile(timerName);
 
         Reader reader = new FileReader(timerFile);
 
@@ -118,13 +121,13 @@ public class Files {
 
         commandTimer.put(key, value);
 
-        FileWriter jsonFile = new FileWriter(getTimerFile(timerName));
+        FileWriter jsonFile = new FileWriter(getTaskFile(timerName));
         jsonFile.write(commandTimer.toJSONString());
         jsonFile.flush();
     }
 
     public static void changeDataInFile(String timerName, String key, Boolean value) throws IOException, ParseException {
-        String timerFile = getTimerFile(timerName);
+        String timerFile = getTaskFile(timerName);
 
         Reader reader = new FileReader(timerFile);
 
@@ -133,13 +136,13 @@ public class Files {
 
         commandTimer.put(key, value);
 
-        FileWriter jsonFile = new FileWriter(getTimerFile(timerName));
+        FileWriter jsonFile = new FileWriter(getTaskFile(timerName));
         jsonFile.write(commandTimer.toJSONString());
         jsonFile.flush();
     }
 
     public static void changeDataInFile(String timerName, String key, ArrayList<String> values) throws IOException, ParseException {
-        String timerFile = getTimerFile(timerName);
+        String timerFile = getTaskFile(timerName);
 
         Reader reader = new FileReader(timerFile);
 
@@ -148,13 +151,13 @@ public class Files {
 
         commandTimer.put(key, values);
 
-        FileWriter jsonFile = new FileWriter(getTimerFile(timerName));
+        FileWriter jsonFile = new FileWriter(getTaskFile(timerName));
         jsonFile.write(commandTimer.toJSONString());
         jsonFile.flush();
     }
 
     public static void changeDataInFile(String timerName, String key, double value) throws IOException, ParseException {
-        String timerFile = getTimerFile(timerName);
+        String timerFile = getTaskFile(timerName);
 
         Reader reader = new FileReader(timerFile);
 
@@ -163,15 +166,16 @@ public class Files {
 
         commandTimer.put(key, value);
 
-        FileWriter jsonFile = new FileWriter(getTimerFile(timerName));
+        FileWriter jsonFile = new FileWriter(getTaskFile(timerName));
         jsonFile.write(commandTimer.toJSONString());
         jsonFile.flush();
     }
 
-    public static void deserializeJsonFilesIntoCommandTimers() {
+    public static List<Task> deserializeJsonFilesIntoCommandTimers() {
         File dir = new File(pluginFolderPath + "/timers");
         File[] directoryListing = dir.listFiles();
         JSONParser jsonParser = new JSONParser();
+        List<Task> tasks = new ArrayList<>();
 
         try {
             if (directoryListing != null && directoryListing.length > 0) {
@@ -181,58 +185,16 @@ public class Files {
                     }
 
                     FileReader fr = new FileReader(file.getPath());
-                    JSONObject o = (JSONObject) jsonParser.parse(fr);
 
-                    CommandTimer t = new CommandTimer((String) o.get("name"));
-
-                    t.setExecutionLimit(((Number) o.getOrDefault("executionLimit", -1)).intValue());
-
-                    t.setExecutePerUser((Boolean) o.getOrDefault("executePerUser", false));
-
-                    t.setUseMinecraftTime((Boolean) o.getOrDefault("useMinecraftTime", false));
-
-                    t.setSelectRandomCommand((Boolean) o.getOrDefault("selectRandomCommand", false));
-
-                    t.setSeconds(((Number) o.getOrDefault("seconds", 5)).intValue());
-
-                    t.setMinPlayers(((Number) o.getOrDefault("minPlayers", -1)).intValue());
-
-                    t.setMaxPlayers(((Number) o.getOrDefault("maxPlayers", -1)).intValue());
-
-                    t.setGender(Gender.valueOf((String) o.getOrDefault("gender", "OPERATOR")));
-
-                    t.setRandom((Double) o.getOrDefault("random", 1.0));
-
-                    t.setTimesExecuted(0);
-
-                    ArrayList<String> commands = (ArrayList<String>) o.getOrDefault("commands", new ArrayList<String>());
-                    t.setCommands(commands);
-
-                    ArrayList<String> days = (ArrayList<String>) o.getOrDefault("days", new ArrayList<String>());
-                    t.setDays(days);
-
-                    ArrayList<String> times = (ArrayList<String>) o.getOrDefault("times", new ArrayList<String>());
-                    t.setTimes(times);
-
-                    ArrayList<String> worlds = (ArrayList<String>) o.getOrDefault("worlds", new ArrayList<String>());
-                    t.setWorlds(worlds);
-
-                    String permission = (String) o.getOrDefault("requiredPermission", "");
-                    t.setRequiredPermission(permission);
-
-                    String lastExecuted = (String) o.getOrDefault("lastExecuted", "");
-
-                    if (!lastExecuted.equals("")) {
-                        LocalTime lastExecutedTime = LocalTime.parse(lastExecuted);
-                        t.setLastExecuted(lastExecutedTime);
-                    }
-
-                    TimerManager.addCommandTimer(t);
-                    Messages.sendConsole("Timer " + t.getName() + " has been loaded");
+                    Gson gson = new Gson();
+                    Task task = gson.fromJson(jsonParser.parse(fr).toString(), Task.class);
+                    tasks.add(task);
                 }
             }
         } catch (IOException | ParseException e) {
             e.printStackTrace();
         }
+
+        return tasks;
     }
 }

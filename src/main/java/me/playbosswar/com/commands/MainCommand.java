@@ -29,7 +29,7 @@ public class MainCommand implements CommandExecutor {
         }
 
         if(args.length == 0) {
-            MainMenu.INVENTORY.open(p);
+            new MainMenu().INVENTORY.open(p);
             return true;
         }
 

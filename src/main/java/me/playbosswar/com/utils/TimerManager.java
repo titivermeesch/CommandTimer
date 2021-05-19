@@ -55,7 +55,7 @@ public class TimerManager {
      */
     public static void createNewCommandTimer(Player p, String name) {
         try {
-            Files.createNewCommandTimerDataFile(name);
+            Files.createNewTaskFile(name);
             CommandTimer t = new CommandTimer(name);
             TimerManager.addCommandTimer(t);
             Messages.sendMessageToPlayer(p, "A new timer has been created");

@@ -16,6 +16,13 @@
     <finalName>${project.name}_v${project.version}</finalName>
     <plugins>
       <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>2.3.1</version>
+        <configuration>
+          <outputDirectory>/Users/tristan/Documents/minecraft/servers/1.16.5/plugins</outputDirectory>
+        </configuration>
+      </plugin>
+      <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.8.1</version>
         <configuration>
@@ -53,6 +60,10 @@
     <repository>
       <id>placeholderapi</id>
       <url>http://repo.extendedclip.com/content/repositories/placeholderapi/</url>
+    </repository>
+    <repository>
+      <id>codemc-snapshots</id>
+      <url>https://repo.codemc.io/repository/maven-snapshots/</url>
     </repository>
   </repositories>
   <dependencies>
