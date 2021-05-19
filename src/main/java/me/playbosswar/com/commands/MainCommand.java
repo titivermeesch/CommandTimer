@@ -1,9 +1,8 @@
 package me.playbosswar.com.commands;
 
 import me.playbosswar.com.Tools;
-import me.playbosswar.com.chat.ChatMenus;
+import me.playbosswar.com.gui.MainMenu;
 import me.playbosswar.com.utils.CommandTimer;
-import me.playbosswar.com.utils.Files;
 import me.playbosswar.com.utils.TimerManager;
 import me.playbosswar.com.utils.Messages;
 import org.bukkit.command.Command;
@@ -26,6 +25,11 @@ public class MainCommand implements CommandExecutor {
 
         if (!p.hasPermission("commandtimer.use")) {
             Messages.sendNoPermission(p);
+            return true;
+        }
+
+        if(args.length == 0) {
+            MainMenu.INVENTORY.open(p);
             return true;
         }
 
@@ -64,11 +68,6 @@ public class MainCommand implements CommandExecutor {
 
             if (args[0].equalsIgnoreCase("remove") || args[0].equalsIgnoreCase("delete")) {
                 TimerManager.deleteCommandtimer(p, args[1]);
-                return true;
-            }
-
-            if (args[0].equalsIgnoreCase("info")) {
-                ChatMenus.openTimerMenu(p, args[1]);
                 return true;
             }
 

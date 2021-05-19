@@ -7,7 +7,7 @@
     <groupId>me.playbosswar.com</groupId>
     <artifactId>commandtimer</artifactId>
     <name>CommandTimer</name>
-    <version>5.2</version>
+    <version>6.0</version>
 
     <description>This plugin allows you to schedule commands that will be executed</description>
 
@@ -86,6 +86,11 @@
             <groupId>com.github.cryptomorin</groupId>
             <artifactId>XSeries</artifactId>
             <version>7.2.1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>fr.minuskube.inv</groupId>
+            <artifactId>smart-invs</artifactId>
+            <version>1.2.7</version>
         </dependency>
     </dependencies>
 </project>
