@@ -8,10 +8,13 @@ public enum HookType {
             "§7PlaceholderAPI",
             "",
             "§bAvailable placeholders:",
-            "§7  - %commandtimer_taskname_seconds%: Show the amount of",
+            "",
+            "§7  - §e%commandtimer_taskname_seconds%: §7Show the amount of",
             "§7    seconds between each execution (only works if seconds are set)",
-            "§7  - %commandtimer_timername_nextExecution%: Show when the next",
+            "",
+            "§7  - §e%commandtimer_timername_nextExecution%: §7Show when the next",
             "§7     execution of a task will be",
+            "",
             "§7You can use §bsecondsFormat §7and §bnextExecutionFormat §7if",
             "§7you want the amount in hours, minutes, seconds"
     });

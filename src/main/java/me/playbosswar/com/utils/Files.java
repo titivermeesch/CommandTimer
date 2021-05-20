@@ -9,7 +9,6 @@ import org.json.simple.parser.ParseException;
 
 import java.io.*;
 import java.nio.file.FileAlreadyExistsException;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -188,6 +187,9 @@ public class Files {
 
                     Gson gson = new Gson();
                     Task task = gson.fromJson(jsonParser.parse(fr).toString(), Task.class);
+                    if(task.getCommands() == null) {
+                        task.setCommands(new ArrayList<>());
+                    }
                     tasks.add(task);
                 }
             }

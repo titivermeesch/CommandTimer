@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class Task {
     private String name;
-    private ArrayList<String> commands = new ArrayList<>();
+    private ArrayList<TaskCommand> commands = new ArrayList<>();
     private Gender gender = Gender.CONSOLE;
     private int seconds = 5;
     private ArrayList<String> times = new ArrayList<>();
@@ -44,16 +44,21 @@ public class Task {
         this.name = name;
     }
 
-    public ArrayList<String> getCommands() {
+    public ArrayList<TaskCommand> getCommands() {
         return commands;
     }
 
-    public void setCommands(ArrayList<String> commands) {
+    public void setCommands(ArrayList<TaskCommand> commands) {
         this.commands = commands;
     }
 
-    public void addCommand(String command) {
+    public int addCommand(TaskCommand command) {
         this.commands.add(command);
+        return commands.indexOf(command);
+    }
+
+    public void removeCommand(TaskCommand command) {
+        commands.remove(command);
     }
 
     public Gender getGender() {

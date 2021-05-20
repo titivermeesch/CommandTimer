@@ -1,7 +1,7 @@
 main: me.playbosswar.com.Main
-name: "${project.name}"
-version: "${project.version}"
-description: "${project.description}"
+name: "CommandTimer"
+version: "6.0.0"
+description: "Schedule commands like you want"
 author: PlayBossWar
 api-version: 1.13
 softdepend: [PlaceholderAPI]

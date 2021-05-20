@@ -7,6 +7,8 @@ import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
 import me.playbosswar.com.Main;
 import me.playbosswar.com.gui.MainMenu;
+import me.playbosswar.com.gui.tasks.commands.AllCommandsMenu;
+import me.playbosswar.com.gui.tasks.scheduler.MainScheduleMenu;
 import me.playbosswar.com.tasks.Task;
 import me.playbosswar.com.utils.ItemGeneratorHelpers;
 import org.bukkit.entity.Player;
@@ -28,7 +30,7 @@ public class EditTaskMenu implements InventoryProvider {
     }
 
     public void init(Player player, InventoryContents contents) {
-        contents.fillBorders(ClickableItem.empty(XMaterial.ORANGE_STAINED_GLASS_PANE.parseItem()));
+        contents.fillBorders(ClickableItem.empty(XMaterial.BLUE_STAINED_GLASS_PANE.parseItem()));
 
         String[] nameLore = new String[]{"", "§7Change the display name of this task"};
         ItemStack nameItem = ItemGeneratorHelpers.generateItem("§bTask name", XMaterial.PAPER, nameLore);
@@ -42,8 +44,17 @@ public class EditTaskMenu implements InventoryProvider {
 
         String[] commandsLore = new String[]{"", "§7Choose which commands to execute"};
         ItemStack commandsItem = ItemGeneratorHelpers.generateItem("§bCommands", XMaterial.COMMAND_BLOCK, commandsLore);
-        ClickableItem clickableCommandsItem = ClickableItem.of(commandsItem, e -> new MainCommandsMenu(task).INVENTORY.open(player));
+        ClickableItem clickableCommandsItem = ClickableItem.of(commandsItem, e -> new AllCommandsMenu(task).INVENTORY.open(player));
         contents.set(1, 3, clickableCommandsItem);
+
+        String[] generalLimitsLore = new String[]{"",
+                "§7Add more limits to this task to",
+                "§7limit when the task can be executed.",
+                "",
+                "§bAvailable limits:",
+                "§7  - Amount of players online",
+                "§7  - "
+        };
 
         ItemStack backItem = ItemGeneratorHelpers.getBackItem();
         ClickableItem clickableBack = ClickableItem.of(backItem, e -> new MainMenu().INVENTORY.open(player));

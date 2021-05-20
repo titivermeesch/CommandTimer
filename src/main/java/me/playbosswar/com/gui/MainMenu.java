@@ -28,7 +28,7 @@ public class MainMenu implements InventoryProvider {
     }
 
     public void init(Player player, InventoryContents contents) {
-        contents.fillBorders(ClickableItem.empty(XMaterial.ORANGE_STAINED_GLASS_PANE.parseItem()));
+        contents.fillBorders(ClickableItem.empty(XMaterial.BLUE_STAINED_GLASS_PANE.parseItem()));
         ItemStack createTaskItem = ItemGeneratorHelpers.generateItem("§bCreate task",
                                                                      XMaterial.ANVIL,
                                                                      new String[]{ "",

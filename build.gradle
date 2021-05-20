@@ -1,0 +1,44 @@
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '7.0.0'
+}
+
+group = 'me.playbosswar.com'
+version = '6.0'
+description = 'CommandTimer'
+sourceCompatibility = '1.8'
+
+repositories {
+    mavenLocal()
+    maven {
+        url = 'https://repo1.maven.org/maven2'
+    }
+    maven {
+        url = 'https://papermc.io/repo/repository/maven-public/'
+    }
+    maven {
+        url = 'http://repo.extendedclip.com/content/repositories/placeholderapi/'
+        allowInsecureProtocol = true
+    }
+    maven {
+        url = 'https://repo.codemc.io/repository/maven-snapshots/'
+    }
+}
+
+shadowJar {
+    dependencies {
+        include(dependency('net.wesjd:anvilgui:1.5.0-SNAPSHOT'))
+        include(dependency('fr.minuskube.inv:smart-invs:1.2.7'))
+        include(dependency('com.github.cryptomorin:XSeries:7.2.1.2'))
+    }
+}
+
+dependencies {
+    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'com.github.cryptomorin:XSeries:7.2.1.2'
+    implementation 'fr.minuskube.inv:smart-invs:1.2.7'
+    implementation 'net.wesjd:anvilgui:1.5.0-SNAPSHOT'
+    implementation 'org.apache.commons:commons-lang3:3.8.1'
+    compileOnly 'com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT'
+    compileOnly 'me.clip:placeholderapi:2.10.9'
+}

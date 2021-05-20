@@ -8,6 +8,7 @@ import fr.minuskube.inv.content.InventoryProvider;
 import fr.minuskube.inv.content.Pagination;
 import fr.minuskube.inv.content.SlotIterator;
 import me.playbosswar.com.Main;
+import me.playbosswar.com.gui.HorizontalIteratorWithBorder;
 import me.playbosswar.com.gui.MainMenu;
 import me.playbosswar.com.tasks.Task;
 import me.playbosswar.com.utils.ItemGeneratorHelpers;
@@ -34,16 +35,12 @@ public class AllTasksMenu implements InventoryProvider {
 
     @Override
     public void init(Player player, InventoryContents contents) {
+        contents.fillBorders(ClickableItem.empty(XMaterial.BLUE_STAINED_GLASS_PANE.parseItem()));
         Pagination pagination = contents.pagination();
 
         pagination.setItems(getAllTaskItems(player));
-        pagination.setItemsPerPage(45);
-        pagination.addToIterator(contents.newIterator(SlotIterator.Type.HORIZONTAL, 0, 0));
+        new HorizontalIteratorWithBorder(player, contents, INVENTORY);
 
-        contents.set(5, 3, ClickableItem.of(new ItemStack(XMaterial.ARROW.parseMaterial()),
-                                            e -> INVENTORY.open(player, pagination.previous().getPage())));
-        contents.set(5, 5, ClickableItem.of(new ItemStack(XMaterial.ARROW.parseMaterial()),
-                                            e -> INVENTORY.open(player, pagination.next().getPage())));
         contents.set(5, 8, ClickableItem.of(ItemGeneratorHelpers.getBackItem(), e -> new MainMenu().INVENTORY.open(player)));
     }
 
