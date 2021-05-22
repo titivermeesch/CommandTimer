@@ -1,6 +1,6 @@
 package me.playbosswar.com.tasks;
 
-import me.playbosswar.com.utils.Gender;
+import me.playbosswar.com.enums.Gender;
 
 import java.time.LocalTime;
 import java.util.ArrayList;

@@ -1,6 +1,7 @@
 package me.playbosswar.com.utils;
 
 import me.playbosswar.com.Tools;
+import me.playbosswar.com.enums.Gender;
 import org.bukkit.entity.Player;
 import org.json.simple.parser.ParseException;
 

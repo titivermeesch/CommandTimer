@@ -1,4 +1,4 @@
-package me.playbosswar.com.utils;
+package me.playbosswar.com.enums;
 
 public enum Gender {
     CONSOLE("console"),

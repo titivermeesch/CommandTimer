@@ -11,7 +11,7 @@ import me.playbosswar.com.gui.HorizontalIteratorWithBorder;
 import me.playbosswar.com.gui.tasks.EditTaskMenu;
 import me.playbosswar.com.tasks.Task;
 import me.playbosswar.com.tasks.TaskCommand;
-import me.playbosswar.com.utils.Gender;
+import me.playbosswar.com.enums.Gender;
 import me.playbosswar.com.utils.ItemGeneratorHelpers;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;

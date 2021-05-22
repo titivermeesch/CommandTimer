@@ -1,4 +1,4 @@
-package me.playbosswar.com.utils;
+package me.playbosswar.com.hooks;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;

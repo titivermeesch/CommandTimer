@@ -1,5 +1,6 @@
 package me.playbosswar.com;
 
+import me.playbosswar.com.enums.Gender;
 import me.playbosswar.com.hooks.PAPIHook;
 import me.playbosswar.com.utils.*;
 import org.bukkit.Bukkit;

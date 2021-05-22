@@ -2,14 +2,13 @@ package me.playbosswar.com.utils;
 
 import me.playbosswar.com.Main;
 import me.playbosswar.com.Tools;
+import me.playbosswar.com.enums.Gender;
 import me.playbosswar.com.hooks.PAPIHook;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.json.simple.parser.ParseException;
 
-import java.io.IOException;
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalDate;

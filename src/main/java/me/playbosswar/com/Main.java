@@ -3,6 +3,7 @@ package me.playbosswar.com;
 import fr.minuskube.inv.InventoryManager;
 import me.playbosswar.com.commands.MainCommand;
 import me.playbosswar.com.hooks.HooksManager;
+import me.playbosswar.com.hooks.Metrics;
 import me.playbosswar.com.tasks.TasksManager;
 import me.playbosswar.com.utils.*;
 import org.bukkit.event.Listener;
@@ -68,5 +69,9 @@ public class Main extends JavaPlugin implements Listener {
 
     public static TasksManager getTasksManager() {
         return tasksManager;
+    }
+
+    public static Metrics getMetrics() {
+        return metrics;
     }
 }
