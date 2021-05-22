@@ -12,12 +12,13 @@ import me.playbosswar.com.gui.tasks.EditTaskMenu;
 import me.playbosswar.com.tasks.Task;
 import me.playbosswar.com.tasks.TaskCommand;
 import me.playbosswar.com.enums.Gender;
-import me.playbosswar.com.utils.ItemGeneratorHelpers;
+import me.playbosswar.com.utils.Items;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class AllCommandsMenu implements InventoryProvider {
     public SmartInventory INVENTORY;
@@ -39,22 +40,45 @@ public class AllCommandsMenu implements InventoryProvider {
         contents.fillBorders(ClickableItem.empty(XMaterial.BLUE_STAINED_GLASS_PANE.parseItem()));
 
         Pagination pagination = contents.pagination();
-
         pagination.setItems(getAllCommands(player));
         new HorizontalIteratorWithBorder(player, contents, INVENTORY);
 
-        contents.set(5, 8, ClickableItem.of(ItemGeneratorHelpers.getBackItem(), e -> new EditTaskMenu(task).INVENTORY.open(player)));
+        contents.set(5, 8, ClickableItem.of(Items.getBackItem(), e -> new EditTaskMenu(task).INVENTORY.open(player)));
 
         String[] addItemLore = new String[]{ "",
                 "§7Add a new command that will be",
                 "§7executed on your specified schedule" };
-        ItemStack addItem = ItemGeneratorHelpers.generateItem("§bAdd command", XMaterial.LIME_DYE, addItemLore);
+        ItemStack addItem = Items.generateItem("§bAdd command", XMaterial.LIME_DYE, addItemLore);
         ClickableItem clickableAddItem = ClickableItem.of(addItem, e -> {
-            TaskCommand taskCommand = new TaskCommand(task, "my command", Gender.CONSOLE);
+            TaskCommand taskCommand = new TaskCommand(task, UUID.randomUUID(), "my command", Gender.CONSOLE);
             task.addCommand(taskCommand);
             new EditCommandMenu(taskCommand).INVENTORY.open(player);
         });
         contents.set(0, 0, clickableAddItem);
+
+        String[] selectModeLore = new String[]{ "",
+                "§7The commands don't need to be executed all",
+                "§7at once. You can decide between one of the",
+                "§7following selection modes:",
+                "",
+                "§7  - §eALL: §7Execute all commands at once",
+                "",
+                "§7  - §eORDERED: §7Execute the commands one by one.",
+                "§7    This works best if you specify seconds. It will",
+                "§7    execute command 1 the first time the task is executed,",
+                "§7    then it will pick command 2 on next execution and so on.",
+                "",
+                "§7  - §eRANDOM: §7Same as above, but will pick a random",
+                "§7    command at each execution.",
+                "",
+                "§a§lCurrent mode: " + task.getCommandExecutionMode().toString()
+        };
+        ItemStack selectModeItem = Items.generateItem("§bExecution mode", XMaterial.DIAMOND_SHOVEL, selectModeLore);
+        ClickableItem clickableSelectModeItem = ClickableItem.of(selectModeItem, e -> {
+            task.switchCommandExecutionMode();
+            this.INVENTORY.open(player);
+        });
+        contents.set(0, 8, clickableSelectModeItem);
     }
 
     @Override
@@ -65,7 +89,7 @@ public class AllCommandsMenu implements InventoryProvider {
     private ClickableItem[] getAllCommands(Player p) {
         ArrayList<TaskCommand> commands = task.getCommands();
 
-        if(commands == null) {
+        if (commands == null) {
             return new ClickableItem[0];
         }
 
@@ -75,7 +99,7 @@ public class AllCommandsMenu implements InventoryProvider {
         for (int i = 0; i < items.length; i++) {
             TaskCommand taskCommand = commands.get(i);
             String command = taskCommand.getCommand();
-            ItemStack item = ItemGeneratorHelpers.generateItem("§b" + command, XMaterial.LEVER, lore);
+            ItemStack item = Items.generateItem("§b" + command, XMaterial.LEVER, lore);
 
             items[i] = ClickableItem.of(item, e -> {
                 if (e.getClick().equals(ClickType.LEFT)) {
