@@ -1,6 +1,6 @@
 main: me.playbosswar.com.Main
 name: "CommandTimer"
-version: "6.0.0"
+version: "6.0.0-ALPHA-2"
 description: "Schedule commands like you want"
 author: PlayBossWar
 api-version: 1.13
@@ -11,6 +11,3 @@ commands:
     usage: /<command>
     aliases: [cmt]
     description: List all commands
-  worldtime:
-    usage: /<command>
-    description: Show real time of current minecraft world
