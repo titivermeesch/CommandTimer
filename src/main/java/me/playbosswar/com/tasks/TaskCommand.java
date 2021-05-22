@@ -20,6 +20,9 @@ public class TaskCommand {
         this.uuid = uuid;
         this.command = command;
         this.gender = gender;
+        weatherConditions.add(WorldWeather.CLEAR);
+        weatherConditions.add(WorldWeather.THUNDER);
+        weatherConditions.add(WorldWeather.RAINING);
     }
 
     public String getCommand() {
@@ -38,6 +41,25 @@ public class TaskCommand {
     public void setGender(Gender gender) {
         this.gender = gender;
         task.storeInstance();
+    }
+
+    public void toggleGender() {
+        if(gender.equals(Gender.OPERATOR)) {
+            gender = Gender.PLAYER;
+            task.storeInstance();
+            return;
+        }
+
+        if(gender.equals(Gender.PLAYER)) {
+            gender = Gender.CONSOLE;
+            task.storeInstance();
+            return;
+        }
+
+        if(gender.equals(Gender.CONSOLE)) {
+            gender = Gender.OPERATOR;
+            task.storeInstance();
+        }
     }
 
     public void setTask(Task task) {

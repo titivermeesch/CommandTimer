@@ -6,10 +6,15 @@ import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
 import me.playbosswar.com.Main;
+import me.playbosswar.com.enums.WorldWeather;
 import me.playbosswar.com.tasks.TaskCommand;
-import me.playbosswar.com.utils.ItemGeneratorHelpers;
+import me.playbosswar.com.utils.Items;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class EditCommandMenu implements InventoryProvider {
     public SmartInventory INVENTORY;
@@ -33,14 +38,14 @@ public class EditCommandMenu implements InventoryProvider {
         String[] editCommandLore = new String[]{ "",
                 "§7Edit the actual command",
                 "",
-                "§7Current command: §e" + taskCommand.getCommand()
+                "§b§lCurrent: " + taskCommand.getCommand()
         };
-        ItemStack editCommandItem = ItemGeneratorHelpers.generateItem("§bChange command", XMaterial.PAPER, editCommandLore);
+        ItemStack editCommandItem = Items.generateItem("§bChange command", XMaterial.PAPER, editCommandLore);
         ClickableItem clickableCommandItem = ClickableItem.of(editCommandItem,
                                                               e -> new EditCommandNameMenu(taskCommand).INVENTORY.open(player));
         contents.set(1, 1, clickableCommandItem);
 
-        String[] genderLore = new String[]{"",
+        String[] genderLore = new String[]{ "",
                 "§7Genders are one of the core concepts of",
                 "§7CommandTimer. They allow you to specify",
                 "§7how your task is executed.",
@@ -59,13 +64,36 @@ public class EditCommandMenu implements InventoryProvider {
                 "§7    has or is lacking.",
                 "",
                 "§7  - §eCONSOLE: §7Execute the command in",
-                "§7    console (terminal) only"
+                "§7    console (terminal) only",
+                "",
+                "§b§lCurrent: " + taskCommand.getGender().toString()
         };
-        ItemStack genderItem = ItemGeneratorHelpers.generateItem("§bGender", XMaterial.CHAINMAIL_HELMET, genderLore);
-        ClickableItem clickableGenderItem = ClickableItem.of(genderItem, e -> {});
+        ItemStack genderItem = Items.generateItem("§bGender", XMaterial.CHAINMAIL_HELMET, genderLore);
+        ClickableItem clickableGenderItem = ClickableItem.of(genderItem, e -> {
+            taskCommand.toggleGender();
+            this.INVENTORY.open(player);
+        });
         contents.set(1, 2, clickableGenderItem);
 
-        contents.set(1, 7, ClickableItem.of(ItemGeneratorHelpers.getBackItem(),
+        List<String> weatherLore = new ArrayList<>();
+        weatherLore.add("");
+        weatherLore.add("§7Set a limit for the weather condition on");
+        weatherLore.add("§7this command");
+        weatherLore.add("");
+
+        boolean clear = taskCommand.getWeatherConditions().contains(WorldWeather.CLEAR);
+        boolean rain = taskCommand.getWeatherConditions().contains(WorldWeather.RAINING);
+        boolean thunder = taskCommand.getWeatherConditions().contains(WorldWeather.THUNDER);
+
+        if (clear || rain || thunder) {
+            weatherLore.add("§b§lCurrent: " + StringUtils.join(taskCommand.getWeatherConditions(), ", "));
+        }
+        String[] weatherLoreArray = weatherLore.toArray(new String[0]);
+        ItemStack weatherItem = Items.generateItem("§bWeather conditions", XMaterial.WATER_BUCKET, weatherLoreArray);
+        ClickableItem clickableWeatherItem = ClickableItem.of(weatherItem, e -> {});
+        contents.set(1, 3, clickableWeatherItem);
+
+        contents.set(1, 7, ClickableItem.of(Items.getBackItem(),
                                             e -> new AllCommandsMenu(taskCommand.getTask()).INVENTORY.open(player)));
     }
 
