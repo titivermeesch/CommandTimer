@@ -8,7 +8,7 @@ import fr.minuskube.inv.content.InventoryProvider;
 import me.playbosswar.com.Main;
 import me.playbosswar.com.gui.MainMenu;
 import me.playbosswar.com.hooks.HookType;
-import me.playbosswar.com.utils.ItemGeneratorHelpers;
+import me.playbosswar.com.utils.Items;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -50,7 +50,7 @@ public class MainIntegrationsMenu implements InventoryProvider {
             i++;
         }
 
-        ItemStack back = ItemGeneratorHelpers.getBackItem();
+        ItemStack back = Items.getBackItem();
         ClickableItem clickableBack = ClickableItem.of(back, e -> new MainMenu().INVENTORY.open(player));
         contents.set(1, 7, clickableBack);
     }

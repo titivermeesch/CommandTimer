@@ -6,7 +6,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
 
-public class ItemGeneratorHelpers {
+public class Items {
     public static ItemStack generateItem(String title, XMaterial material) {
         ItemStack item = material.parseItem();
         ItemMeta meta = item.getItemMeta();

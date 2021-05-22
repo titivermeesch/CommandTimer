@@ -18,7 +18,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class Tools {
-    private static Plugin pl = Main.getPlugin();
+    private static final Plugin pl = Main.getPlugin();
     private static HashMap<String, Integer> tasksTimesExecuted = new HashMap<>();
     public static ArrayList<Timer> timerList = new ArrayList<>();
 
@@ -46,28 +46,22 @@ public class Tools {
         long hours = gameTime / 1000 + 6;
         long minutes = (gameTime % 1000) * 60 / 1000;
 
-        if (hours == 0) hours = 12;
-        if (hours >= 24) hours -= 24;
+        if (hours == 0) {
+            hours = 12;
+        }
+        if (hours >= 24) {
+            hours -= 24;
+        }
 
         String mm = "0" + minutes;
         mm = mm.substring(mm.length() - 2);
 
         String realHours = String.valueOf(hours);
-        if(hours < 10) {
+        if (hours < 10) {
             realHours = "0" + realHours;
         }
 
         return realHours + ":" + mm;
-    }
-
-    /**
-     * Reload all plugin tasks
-     */
-    public static void reloadTasks() {
-        TimerManager.cancelAllTimers();
-        pl.reloadConfig();
-        Files.deserializeJsonFilesIntoCommandTimers();
-        CommandExecutor.startRunner();
     }
 
     static void scheduleHourRange(String hour, String task, String command, Gender gender, String worldName) {
@@ -143,18 +137,22 @@ public class Tools {
 
                             int timesExecuted = tasksTimesExecuted.get(task);
 
-                            if (c.contains("tasks." + task + ".executionLimit") && timesExecuted >= c.getInt("tasks." + task + ".executionLimit")) {
+                            if (c.contains("tasks." + task + ".executionLimit") && timesExecuted >= c.getInt("tasks." + task +
+                                                                                                                     ".executionLimit")) {
                                 return;
                             }
 
                             tasksTimesExecuted.replace(task, ++timesExecuted);
 
                             if (c.contains("tasks." + task + ".seconds")) {
-                                Bukkit.getScheduler().scheduleSyncDelayedTask(pl, () -> Tools.executeCommand(task, command, gender), c.getInt("tasks." + task + ".seconds") * 20);
+                                Bukkit.getScheduler().scheduleSyncDelayedTask(pl, () -> Tools.executeCommand(task, command,
+                                                                                                             gender), c.getInt(
+                                                                                                                     "tasks." + task + ".seconds") * 20);
                                 return;
                             }
 
-                            Bukkit.getScheduler().scheduleSyncDelayedTask(pl, () -> Tools.executeCommand(task, command, gender), 1L);
+                            Bukkit.getScheduler().scheduleSyncDelayedTask(pl, () -> Tools.executeCommand(task, command, gender)
+                                    , 1L);
                         }
                     }, 1L, 900L);
                 }
@@ -179,7 +177,8 @@ public class Tools {
 
                         int timesExecuted = tasksTimesExecuted.get(task);
 
-                        if (c.contains("tasks." + task + ".executionLimit") && timesExecuted >= c.getInt("tasks." + task + ".executionLimit")) {
+                        if (c.contains("tasks." + task + ".executionLimit") && timesExecuted >= c.getInt("tasks." + task +
+                                                                                                                 ".executionLimit")) {
                             return;
                         }
 
@@ -303,6 +302,7 @@ public class Tools {
      * Returns a boolean value based on the value
      *
      * @param random - value between 0 and 1
+     *
      * @return boolean
      */
     public static boolean randomCheck(double random) {
@@ -320,7 +320,8 @@ public class Tools {
         int m = (seconds % 3600) / 60;
         int s = seconds % 60;
         String sh = (h > 0 ? h + " " + "h" : "");
-        String sm = (m < 10 && m > 0 && h > 0 ? "0" : "") + (m > 0 ? (h > 0 && s == 0 ? String.valueOf(m) : m + " " + "min") : "");
+        String sm = (m < 10 && m > 0 && h > 0 ? "0" : "") + (m > 0 ? (h > 0 && s == 0 ? String.valueOf(m) : m + " " + "min") :
+                "");
         String ss = (s == 0 && (h > 0 || m > 0) ? "" : (s < 10 && (h > 0 || m > 0) ? "0" : "") + s + " " + "sec");
         return sh + (h > 0 ? " " : "") + sm + (m > 0 ? " " : "") + ss;
     }

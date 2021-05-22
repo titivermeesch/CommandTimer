@@ -6,12 +6,11 @@ import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
 import fr.minuskube.inv.content.Pagination;
-import fr.minuskube.inv.content.SlotIterator;
 import me.playbosswar.com.Main;
 import me.playbosswar.com.gui.HorizontalIteratorWithBorder;
 import me.playbosswar.com.gui.MainMenu;
 import me.playbosswar.com.tasks.Task;
-import me.playbosswar.com.utils.ItemGeneratorHelpers;
+import me.playbosswar.com.utils.Items;
 import me.playbosswar.com.utils.Messages;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -41,7 +40,7 @@ public class AllTasksMenu implements InventoryProvider {
         pagination.setItems(getAllTaskItems(player));
         new HorizontalIteratorWithBorder(player, contents, INVENTORY);
 
-        contents.set(5, 8, ClickableItem.of(ItemGeneratorHelpers.getBackItem(), e -> new MainMenu().INVENTORY.open(player)));
+        contents.set(5, 8, ClickableItem.of(Items.getBackItem(), e -> new MainMenu().INVENTORY.open(player)));
     }
 
     @Override
@@ -57,7 +56,7 @@ public class AllTasksMenu implements InventoryProvider {
 
         for (int i = 0; i < items.length; i++) {
             Task task = tasks.get(i);
-            ItemStack item = ItemGeneratorHelpers.generateItem("§b" + task.getName(), XMaterial.MAP, lore);
+            ItemStack item = Items.generateItem("§b" + task.getName(), XMaterial.MAP, lore);
             items[i] = ClickableItem.of(item, e -> {
                 if (e.getClick().equals(ClickType.LEFT)) {
                     new EditTaskMenu(task).INVENTORY.open(p);

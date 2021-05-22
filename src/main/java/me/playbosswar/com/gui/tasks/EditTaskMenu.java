@@ -10,7 +10,7 @@ import me.playbosswar.com.gui.MainMenu;
 import me.playbosswar.com.gui.tasks.commands.AllCommandsMenu;
 import me.playbosswar.com.gui.tasks.scheduler.MainScheduleMenu;
 import me.playbosswar.com.tasks.Task;
-import me.playbosswar.com.utils.ItemGeneratorHelpers;
+import me.playbosswar.com.utils.Items;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -33,17 +33,17 @@ public class EditTaskMenu implements InventoryProvider {
         contents.fillBorders(ClickableItem.empty(XMaterial.BLUE_STAINED_GLASS_PANE.parseItem()));
 
         String[] nameLore = new String[]{"", "§7Change the display name of this task"};
-        ItemStack nameItem = ItemGeneratorHelpers.generateItem("§bTask name", XMaterial.PAPER, nameLore);
+        ItemStack nameItem = Items.generateItem("§bTask name", XMaterial.PAPER, nameLore);
         ClickableItem clickableNameItem = ClickableItem.of(nameItem, e -> new TaskNameMenu(player, task).INVENTORY.open(player));
         contents.set(1, 1, clickableNameItem);
 
         String[] scheduleLore = new String[]{"", "§7Choose when this task will be executed"};
-        ItemStack scheduleItem = ItemGeneratorHelpers.generateItem("§bSchedule settings", XMaterial.CLOCK, scheduleLore);
+        ItemStack scheduleItem = Items.generateItem("§bSchedule settings", XMaterial.CLOCK, scheduleLore);
         ClickableItem clickableScheduleItem = ClickableItem.of(scheduleItem, e -> new MainScheduleMenu(task).INVENTORY.open(player));
         contents.set(1, 2, clickableScheduleItem);
 
         String[] commandsLore = new String[]{"", "§7Choose which commands to execute"};
-        ItemStack commandsItem = ItemGeneratorHelpers.generateItem("§bCommands", XMaterial.COMMAND_BLOCK, commandsLore);
+        ItemStack commandsItem = Items.generateItem("§bCommands", XMaterial.COMMAND_BLOCK, commandsLore);
         ClickableItem clickableCommandsItem = ClickableItem.of(commandsItem, e -> new AllCommandsMenu(task).INVENTORY.open(player));
         contents.set(1, 3, clickableCommandsItem);
 
@@ -56,7 +56,7 @@ public class EditTaskMenu implements InventoryProvider {
                 "§7  - "
         };
 
-        ItemStack backItem = ItemGeneratorHelpers.getBackItem();
+        ItemStack backItem = Items.getBackItem();
         ClickableItem clickableBack = ClickableItem.of(backItem, e -> new MainMenu().INVENTORY.open(player));
         contents.set(2, 7, clickableBack);
     }

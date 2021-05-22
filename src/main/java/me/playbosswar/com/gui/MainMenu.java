@@ -9,8 +9,7 @@ import me.playbosswar.com.Main;
 import me.playbosswar.com.gui.integrations.MainIntegrationsMenu;
 import me.playbosswar.com.gui.tasks.AllTasksMenu;
 import me.playbosswar.com.gui.tasks.EditTaskMenu;
-import me.playbosswar.com.tasks.Task;
-import me.playbosswar.com.utils.ItemGeneratorHelpers;
+import me.playbosswar.com.utils.Items;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -29,9 +28,9 @@ public class MainMenu implements InventoryProvider {
 
     public void init(Player player, InventoryContents contents) {
         contents.fillBorders(ClickableItem.empty(XMaterial.BLUE_STAINED_GLASS_PANE.parseItem()));
-        ItemStack createTaskItem = ItemGeneratorHelpers.generateItem("§bCreate task",
-                                                                     XMaterial.ANVIL,
-                                                                     new String[]{ "",
+        ItemStack createTaskItem = Items.generateItem("§bCreate task",
+                                                      XMaterial.ANVIL,
+                                                      new String[]{ "",
                                                                              "§7A task consists of:",
                                                                              "§7  - A set of conditions",
                                                                              "§7  - One or more commands",
@@ -45,18 +44,18 @@ public class MainMenu implements InventoryProvider {
         );
         contents.set(1, 1, createItem);
 
-        ItemStack listTimersItem = ItemGeneratorHelpers.generateItem("§bAll tasks",
-                                                                     XMaterial.PAPER,
-                                                                     new String[]{ "",
+        ItemStack listTimersItem = Items.generateItem("§bAll tasks",
+                                                      XMaterial.PAPER,
+                                                      new String[]{ "",
                                                                              "§7Get an overview of your currently",
                                                                              "§7loaded tasks"
                                                                      });
         ClickableItem listItem = ClickableItem.of(listTimersItem, e -> new AllTasksMenu().INVENTORY.open(player));
         contents.set(1, 2, listItem);
 
-        ItemStack integrationsItem = ItemGeneratorHelpers.generateItem("§bIntegrations",
-                                                                       XMaterial.CRAFTING_TABLE,
-                                                                       new String[]{ "",
+        ItemStack integrationsItem = Items.generateItem("§bIntegrations",
+                                                        XMaterial.CRAFTING_TABLE,
+                                                        new String[]{ "",
                                                                                "§7See all possible integrations",
                                                                                "§7and the ones that are currently loaded"
                                                                        });
@@ -64,9 +63,9 @@ public class MainMenu implements InventoryProvider {
                                                                    e -> new MainIntegrationsMenu().INVENTORY.open(player));
         contents.set(1, 3, clickableIntegrationsItem);
 
-        ItemStack infoItem = ItemGeneratorHelpers.generateItem("§bGeneral information",
-                                                               XMaterial.REDSTONE_TORCH,
-                                                               new String[]{ "",
+        ItemStack infoItem = Items.generateItem("§bGeneral information",
+                                                XMaterial.REDSTONE_TORCH,
+                                                new String[]{ "",
                                                                        "§7Version: 6.0.0-ALPHA-2" });
         contents.set(1, 7, ClickableItem.empty(infoItem));
     }

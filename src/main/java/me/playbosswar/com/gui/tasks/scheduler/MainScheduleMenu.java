@@ -8,7 +8,7 @@ import fr.minuskube.inv.content.InventoryProvider;
 import me.playbosswar.com.Main;
 import me.playbosswar.com.gui.tasks.EditTaskMenu;
 import me.playbosswar.com.tasks.Task;
-import me.playbosswar.com.utils.ItemGeneratorHelpers;
+import me.playbosswar.com.utils.Items;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -36,7 +36,7 @@ public class MainScheduleMenu implements InventoryProvider {
                 "",
                 "§7This means that your set of commands will be",
                 "§7executed every x seconds on a", "§7regular base." };
-        ItemStack secondsItem = ItemGeneratorHelpers.generateItem("§bSeconds", XMaterial.CLOCK, secondsItemLore);
+        ItemStack secondsItem = Items.generateItem("§bSeconds", XMaterial.CLOCK, secondsItemLore);
         ClickableItem clickableSecondsItem = ClickableItem.of(secondsItem, e -> {});
         contents.set(1, 1, clickableSecondsItem);
 
@@ -46,7 +46,7 @@ public class MainScheduleMenu implements InventoryProvider {
                 "",
                 "§7This could for example be 13:15:00, that would",
                 "§7execute your task every day at that time" };
-        ItemStack timesItem = ItemGeneratorHelpers.generateItem("§bSpecific time", XMaterial.CLOCK, hoursLore);
+        ItemStack timesItem = Items.generateItem("§bSpecific time", XMaterial.CLOCK, hoursLore);
         ClickableItem clickableTimesItem = ClickableItem.of(timesItem, e -> {});
         contents.set(1, 2, clickableTimesItem);
 
@@ -58,11 +58,11 @@ public class MainScheduleMenu implements InventoryProvider {
                 "",
                 "§7You can for example choose to only execute a task",
                 "§7during the weekend, or only on monday,..." };
-        ItemStack daysItem = ItemGeneratorHelpers.generateItem("§bDays", XMaterial.CLOCK, daysLore);
+        ItemStack daysItem = Items.generateItem("§bDays", XMaterial.CLOCK, daysLore);
         ClickableItem clickableDaysItem = ClickableItem.of(daysItem, e -> {});
         contents.set(1, 3, clickableDaysItem);
 
-        contents.set(1, 7, ClickableItem.of(ItemGeneratorHelpers.getBackItem(),
+        contents.set(1, 7, ClickableItem.of(Items.getBackItem(),
                                             e -> new EditTaskMenu(task).INVENTORY.open(player)));
     }
 
