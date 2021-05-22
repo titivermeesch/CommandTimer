@@ -17,6 +17,11 @@ public enum HookType {
             "",
             "§7You can use §bsecondsFormat §7and §bnextExecutionFormat §7if",
             "§7you want the amount in hours, minutes, seconds"
+    }),
+    METRICS("Metrics", new String[]{ "",
+            "§7Metrics is an integration to keep track of certain",
+            "§7server statistics like player count, what machine",
+            "§7you are using,...",
     });
 
     private String displayName;

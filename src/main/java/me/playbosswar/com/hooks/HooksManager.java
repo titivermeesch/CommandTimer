@@ -13,11 +13,15 @@ import java.util.List;
  * Main manager that handles all external API's
  */
 public class HooksManager implements Listener {
-    private List<HookType> loadedHooks = new ArrayList<>();
+    private final List<HookType> loadedHooks = new ArrayList<>();
 
     public HooksManager() {
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             hookIntoPAPI();
+        }
+
+        if(Main.getMetrics().isEnabled()) {
+            loadedHooks.add(HookType.METRICS);
         }
     }
 

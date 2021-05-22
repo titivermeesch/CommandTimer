@@ -47,6 +47,7 @@ public class MainIntegrationsMenu implements InventoryProvider {
             item.setItemMeta(meta);
 
             contents.set(1, i, ClickableItem.empty(item));
+            i++;
         }
 
         ItemStack back = ItemGeneratorHelpers.getBackItem();
