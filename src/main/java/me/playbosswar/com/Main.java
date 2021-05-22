@@ -34,14 +34,12 @@ public class Main extends JavaPlugin implements Listener {
         inventoryManager.init();
 
         Tools.printDate();
-        CommandExecutor.startRunner();
         Messages.sendConsole("&e" + getDescription().getVersion() + "&a loaded!");
     }
 
     @Override
     public void onDisable() {
-        TimerManager.cancelAllTimers();
-
+        tasksManager.disable();
         saveDefaultConfig();
         plugin = null;
     }

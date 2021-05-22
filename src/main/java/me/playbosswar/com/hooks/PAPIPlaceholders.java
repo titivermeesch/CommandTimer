@@ -1,9 +1,9 @@
 package me.playbosswar.com.hooks;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import me.playbosswar.com.Main;
 import me.playbosswar.com.Tools;
-import me.playbosswar.com.utils.CommandTimer;
-import me.playbosswar.com.utils.TimerManager;
+import me.playbosswar.com.tasks.Task;
 import me.playbosswar.com.utils.Messages;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -53,33 +53,33 @@ public class PAPIPlaceholders extends PlaceholderExpansion {
         String commandName = identifierParts[0];
         String commandField = identifierParts[1];
 
-        CommandTimer timer = TimerManager.getCommandTimer(commandName);
+        Task task = Main.getTasksManager().getTaskByName(commandName);
 
-        if(timer == null) {
+        if(task == null) {
             Messages.sendConsole("Tried to use PAPI placeholder for unknown command: %commandtimer_" + identifier);
             return null;
         }
 
         if(commandField.equalsIgnoreCase("seconds")) {
-            return timer.getSeconds() + "";
+            return task.getSeconds() + "";
         }
 
         if(commandField.equalsIgnoreCase("secondsFormat")) {
-            return Tools.getTimeString(timer.getSeconds());
+            return Tools.getTimeString(task.getSeconds());
         }
 
         if(commandField.equalsIgnoreCase("nextExecution")) {
             LocalTime now = LocalTime.now();
-            LocalTime lastExecution = timer.getLastExecuted();
+            LocalTime lastExecution = task.getLastExecuted();
             long difference = lastExecution.until(now, ChronoUnit.SECONDS);
-            return timer.getSeconds() - difference + "";
+            return task.getSeconds() - difference + "";
         }
 
         if(commandField.equalsIgnoreCase("nextExecutionFormat")) {
             LocalTime now = LocalTime.now();
-            LocalTime lastExecution = timer.getLastExecuted();
+            LocalTime lastExecution = task.getLastExecuted();
             long difference = lastExecution.until(now, ChronoUnit.SECONDS);
-            long timeLeft = timer.getSeconds() - difference;
+            long timeLeft = task.getSeconds() - difference;
 
             return Tools.getTimeString((int) timeLeft);
         }

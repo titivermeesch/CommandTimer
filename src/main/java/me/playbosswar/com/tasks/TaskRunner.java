@@ -1,13 +1,14 @@
-package me.playbosswar.com.utils;
+package me.playbosswar.com.tasks;
 
 import me.playbosswar.com.Main;
 import me.playbosswar.com.Tools;
+import me.playbosswar.com.enums.CommandExecutionMode;
 import me.playbosswar.com.enums.Gender;
 import me.playbosswar.com.hooks.PAPIHook;
+import me.playbosswar.com.utils.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.time.DayOfWeek;
 import java.time.Duration;
@@ -15,17 +16,24 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
-public class CommandExecutor {
+/**
+ * Runnable responsible for scheduling tasks
+ */
+public class TaskRunner implements Runnable {
     private static final boolean debug = Main.getPlugin().getConfig().getBoolean("debug");
 
-    public static void startRunner() {
-        BukkitRunnable timer = new BukkitRunnable() {
+    @Override
+    public void run() {
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                ArrayList<CommandTimer> timers = TimerManager.getAllTimers();
+                ArrayList<Task> tasks = Main.getTasksManager().getLoadedTasks();
 
-                for (CommandTimer timer : timers) {
+                for (Task timer : tasks) {
                     if (debug) {
                         Messages.sendConsole("Checking if " + timer.getName() + " can be executed");
                     }
@@ -64,7 +72,8 @@ public class CommandExecutor {
                         Boolean shouldBlock = true;
 
                         // Handle minecraft world time
-                        if (timer.getUseMinecraftTime()) {
+                        // if (timer.getUseMinecraftTime()) {
+                        if(true) {
                             if (debug) {
                                 Messages.sendConsole("Timer is using minecraft time");
                             }
@@ -74,15 +83,15 @@ public class CommandExecutor {
                                 assert world != null;
                                 String minecraftTime = Tools.calculateWorldTime(world);
 
-                                if(debug) {
+                                if (debug) {
                                     Messages.sendConsole("Current minecraft time is " + minecraftTime);
                                 }
 
-                                for (String time : timer.getTimes()) {
+                                for (TaskTime time : timer.getTimes()) {
                                     LocalTime current = LocalTime.parse(minecraftTime);
 
-                                    if (time.contains("[")) {
-                                        String[] hourRange = Tools.charRemoveAt(Tools.charRemoveAt(time, 0), time.length() - 2).split("-");
+                                    if (time.getTime().contains("[")) {
+                                        String[] hourRange = Tools.charRemoveAt(Tools.charRemoveAt(time.getTime(), 0), time.getTime().length() - 2).split("-");
 
                                         LocalTime startRange = LocalTime.parse(hourRange[0]);
                                         LocalTime endRange = LocalTime.parse(hourRange[1]);
@@ -98,25 +107,25 @@ public class CommandExecutor {
                         }
 
                         // Handle real world time
-                        for (String time : timer.getTimes()) {
-                            if(debug) {
+                        for (TaskTime time : timer.getTimes()) {
+                            if (debug) {
                                 Messages.sendConsole("Found time " + time + ", checking if execution is needed");
                             }
 
                             LocalTime current = LocalTime.now().withNano(0);
 
-                            if (time.contains("[")) {
-                                if(debug) {
+                            if (time.getTime().contains("[")) {
+                                if (debug) {
                                     Messages.sendConsole("Found time range");
                                 }
 
-                                String[] hourRange = Tools.charRemoveAt(Tools.charRemoveAt(time, 0), time.length() - 2).split("-");
+                                String[] hourRange = Tools.charRemoveAt(Tools.charRemoveAt(time.getTime(), 0), time.getTime().length() - 2).split("-");
 
                                 LocalTime startRange = LocalTime.parse(hourRange[0]);
                                 LocalTime endRange = LocalTime.parse(hourRange[1]);
 
                                 if (current.isAfter(startRange) && current.isBefore(endRange)) {
-                                    if(debug) {
+                                    if (debug) {
                                         Messages.sendConsole("Time is in range, continue processing...");
                                     }
 
@@ -126,13 +135,13 @@ public class CommandExecutor {
 
                             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 
-                            if(debug) {
+                            if (debug) {
                                 Messages.sendConsole("Time for timer is: " + time);
                                 Messages.sendConsole("Current time is: " + current.format(formatter));
                             }
 
                             if (current.format(formatter).equals(time)) {
-                                if(debug) {
+                                if (debug) {
                                     Messages.sendConsole("Times are equal, continue processing...");
                                 }
 
@@ -141,7 +150,7 @@ public class CommandExecutor {
                         }
 
                         if (shouldBlock) {
-                            if(debug) {
+                            if (debug) {
                                 Messages.sendConsole("Times are not equal, skipping");
                             }
                             continue;
@@ -178,54 +187,56 @@ public class CommandExecutor {
                         continue;
                     }
 
-                    Gender timerGender = timer.getGender();
-                    boolean selectRandomCommand = timer.isSelectRandomCommand();
+                    // Gender timerGender = timer.getGender();
+                    Gender timerGender = Gender.CONSOLE;
+                    boolean selectRandomCommand = timer.getCommandExecutionMode().equals(CommandExecutionMode.RANDOM);
                     int selectedCommand = Tools.getRandomInt(0, timer.getCommands().size() - 1);
 
-                    if(debug && selectRandomCommand) {
+                    if (debug && selectRandomCommand) {
                         Messages.sendConsole("Timer has random command selection enabled");
                     }
 
                     if (timerGender.equals(Gender.CONSOLE)) {
                         int i = 0;
-                        for (String command : timer.getCommands()) {
+                        for (TaskCommand command : timer.getCommands()) {
 
-                            if(selectRandomCommand && i != selectedCommand) {
+                            if (selectRandomCommand && i != selectedCommand) {
                                 i++;
                                 continue;
                             }
 
-                            if (timer.getExecutePerUser()) {
+                            // if (timer.getExecutePerUser()) {
+                            if(true) {
                                 for (Player p : Bukkit.getOnlinePlayers()) {
                                     if (timer.getRequiredPermission() != "" && p.hasPermission(timer.getRequiredPermission())) {
-                                        Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command, p));
+                                        Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command.getCommand(), p));
                                     }
                                 }
                             } else {
-                                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command, null));
+                                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command.getCommand(), null));
                             }
 
                             i++;
                         }
                     } else if (timerGender.equals(Gender.PLAYER)) {
                         int i = 0;
-                        for (String command : timer.getCommands()) {
-                            if(selectRandomCommand && i != selectedCommand) {
+                        for (TaskCommand command : timer.getCommands()) {
+                            if (selectRandomCommand && i != selectedCommand) {
                                 i++;
                                 continue;
                             }
 
                             for (Player p : Bukkit.getOnlinePlayers()) {
                                 if (!timer.getRequiredPermission().equals("") && p.hasPermission(timer.getRequiredPermission())) {
-                                    p.performCommand(PAPIHook.parsePAPI(command, p));
+                                    p.performCommand(PAPIHook.parsePAPI(command.getCommand(), p));
                                 }
                             }
                             i++;
                         }
                     } else if (timerGender.equals(Gender.OPERATOR)) {
                         int i = 0;
-                        for (String command : timer.getCommands()) {
-                            if(selectRandomCommand && i != selectedCommand) {
+                        for (TaskCommand command : timer.getCommands()) {
+                            if (selectRandomCommand && i != selectedCommand) {
                                 i++;
                                 continue;
                             }
@@ -239,7 +250,7 @@ public class CommandExecutor {
                                         p.setOp(true);
                                     }
 
-                                    p.performCommand(PAPIHook.parsePAPI(command, p));
+                                    p.performCommand(PAPIHook.parsePAPI(command.getCommand(), p));
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 } finally {
@@ -258,8 +269,6 @@ public class CommandExecutor {
                     timer.setTimesExecuted(timer.getTimesExecuted() + 1);
                 }
             }
-        };
-
-        timer.runTaskTimer(Main.getPlugin(), 20, 20);
+        }, 1000);
     }
 }
