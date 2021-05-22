@@ -17,7 +17,7 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 
 public class AllTasksMenu implements InventoryProvider {
     public SmartInventory INVENTORY;
@@ -49,7 +49,7 @@ public class AllTasksMenu implements InventoryProvider {
     }
 
     private ClickableItem[] getAllTaskItems(Player p) {
-        ArrayList<Task> tasks = Main.getTasksManager().getLoadedTasks();
+        List<Task> tasks = Main.getTasksManager().getLoadedTasks();
 
         ClickableItem[] items = new ClickableItem[tasks.size()];
         String[] lore = new String[]{ "", "§aLeft-Click to edit", "§cRight-Click to delete" };

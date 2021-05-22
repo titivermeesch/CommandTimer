@@ -1,20 +1,30 @@
 package me.playbosswar.com.tasks;
 
+import me.playbosswar.com.Main;
+import me.playbosswar.com.enums.Gender;
+import me.playbosswar.com.hooks.PAPIHook;
 import me.playbosswar.com.utils.Files;
 import org.apache.commons.lang.RandomStringUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.List;
 
 public class TasksManager {
-    private final ArrayList<Task> loadedTasks = new ArrayList<>();
+    private final List<Task> loadedTasks = new ArrayList<>();
+    private final List<TaskCommand> scheduledExecutions = new ArrayList<>();
     private Thread runnerThread;
 
     public TasksManager() {
         loadedTasks.addAll(Files.deserializeJsonFilesIntoCommandTimers());
         startRunner();
+        startCommandExecutor();
     }
 
     public Task createTask() {
@@ -44,15 +54,94 @@ public class TasksManager {
         loadedTasks.remove(task);
     }
 
-    public ArrayList<Task> getLoadedTasks() {
+    public List<Task> getLoadedTasks() {
         return loadedTasks;
     }
 
+    // Checks if any command should be scheduled for execution
     private void startRunner() {
         Runnable runner = new TaskRunner();
         Thread thread = new Thread(runner);
         thread.start();
         this.runnerThread = thread;
+    }
+
+    private void runConsoleCommand(TaskCommand taskCommand) {
+        String command = taskCommand.getCommand();
+        String permission = taskCommand.getTask().getRequiredPermission();
+
+        if (taskCommand.isExecutePerUser()) {
+            for (Player p : Bukkit.getOnlinePlayers()) {
+                if (!permission.equals("") && p.hasPermission(permission)) {
+                    Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command, p));
+                }
+            }
+            return;
+        }
+
+        Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command, null));
+    }
+
+    private void runPlayerCommand(TaskCommand taskCommand) {
+        String command = taskCommand.getCommand();
+        String permission = taskCommand.getTask().getRequiredPermission();
+
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            if (!permission.equals("") && p.hasPermission(permission)) {
+                p.performCommand(PAPIHook.parsePAPI(command, p));
+            }
+        }
+    }
+
+    private void runOperatorCommand(TaskCommand taskCommand) {
+        String command = taskCommand.getCommand();
+
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            boolean wasAlreadyOp = p.isOp();
+
+            try {
+                if (!wasAlreadyOp) {
+                    p.setOp(true);
+                }
+
+                p.performCommand(PAPIHook.parsePAPI(command, p));
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (!wasAlreadyOp) {
+                    p.setOp(false);
+                }
+            }
+        }
+    }
+
+    // Executes scheduled commands
+    private void startCommandExecutor() {
+        BukkitRunnable runnable = new BukkitRunnable() {
+            @Override
+            public void run() {
+                scheduledExecutions.forEach(taskCommand -> {
+                    Task task = taskCommand.getTask();
+                    Gender gender = taskCommand.getGender();
+
+                    // Choose correct gender executor
+                    if (gender.equals(Gender.CONSOLE)) {
+                        runConsoleCommand(taskCommand);
+                    } else if (gender.equals(Gender.PLAYER)) {
+                        runPlayerCommand(taskCommand);
+                    } else if (gender.equals(Gender.OPERATOR)) {
+                        runOperatorCommand(taskCommand);
+                    }
+
+                    final LocalTime lastExecuted = LocalTime.now();
+
+                    task.setLastExecuted(lastExecuted);
+                    task.setTimesExecuted(task.getTimesExecuted() + 1);
+                });
+            }
+        };
+
+        runnable.runTaskTimer(Main.getPlugin(), 20L, 20L);
     }
 
     public void disable() {

@@ -15,7 +15,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -31,7 +31,7 @@ public class TaskRunner implements Runnable {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                ArrayList<Task> tasks = Main.getTasksManager().getLoadedTasks();
+                List<Task> tasks = Main.getTasksManager().getLoadedTasks();
 
                 for (Task timer : tasks) {
                     if (debug) {
