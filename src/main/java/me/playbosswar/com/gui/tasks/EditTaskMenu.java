@@ -24,7 +24,7 @@ public class EditTaskMenu implements InventoryProvider {
                 .id("edit-task")
                 .provider(this)
                 .manager(Main.getInventoryManager())
-                .size(4, 9)
+                .size(3, 9)
                 .title("§9§lEdit " + task.getName())
                 .build();
     }
@@ -58,7 +58,7 @@ public class EditTaskMenu implements InventoryProvider {
 
         ItemStack backItem = Items.getBackItem();
         ClickableItem clickableBack = ClickableItem.of(backItem, e -> new MainMenu().INVENTORY.open(player));
-        contents.set(2, 7, clickableBack);
+        contents.set(1, 7, clickableBack);
     }
 
     public void update(Player player, InventoryContents contents) {
