@@ -73,7 +73,7 @@ public class TaskRunner implements Runnable {
 
                         // Handle minecraft world time
                         // if (timer.getUseMinecraftTime()) {
-                        if(true) {
+                        if (true) {
                             if (debug) {
                                 Messages.sendConsole("Timer is using minecraft time");
                             }
@@ -90,11 +90,9 @@ public class TaskRunner implements Runnable {
                                 for (TaskTime time : timer.getTimes()) {
                                     LocalTime current = LocalTime.parse(minecraftTime);
 
-                                    if (time.getTime().contains("[")) {
-                                        String[] hourRange = Tools.charRemoveAt(Tools.charRemoveAt(time.getTime(), 0), time.getTime().length() - 2).split("-");
-
-                                        LocalTime startRange = LocalTime.parse(hourRange[0]);
-                                        LocalTime endRange = LocalTime.parse(hourRange[1]);
+                                    if (time.getTime2() != null) {
+                                        LocalTime startRange = time.getTime1();
+                                        LocalTime endRange = time.getTime2();
 
                                         if (current.isAfter(startRange) && current.isBefore(endRange)) {
                                             shouldBlock = false;
@@ -114,15 +112,13 @@ public class TaskRunner implements Runnable {
 
                             LocalTime current = LocalTime.now().withNano(0);
 
-                            if (time.getTime().contains("[")) {
+                            if (time.getTime2() != null) {
                                 if (debug) {
                                     Messages.sendConsole("Found time range");
                                 }
 
-                                String[] hourRange = Tools.charRemoveAt(Tools.charRemoveAt(time.getTime(), 0), time.getTime().length() - 2).split("-");
-
-                                LocalTime startRange = LocalTime.parse(hourRange[0]);
-                                LocalTime endRange = LocalTime.parse(hourRange[1]);
+                                LocalTime startRange = time.getTime1();
+                                LocalTime endRange = time.getTime2();
 
                                 if (current.isAfter(startRange) && current.isBefore(endRange)) {
                                     if (debug) {
@@ -171,7 +167,8 @@ public class TaskRunner implements Runnable {
 
                     // If the last execution happened less that timer seconds ago
 
-                    if (secondsSinceLastExecution.getSeconds() < timer.getSeconds()) {
+                    if (true) {
+                        // if (secondsSinceLastExecution.getSeconds() < timer.getSeconds()) {
                         if (debug) {
                             Messages.sendConsole("Timer has been executed before");
                         }
@@ -206,14 +203,16 @@ public class TaskRunner implements Runnable {
                             }
 
                             // if (timer.getExecutePerUser()) {
-                            if(true) {
+                            if (true) {
                                 for (Player p : Bukkit.getOnlinePlayers()) {
                                     if (timer.getRequiredPermission() != "" && p.hasPermission(timer.getRequiredPermission())) {
-                                        Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command.getCommand(), p));
+                                        Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(),
+                                                                           PAPIHook.parsePAPI(command.getCommand(), p));
                                     }
                                 }
                             } else {
-                                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command.getCommand(), null));
+                                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(),
+                                                                   PAPIHook.parsePAPI(command.getCommand(), null));
                             }
 
                             i++;
