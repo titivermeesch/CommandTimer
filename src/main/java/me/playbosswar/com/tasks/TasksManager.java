@@ -66,18 +66,19 @@ public class TasksManager {
         this.runnerThread = thread;
     }
 
-    private void runConsoleCommand(TaskCommand taskCommand) {
+    private void runConsolePerUserCommand(TaskCommand taskCommand) {
         String command = taskCommand.getCommand();
         String permission = taskCommand.getTask().getRequiredPermission();
 
-        if (taskCommand.isExecutePerUser()) {
-            for (Player p : Bukkit.getOnlinePlayers()) {
-                if (!permission.equals("") && p.hasPermission(permission)) {
-                    Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command, p));
-                }
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            if (!permission.equals("") && p.hasPermission(permission)) {
+                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command, p));
             }
-            return;
         }
+    }
+
+    private void runConsoleCommand(TaskCommand taskCommand) {
+        String command = taskCommand.getCommand();
 
         Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command, null));
     }
@@ -131,6 +132,8 @@ public class TasksManager {
                         runPlayerCommand(taskCommand);
                     } else if (gender.equals(Gender.OPERATOR)) {
                         runOperatorCommand(taskCommand);
+                    } else if(gender.equals(Gender.CONSOLE_PER_USER)) {
+                        runConsolePerUserCommand(taskCommand);
                     }
 
                     final LocalTime lastExecuted = LocalTime.now();

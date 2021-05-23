@@ -63,8 +63,11 @@ public class EditCommandMenu implements InventoryProvider {
                 "§7    into account the possible permissions the player",
                 "§7    has or is lacking.",
                 "",
-                "§7  - §eCONSOLE: §7Execute the command in",
-                "§7    console (terminal) only",
+                "§7  - §eCONSOLE: §7Execute the command in the console only",
+                "",
+                "§7  - §eCONSOLE PER USER: §7Execute the command in the console",
+                "§7    for each individual player. This works very well with",
+                "§7    placeholders",
                 "",
                 "§b§lCurrent: " + taskCommand.getGender().toString()
         };
