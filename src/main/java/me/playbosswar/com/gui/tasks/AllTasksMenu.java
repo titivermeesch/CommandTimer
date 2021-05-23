@@ -52,10 +52,16 @@ public class AllTasksMenu implements InventoryProvider {
         List<Task> tasks = Main.getTasksManager().getLoadedTasks();
 
         ClickableItem[] items = new ClickableItem[tasks.size()];
-        String[] lore = new String[]{ "", "§aLeft-Click to edit", "§cRight-Click to delete" };
 
         for (int i = 0; i < items.length; i++) {
             Task task = tasks.get(i);
+            String[] lore = new String[]{ "",
+                    task.isActive() ? "§a§lThis task is active" : "§c§lThis task is not active",
+                    "",
+                    "§aLeft-Click to edit",
+                    "§cRight-Click to delete",
+            };
+
             ItemStack item = Items.generateItem("§b" + task.getName(), XMaterial.MAP, lore);
             items[i] = ClickableItem.of(item, e -> {
                 if (e.getClick().equals(ClickType.LEFT)) {
