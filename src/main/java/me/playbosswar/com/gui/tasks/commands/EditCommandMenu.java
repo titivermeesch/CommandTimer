@@ -7,6 +7,7 @@ import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
 import me.playbosswar.com.Main;
 import me.playbosswar.com.enums.WorldWeather;
+import me.playbosswar.com.gui.tasks.weather.WeatherMenu;
 import me.playbosswar.com.tasks.TaskCommand;
 import me.playbosswar.com.utils.Items;
 import org.apache.commons.lang.StringUtils;
@@ -93,7 +94,7 @@ public class EditCommandMenu implements InventoryProvider {
         }
         String[] weatherLoreArray = weatherLore.toArray(new String[0]);
         ItemStack weatherItem = Items.generateItem("§bWeather conditions", XMaterial.WATER_BUCKET, weatherLoreArray);
-        ClickableItem clickableWeatherItem = ClickableItem.of(weatherItem, e -> {});
+        ClickableItem clickableWeatherItem = ClickableItem.of(weatherItem, e -> new WeatherMenu(taskCommand).INVENTORY.open(player));
         contents.set(1, 3, clickableWeatherItem);
 
         contents.set(1, 7, ClickableItem.of(Items.getBackItem(),

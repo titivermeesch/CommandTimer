@@ -13,7 +13,6 @@ public class TaskCommand {
     private Gender gender;
     private transient Task task;
     private List<WorldWeather> weatherConditions = new ArrayList<>();
-    private boolean executePerUser;
 
     public TaskCommand(Task task, UUID uuid, String command, Gender gender) {
         this.task = task;
@@ -86,12 +85,13 @@ public class TaskCommand {
         task.storeInstance();
     }
 
-    public boolean isExecutePerUser() {
-        return executePerUser;
-    }
+    public void toggleWeatherCondition(WorldWeather weather) {
+        if(weatherConditions.contains(weather)) {
+            weatherConditions.remove(weather);
+        } else {
+            weatherConditions.add(weather);
+        }
 
-    public void setExecutePerUser(boolean executePerUser) {
-        this.executePerUser = executePerUser;
         task.storeInstance();
     }
 

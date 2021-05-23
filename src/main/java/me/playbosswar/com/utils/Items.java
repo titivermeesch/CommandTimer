@@ -26,6 +26,24 @@ public class Items {
         return item;
     }
 
+    public static ItemStack getToggleItem(String title, String[] lore, boolean value) {
+        ItemStack item = value ? XMaterial.LIME_DYE.parseItem() : XMaterial.GRAY_DYE.parseItem();
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(title);
+        meta.setLore(Arrays.asList(lore));
+        item.setItemMeta(meta);
+
+        return item;
+    }
+
+    public static ItemStack getAddItem() {
+        return generateItem("§b+", XMaterial.STONE_BUTTON);
+    }
+
+    public static ItemStack getSubstractItem() {
+        return generateItem("§b-", XMaterial.STONE_BUTTON);
+    }
+
     public static ItemStack getBackItem() {
         return generateItem("§cBack", XMaterial.REDSTONE);
     }
