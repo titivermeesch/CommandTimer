@@ -1,22 +1,36 @@
 package me.playbosswar.com.tasks;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+
 public class TaskTime {
     private transient Task task;
-    private String time;
+    private LocalTime time1;
+    private LocalTime time2;
     private boolean isMinecraftTime;
+    private String world;
 
-    public TaskTime(Task task, String time, boolean isMinecraftTime) {
+    public TaskTime(Task task, LocalTime time1, boolean isMinecraftTime) {
         this.task = task;
-        this.time = time;
+        this.time1 = time1;
         this.isMinecraftTime = isMinecraftTime;
     }
 
-    public String getTime() {
-        return time;
+    public LocalTime getTime1() {
+        return time1;
     }
 
-    public void setTime(String time) {
-        this.time = time;
+    public void setTime1(LocalTime time1) {
+        this.time1 = time1;
+        task.storeInstance();
+    }
+
+    public LocalTime getTime2() {
+        return time2;
+    }
+
+    public void setTime2(LocalTime time2) {
+        this.time2 = time2;
         task.storeInstance();
     }
 
@@ -25,7 +39,20 @@ public class TaskTime {
     }
 
     public void setMinecraftTime(boolean minecraftTime) {
+        if(!minecraftTime) {
+            world = null;
+        }
+
         isMinecraftTime = minecraftTime;
+        task.storeInstance();
+    }
+
+    public void toggleMinecraftTime() {
+        if(isMinecraftTime) {
+            world = null;
+        }
+
+        isMinecraftTime = !isMinecraftTime;
         task.storeInstance();
     }
 
@@ -35,5 +62,25 @@ public class TaskTime {
 
     public void setTask(Task task) {
         this.task = task;
+    }
+
+    public String toString() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+
+        if (time2 != null) {
+            return "[" + time1.format(formatter) + ":" + time2.format(formatter) + "]";
+        }
+
+
+        return time1.format(formatter);
+    }
+
+    public String getWorld() {
+        return world;
+    }
+
+    public void setWorld(String world) {
+        this.world = world;
+        task.storeInstance();
     }
 }

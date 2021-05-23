@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import me.playbosswar.com.enums.CommandExecutionMode;
 import me.playbosswar.com.utils.Files;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalTime;
@@ -12,7 +13,7 @@ import java.util.ArrayList;
 public class Task {
     private String name;
     private ArrayList<TaskCommand> commands = new ArrayList<>();
-    private int seconds = 5;
+    private TaskInterval interval = new TaskInterval(this, 0, 0, 0, 5);
     private ArrayList<TaskTime> times = new ArrayList<>();
     private double random = 1.0;
     private ArrayList<String> worlds = new ArrayList<>();
@@ -43,6 +44,9 @@ public class Task {
     }
 
     public void setName(String name) {
+        File oldFile = new File(Files.getTaskFile(this.name));
+        oldFile.delete();
+
         this.name = name;
         storeInstance();
     }
@@ -67,12 +71,12 @@ public class Task {
         storeInstance();
     }
 
-    public int getSeconds() {
-        return seconds;
+    public TaskInterval getInterval() {
+        return interval;
     }
 
-    public void setSeconds(int seconds) {
-        this.seconds = seconds;
+    public void setInterval(TaskInterval interval) {
+        this.interval = interval;
         storeInstance();
     }
 
@@ -90,8 +94,8 @@ public class Task {
         storeInstance();
     }
 
-    public void removeTime(int index) {
-        this.times.remove(index);
+    public void removeTime(TaskTime time) {
+        times.remove(time);
         storeInstance();
     }
 
@@ -187,6 +191,11 @@ public class Task {
 
     public void setActive(boolean active) {
         this.active = active;
+        storeInstance();
+    }
+
+    public void toggleActive() {
+        active = !active;
         storeInstance();
     }
 

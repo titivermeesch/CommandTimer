@@ -32,22 +32,24 @@ public class EditTaskMenu implements InventoryProvider {
     public void init(Player player, InventoryContents contents) {
         contents.fillBorders(ClickableItem.empty(XMaterial.BLUE_STAINED_GLASS_PANE.parseItem()));
 
-        String[] nameLore = new String[]{"", "§7Change the display name of this task"};
+        String[] nameLore = new String[]{ "", "§7Change the display name of this task" };
         ItemStack nameItem = Items.generateItem("§bTask name", XMaterial.PAPER, nameLore);
         ClickableItem clickableNameItem = ClickableItem.of(nameItem, e -> new TaskNameMenu(player, task).INVENTORY.open(player));
         contents.set(1, 1, clickableNameItem);
 
-        String[] scheduleLore = new String[]{"", "§7Choose when this task will be executed"};
+        String[] scheduleLore = new String[]{ "", "§7Choose when this task will be executed" };
         ItemStack scheduleItem = Items.generateItem("§bSchedule settings", XMaterial.CLOCK, scheduleLore);
-        ClickableItem clickableScheduleItem = ClickableItem.of(scheduleItem, e -> new MainScheduleMenu(task).INVENTORY.open(player));
+        ClickableItem clickableScheduleItem = ClickableItem.of(scheduleItem,
+                                                               e -> new MainScheduleMenu(task).INVENTORY.open(player));
         contents.set(1, 2, clickableScheduleItem);
 
-        String[] commandsLore = new String[]{"", "§7Choose which commands to execute"};
+        String[] commandsLore = new String[]{ "", "§7Choose which commands to execute" };
         ItemStack commandsItem = Items.generateItem("§bCommands", XMaterial.COMMAND_BLOCK, commandsLore);
-        ClickableItem clickableCommandsItem = ClickableItem.of(commandsItem, e -> new AllCommandsMenu(task).INVENTORY.open(player));
+        ClickableItem clickableCommandsItem = ClickableItem.of(commandsItem,
+                                                               e -> new AllCommandsMenu(task).INVENTORY.open(player));
         contents.set(1, 3, clickableCommandsItem);
 
-        String[] generalLimitsLore = new String[]{"",
+        String[] generalLimitsLore = new String[]{ "",
                 "§7Add more limits to this task to",
                 "§7limit when the task can be executed.",
                 "",
@@ -56,9 +58,18 @@ public class EditTaskMenu implements InventoryProvider {
                 "§7  - "
         };
 
-        ItemStack backItem = Items.getBackItem();
-        ClickableItem clickableBack = ClickableItem.of(backItem, e -> new MainMenu().INVENTORY.open(player));
-        contents.set(1, 7, clickableBack);
+        boolean isActive = task.isActive();
+        String[] activationLore = new String[]{ "",
+                "§7Choose if this task should run or not",
+                "",
+                "§b§lCurrent: " + (isActive ? "Active" : "Not active")
+        };
+        contents.set(1, 6, ClickableItem.of(Items.getToggleItem("§bActivation status", activationLore, isActive), e -> {
+            task.toggleActive();
+            this.INVENTORY.open(player);
+        }));
+
+        contents.set(1, 7, ClickableItem.of(Items.getBackItem(), e -> new AllTasksMenu().INVENTORY.open(player)));
     }
 
     public void update(Player player, InventoryContents contents) {

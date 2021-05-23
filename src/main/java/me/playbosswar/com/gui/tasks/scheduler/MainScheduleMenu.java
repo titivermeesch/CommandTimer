@@ -31,13 +31,17 @@ public class MainScheduleMenu implements InventoryProvider {
     public void init(Player player, InventoryContents contents) {
         contents.fillBorders(ClickableItem.empty(XMaterial.BLUE_STAINED_GLASS_PANE.parseItem()));
 
-        String[] secondsItemLore = new String[]{ "",
-                "§7Set an interval in seconds for this task.",
+        String[] intervalItemLore = new String[]{ "",
+                "§7Set an interval for this task.",
                 "",
                 "§7This means that your set of commands will be",
-                "§7executed every x seconds on a", "§7regular base." };
-        ItemStack secondsItem = Items.generateItem("§bSeconds", XMaterial.CLOCK, secondsItemLore);
-        ClickableItem clickableSecondsItem = ClickableItem.of(secondsItem, e -> {});
+                "§7executed every x seconds/minutes on a regular base",
+                "",
+                "§b§lCurrent: " + task.getInterval().toString()
+        };
+        ItemStack intervalItem = Items.generateItem("§bInterval", XMaterial.CLOCK, intervalItemLore);
+        ClickableItem clickableSecondsItem = ClickableItem.of(intervalItem,
+                                                              e -> new EditIntervalMenu(task.getInterval()).INVENTORY.open(player));
         contents.set(1, 1, clickableSecondsItem);
 
         String[] hoursLore = new String[]{ "",
@@ -47,7 +51,7 @@ public class MainScheduleMenu implements InventoryProvider {
                 "§7This could for example be 13:15:00, that would",
                 "§7execute your task every day at that time" };
         ItemStack timesItem = Items.generateItem("§bSpecific time", XMaterial.CLOCK, hoursLore);
-        ClickableItem clickableTimesItem = ClickableItem.of(timesItem, e -> {});
+        ClickableItem clickableTimesItem = ClickableItem.of(timesItem, e -> new EditTimesMenu(task).INVENTORY.open(player));
         contents.set(1, 2, clickableTimesItem);
 
         String[] daysLore = new String[]{ "",
