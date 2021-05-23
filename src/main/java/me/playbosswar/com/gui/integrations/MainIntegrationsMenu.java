@@ -31,7 +31,7 @@ public class MainIntegrationsMenu implements InventoryProvider {
     }
 
     public void init(Player player, InventoryContents contents) {
-        contents.fillBorders(ClickableItem.empty(XMaterial.ORANGE_STAINED_GLASS_PANE.parseItem()));
+        contents.fillBorders(ClickableItem.empty(XMaterial.BLUE_STAINED_GLASS_PANE.parseItem()));
 
         int i = 1;
         for (HookType hookType : HookType.values()) {
