@@ -63,7 +63,7 @@ public class MainScheduleMenu implements InventoryProvider {
                 "§7You can for example choose to only execute a task",
                 "§7during the weekend, or only on monday,..." };
         ItemStack daysItem = Items.generateItem("§bDays", XMaterial.CLOCK, daysLore);
-        ClickableItem clickableDaysItem = ClickableItem.of(daysItem, e -> {});
+        ClickableItem clickableDaysItem = ClickableItem.of(daysItem, e -> new EditDaysMenu(task).INVENTORY.open(player));
         contents.set(1, 3, clickableDaysItem);
 
         contents.set(1, 7, ClickableItem.of(Items.getBackItem(),
