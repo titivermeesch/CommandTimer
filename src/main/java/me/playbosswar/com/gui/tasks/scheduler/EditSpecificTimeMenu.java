@@ -41,7 +41,8 @@ public class EditSpecificTimeMenu implements InventoryProvider {
                 "§aLeft-Click to edit"
         };
         ItemStack time1Item = Items.generateItem("§bTime 1", XMaterial.CLOCK, time1Lore);
-        ClickableItem clickableTime1Item = ClickableItem.of(time1Item, e -> {});
+        ClickableItem clickableTime1Item = ClickableItem.of(time1Item,
+                                                            e -> new EditHourMenu(taskTime, false).INVENTORY.open(player));
         contents.set(1, 1, clickableTime1Item);
 
         String[] time2Lore = new String[]{ "",
@@ -56,7 +57,16 @@ public class EditSpecificTimeMenu implements InventoryProvider {
                 "§cRight-Click to delete"
         };
         ItemStack time2Item = Items.generateItem("§bTime 2", XMaterial.CLOCK, time2Lore);
-        ClickableItem clickableTime2Item = ClickableItem.of(time2Item, e -> {});
+        ClickableItem clickableTime2Item = ClickableItem.of(time2Item, e -> {
+            if (e.isLeftClick()) {
+                new EditHourMenu(taskTime, true).INVENTORY.open(player);
+            }
+
+            if (e.isRightClick()) {
+                taskTime.setTime2(null);
+                this.INVENTORY.open(player);
+            }
+        });
         contents.set(1, 2, clickableTime2Item);
 
         String[] minecraftTimeLore = new String[]{ "",
