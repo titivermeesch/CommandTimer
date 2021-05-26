@@ -8,6 +8,7 @@ import fr.minuskube.inv.content.InventoryProvider;
 import me.playbosswar.com.Main;
 import me.playbosswar.com.gui.MainMenu;
 import me.playbosswar.com.gui.tasks.commands.AllCommandsMenu;
+import me.playbosswar.com.gui.tasks.general.GeneralLimitsMenu;
 import me.playbosswar.com.gui.tasks.scheduler.MainScheduleMenu;
 import me.playbosswar.com.tasks.Task;
 import me.playbosswar.com.utils.Items;
@@ -55,8 +56,13 @@ public class EditTaskMenu implements InventoryProvider {
                 "",
                 "§bAvailable limits:",
                 "§7  - Amount of players online",
-                "§7  - "
+                "§7  - Required permission",
+                "§7  - Maximum executions",
+                "§7  - Worlds"
         };
+        ItemStack generalLimitsItem = Items.generateItem("§bGeneral limits", XMaterial.GOLD_INGOT, generalLimitsLore);
+        ClickableItem clickableGeneralLimitsItem = ClickableItem.of(generalLimitsItem, e -> new GeneralLimitsMenu(task).INVENTORY.open(player));
+        contents.set(1, 4, clickableGeneralLimitsItem);
 
         boolean isActive = task.isActive();
         String[] activationLore = new String[]{ "",

@@ -26,6 +26,7 @@ public class Task {
     private int maxPlayers = -1;
     private CommandExecutionMode commandExecutionMode = CommandExecutionMode.ALL;
     private boolean active = false;
+    private boolean resetExecutionsAfterRestart = false;
 
     public Task(String name) {
         this.name = name;
@@ -131,6 +132,16 @@ public class Task {
         storeInstance();
     }
 
+    public void toggleDay(String day) {
+        if(days.contains(day)) {
+            days.remove(day);
+        } else {
+            days.add(day);
+        }
+
+        storeInstance();
+    }
+
     public int getExecutionLimit() {
         return executionLimit;
     }
@@ -195,7 +206,7 @@ public class Task {
     }
 
     public void toggleActive() {
-        active = !active;
+        this.active = !this.active;
         storeInstance();
     }
 
@@ -224,6 +235,20 @@ public class Task {
             commandExecutionMode = CommandExecutionMode.ALL;
             storeInstance();
         }
+    }
+
+    public boolean isResetExecutionsAfterRestart() {
+        return resetExecutionsAfterRestart;
+    }
+
+    public void setResetExecutionsAfterRestart(boolean resetExecutionsAfterRestart) {
+        this.resetExecutionsAfterRestart = resetExecutionsAfterRestart;
+        storeInstance();
+    }
+
+    public void toggleResetExecutionAfterRestart() {
+        this.resetExecutionsAfterRestart = !this.resetExecutionsAfterRestart;
+        storeInstance();
     }
 
     public void storeInstance() {

@@ -42,8 +42,7 @@ public class EditCommandMenu implements InventoryProvider {
                 "§b§lCurrent: " + taskCommand.getCommand()
         };
         ItemStack editCommandItem = Items.generateItem("§bChange command", XMaterial.PAPER, editCommandLore);
-        ClickableItem clickableCommandItem = ClickableItem.of(editCommandItem,
-                                                              e -> new EditCommandNameMenu(taskCommand).INVENTORY.open(player));
+        ClickableItem clickableCommandItem = ClickableItem.of(editCommandItem, e -> new EditCommandNameMenu(player, taskCommand));
         contents.set(1, 1, clickableCommandItem);
 
         String[] genderLore = new String[]{ "",
@@ -94,7 +93,8 @@ public class EditCommandMenu implements InventoryProvider {
         }
         String[] weatherLoreArray = weatherLore.toArray(new String[0]);
         ItemStack weatherItem = Items.generateItem("§bWeather conditions", XMaterial.WATER_BUCKET, weatherLoreArray);
-        ClickableItem clickableWeatherItem = ClickableItem.of(weatherItem, e -> new WeatherMenu(taskCommand).INVENTORY.open(player));
+        ClickableItem clickableWeatherItem = ClickableItem.of(weatherItem,
+                                                              e -> new WeatherMenu(taskCommand).INVENTORY.open(player));
         contents.set(1, 3, clickableWeatherItem);
 
         contents.set(1, 7, ClickableItem.of(Items.getBackItem(),
