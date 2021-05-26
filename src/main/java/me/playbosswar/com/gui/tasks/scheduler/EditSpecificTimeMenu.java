@@ -36,9 +36,9 @@ public class EditSpecificTimeMenu implements InventoryProvider {
         contents.fillBorders(ClickableItem.empty(XMaterial.BLUE_STAINED_GLASS_PANE.parseItem()));
 
         String[] time1Lore = new String[]{ "",
-                "§b§lCurrent value: " + (taskTime.getTime1() == null ? "Not set" : taskTime.getTime1().toString()),
+                "§7Current value: §e" + (taskTime.getTime1() == null ? "Not set" : taskTime.getTime1().toString()),
                 "",
-                "§aLeft-Click to edit"
+                "§aLeft-Click to edit",
         };
         ItemStack time1Item = Items.generateItem("§bTime 1", XMaterial.CLOCK, time1Lore);
         ClickableItem clickableTime1Item = ClickableItem.of(time1Item,
@@ -51,7 +51,7 @@ public class EditSpecificTimeMenu implements InventoryProvider {
                 "§7to only execute a task between a set of hours, like",
                 "§7between 12:00:00 and 14:00:00",
                 "",
-                "§b§lCurrent value: " + (taskTime.getTime2() == null ? "Not set" : taskTime.getTime2().toString()),
+                "§7Current value: §e" + (taskTime.getTime2() == null ? "Not set" : taskTime.getTime2().toString()),
                 "",
                 "§aLeft-Click to edit",
                 "§cRight-Click to delete"
@@ -86,7 +86,7 @@ public class EditSpecificTimeMenu implements InventoryProvider {
                     "",
                     "§7This does not affect where the actual task is executed",
                     "",
-                    "§b§lCurrent world: " + (taskTime.getWorld() == null ? "Not set" : taskTime.getWorld())
+                    "§7Current world: §e" + (taskTime.getWorld() == null ? "Not set" : taskTime.getWorld())
             };
             ItemStack worldItem = Items.generateItem("§bUsed world for Minecraft time", XMaterial.MAP, worldLore);
             Callback worldCallback = new Callback() {

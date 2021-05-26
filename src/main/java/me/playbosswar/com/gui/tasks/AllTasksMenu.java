@@ -56,7 +56,7 @@ public class AllTasksMenu implements InventoryProvider {
         for (int i = 0; i < items.length; i++) {
             Task task = tasks.get(i);
             String[] lore = new String[]{ "",
-                    task.isActive() ? "§a§lThis task is active" : "§c§lThis task is not active",
+                    "§7Status: " + (task.isActive() ? "§aActive" : "§cNot active"),
                     "",
                     "§aLeft-Click to edit",
                     "§cRight-Click to delete",

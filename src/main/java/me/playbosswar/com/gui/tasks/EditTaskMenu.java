@@ -68,7 +68,7 @@ public class EditTaskMenu implements InventoryProvider {
         String[] activationLore = new String[]{ "",
                 "§7Choose if this task should run or not",
                 "",
-                "§b§lCurrent: " + (isActive ? "Active" : "Not active")
+                "§7Current: " + (isActive ? "§aActive" : "§cNot active")
         };
         contents.set(1, 6, ClickableItem.of(Items.getToggleItem("§bActivation status", activationLore, isActive), e -> {
             task.toggleActive();

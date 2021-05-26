@@ -35,9 +35,14 @@ public class EditHourMenu implements InventoryProvider {
 
         LocalTime usedTime = isTime2 ? taskTime.getTime2() : taskTime.getTime1();
 
-        if(usedTime == null && isTime2) {
-            taskTime.setTime2(LocalTime.of(14, 0, 0));
-            usedTime = taskTime.getTime2();
+        if (usedTime == null) {
+            if (isTime2) {
+                taskTime.setTime2(LocalTime.of(14, 0, 0));
+                usedTime = taskTime.getTime2();
+            } else {
+                taskTime.setTime1(LocalTime.of(14, 0, 0));
+                usedTime = taskTime.getTime1();
+            }
         }
 
         LocalTime finalUsedTime = usedTime;
@@ -85,7 +90,7 @@ public class EditHourMenu implements InventoryProvider {
     private void refresh(Player player) { this.INVENTORY.open(player); }
 
     private void setTime(LocalTime time) {
-        if(isTime2) {
+        if (isTime2) {
             taskTime.setTime2(time);
         } else {
             taskTime.setTime1(time);

@@ -37,7 +37,7 @@ public class GeneralLimitsMenu implements InventoryProvider {
                 "§7Define the minimum amount of players that",
                 "§7are required to execute the task",
                 "",
-                "§b§lCurrent value: " + task.getMinPlayers()
+                "§7Current value: §e" + task.getMinPlayers()
         };
         ItemStack minPlayersItem = Items.generateItem("§bMinimum players", XMaterial.ZOMBIE_HEAD, minPlayersLore);
         ClickableItem clickableMinPlayersItem = ClickableItem.of(minPlayersItem, e ->
@@ -52,7 +52,7 @@ public class GeneralLimitsMenu implements InventoryProvider {
                 "§7Define the maximum amount of players that",
                 "§7can be online to execute the task",
                 "",
-                "§b§lCurrent value: " + task.getMaxPlayers()
+                "§7Current value: §e" + task.getMaxPlayers()
         };
         ItemStack maxPlayersItem = Items.generateItem("§bMaximum players", XMaterial.ZOMBIE_HEAD, maxPlayersLore);
         ClickableItem clickableMaxPlayersItem = ClickableItem.of(maxPlayersItem, e ->
@@ -70,13 +70,21 @@ public class GeneralLimitsMenu implements InventoryProvider {
                 "§7You can start your permission with a - to",
                 "§7Exclude a permission",
                 "",
-                "§b§lCurrent value: " + task.getRequiredPermission()
+                "§7Current value: §e" + (task.getRequiredPermission().equals("") ? "Not set" : task.getRequiredPermission())
         };
         ItemStack permissionItem = Items.generateItem("§bRequired permission", XMaterial.DIAMOND_HELMET, permissionLore);
         ClickableItem clickablePermissionItem = ClickableItem.of(permissionItem, e -> new EditPermissionMenu(player, task));
         contents.set(1, 3, clickablePermissionItem);
 
-        ItemStack executionLimitItem = Items.generateItem("§bExecution limit", XMaterial.DIAMOND_AXE);
+        String[] executionLimitLore = {
+                "",
+                "§7Set a limit on how many times",
+                "§7a task can be executed in total",
+                "",
+                "§7Current limit: §e" + task.getExecutionLimit(),
+                "§7Reset on restart: §e" + task.isResetExecutionsAfterRestart()
+        };
+        ItemStack executionLimitItem = Items.generateItem("§bExecution limit", XMaterial.DIAMOND_AXE, executionLimitLore);
         ClickableItem clickableExecutionLimitItem = ClickableItem.of(executionLimitItem, e -> new ExecutionLimitMenu(player,
                                                                                                                      task));
         contents.set(1, 4, clickableExecutionLimitItem);

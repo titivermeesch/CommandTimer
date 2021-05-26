@@ -13,6 +13,7 @@ import me.playbosswar.com.tasks.Task;
 import me.playbosswar.com.tasks.TaskCommand;
 import me.playbosswar.com.enums.Gender;
 import me.playbosswar.com.utils.Items;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
@@ -71,7 +72,7 @@ public class AllCommandsMenu implements InventoryProvider {
                 "§7  - §eRANDOM: §7Same as above, but will pick a random",
                 "§7    command at each execution.",
                 "",
-                "§a§lCurrent mode: " + task.getCommandExecutionMode().toString()
+                "§7Current mode: §e" + task.getCommandExecutionMode().toString()
         };
         ItemStack selectModeItem = Items.generateItem("§bExecution mode", XMaterial.DIAMOND_SHOVEL, selectModeLore);
         ClickableItem clickableSelectModeItem = ClickableItem.of(selectModeItem, e -> {
@@ -94,12 +95,19 @@ public class AllCommandsMenu implements InventoryProvider {
         }
 
         ClickableItem[] items = new ClickableItem[commands.size()];
-        String[] lore = new String[]{ "", "§aLeft-Click to edit", "§cRight-Click to delete" };
 
         for (int i = 0; i < items.length; i++) {
             TaskCommand taskCommand = commands.get(i);
             String command = taskCommand.getCommand();
-            ItemStack item = Items.generateItem("§b" + command, XMaterial.LEVER, lore);
+            String[] lore = new String[]{
+                    "",
+                    "§7Gender: §e" + taskCommand.getGender(),
+                    "§7Weather: §e" + StringUtils.join(taskCommand.getWeatherConditions(), ", "),
+                    "",
+                    "§aLeft-Click to edit",
+                    "§cRight-Click to delete"
+            };
+            ItemStack item = Items.generateItem("§b" + command, XMaterial.COMMAND_BLOCK_MINECART, lore);
 
             items[i] = ClickableItem.of(item, e -> {
                 if (e.getClick().equals(ClickType.LEFT)) {

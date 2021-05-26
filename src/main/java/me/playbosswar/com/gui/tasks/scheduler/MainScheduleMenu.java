@@ -37,7 +37,7 @@ public class MainScheduleMenu implements InventoryProvider {
                 "§7This means that your set of commands will be",
                 "§7executed every x seconds/minutes on a regular base",
                 "",
-                "§b§lCurrent: " + task.getInterval().toString()
+                "§7Current: §e" + task.getInterval().toString()
         };
         ItemStack intervalItem = Items.generateItem("§bInterval", XMaterial.CLOCK, intervalItemLore);
         ClickableItem clickableSecondsItem = ClickableItem.of(intervalItem,

@@ -7,6 +7,7 @@ import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.Pagination;
 import fr.minuskube.inv.content.SlotIterator;
 import fr.minuskube.inv.content.SlotPos;
+import me.playbosswar.com.utils.Items;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -32,10 +33,10 @@ public class HorizontalIteratorWithBorder implements SlotIterator {
         pagination.setItemsPerPage(28);
         pagination.addToIterator(this);
 
-        contents.set(5, 3, ClickableItem.of(new ItemStack(XMaterial.ARROW.parseMaterial()),
-                                            e -> inv.open(player, pagination.previous().getPage())));
-        contents.set(5, 5, ClickableItem.of(new ItemStack(XMaterial.ARROW.parseMaterial()),
-                                            e -> inv.open(player, pagination.next().getPage())));
+        ItemStack backItem = Items.generateItem("§7Back", XMaterial.ARROW);
+        ItemStack nextItem = Items.generateItem("§7Next", XMaterial.ARROW);
+        contents.set(5, 3, ClickableItem.of(backItem, e -> inv.open(player, pagination.previous().getPage())));
+        contents.set(5, 5, ClickableItem.of(nextItem, e -> inv.open(player, pagination.next().getPage())));
     }
 
     @Override

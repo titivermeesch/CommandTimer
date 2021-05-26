@@ -42,7 +42,7 @@ public class ExecutionLimitMenu implements InventoryProvider {
                 "§7Set a limit on how many times a task",
                 "§7can be executed in total",
                 "",
-                "§b§lCurrent value: " + task.getExecutionLimit()
+                "§7Current value: §e" + task.getExecutionLimit()
         };
         ItemStack limitItem = Items.generateItem("§bLimit", XMaterial.STICK, limitLore);
         ClickableItem clickableLimitItem = ClickableItem.of(limitItem, e ->

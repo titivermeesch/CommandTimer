@@ -39,7 +39,7 @@ public class EditCommandMenu implements InventoryProvider {
         String[] editCommandLore = new String[]{ "",
                 "§7Edit the actual command",
                 "",
-                "§b§lCurrent: " + taskCommand.getCommand()
+                "§7Current: §e" + taskCommand.getCommand()
         };
         ItemStack editCommandItem = Items.generateItem("§bChange command", XMaterial.PAPER, editCommandLore);
         ClickableItem clickableCommandItem = ClickableItem.of(editCommandItem, e -> new EditCommandNameMenu(player, taskCommand));
@@ -69,7 +69,7 @@ public class EditCommandMenu implements InventoryProvider {
                 "§7    for each individual player. This works very well with",
                 "§7    placeholders",
                 "",
-                "§b§lCurrent: " + taskCommand.getGender().toString()
+                "§7Current: §e" + taskCommand.getGender().toString()
         };
         ItemStack genderItem = Items.generateItem("§bGender", XMaterial.CHAINMAIL_HELMET, genderLore);
         ClickableItem clickableGenderItem = ClickableItem.of(genderItem, e -> {
@@ -89,7 +89,7 @@ public class EditCommandMenu implements InventoryProvider {
         boolean thunder = taskCommand.getWeatherConditions().contains(WorldWeather.THUNDER);
 
         if (clear || rain || thunder) {
-            weatherLore.add("§b§lCurrent: " + StringUtils.join(taskCommand.getWeatherConditions(), ", "));
+            weatherLore.add("§7Current: §e" + StringUtils.join(taskCommand.getWeatherConditions(), ", "));
         }
         String[] weatherLoreArray = weatherLore.toArray(new String[0]);
         ItemStack weatherItem = Items.generateItem("§bWeather conditions", XMaterial.WATER_BUCKET, weatherLoreArray);
