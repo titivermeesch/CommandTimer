@@ -1,11 +1,14 @@
 package me.playbosswar.com.utils;
 
+import me.playbosswar.com.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class Messages {
+    private static final boolean debug = Main.getPlugin().getConfig().getBoolean("debug");
+
     public static String colorize(String message) {
         return ChatColor.translateAlternateColorCodes('&', message);
     }
@@ -33,6 +36,12 @@ public class Messages {
      */
     public static void sendConsole(String message) {
         Bukkit.getConsoleSender().sendMessage(colorize(getPrefix() + message));
+    }
+
+    public static void sendDebugConsole(String message) {
+        if(debug) {
+            sendConsole(message);
+        }
     }
 
     /**

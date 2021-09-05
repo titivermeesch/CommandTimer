@@ -4,22 +4,25 @@ import me.playbosswar.com.Main;
 import me.playbosswar.com.enums.Gender;
 import me.playbosswar.com.hooks.PAPIHook;
 import me.playbosswar.com.utils.Files;
+import me.playbosswar.com.utils.Messages;
+import me.playbosswar.com.utils.gson.WeatherConditions;
 import org.apache.commons.lang.RandomStringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
-import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class TasksManager {
     private final List<Task> loadedTasks = new ArrayList<>();
     private final List<TaskCommand> scheduledExecutions = new ArrayList<>();
     private Thread runnerThread;
+    public boolean stopRunner = false;
 
     public TasksManager() {
         loadedTasks.addAll(Files.deserializeJsonFilesIntoCommandTimers());
@@ -58,7 +61,6 @@ public class TasksManager {
         return loadedTasks;
     }
 
-    // Checks if any command should be scheduled for execution
     private void startRunner() {
         Runnable runner = new TaskRunner();
         Thread thread = new Thread(runner);
@@ -71,15 +73,20 @@ public class TasksManager {
         String permission = taskCommand.getTask().getRequiredPermission();
 
         for (Player p : Bukkit.getOnlinePlayers()) {
-            if (!permission.equals("") && p.hasPermission(permission)) {
-                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command, p));
+            if (!permission.equals("") && !p.hasPermission(permission)) {
+                return;
             }
+
+            if (!WeatherConditions.checkPlayerMatchesWeather(p, taskCommand.getWeatherConditions())) {
+                return;
+            }
+
+            Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command, p));
         }
     }
 
     private void runConsoleCommand(TaskCommand taskCommand) {
         String command = taskCommand.getCommand();
-
         Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command, null));
     }
 
@@ -88,9 +95,17 @@ public class TasksManager {
         String permission = taskCommand.getTask().getRequiredPermission();
 
         for (Player p : Bukkit.getOnlinePlayers()) {
-            if (!permission.equals("") && p.hasPermission(permission)) {
-                p.performCommand(PAPIHook.parsePAPI(command, p));
+            if (!permission.equals("") && !p.hasPermission(permission)) {
+                Messages.sendDebugConsole("Cannot execute task because player lacks permissions");
+                return;
             }
+
+            if (!WeatherConditions.checkPlayerMatchesWeather(p, taskCommand.getWeatherConditions())) {
+                Messages.sendDebugConsole("Player has incorrect weather for his current location");
+                return;
+            }
+
+            p.performCommand(PAPIHook.parsePAPI(command, p));
         }
     }
 
@@ -105,6 +120,10 @@ public class TasksManager {
                     p.setOp(true);
                 }
 
+                if (!WeatherConditions.checkPlayerMatchesWeather(p, taskCommand.getWeatherConditions())) {
+                    return;
+                }
+
                 p.performCommand(PAPIHook.parsePAPI(command, p));
             } catch (Exception e) {
                 e.printStackTrace();
@@ -116,12 +135,19 @@ public class TasksManager {
         }
     }
 
+    public void addTaskCommandExecution(TaskCommand taskCommand) {
+        scheduledExecutions.add(taskCommand);
+    }
+
     // Executes scheduled commands
     private void startCommandExecutor() {
         BukkitRunnable runnable = new BukkitRunnable() {
+
             @Override
             public void run() {
-                scheduledExecutions.forEach(taskCommand -> {
+                final List<TaskCommand> tasksToRemove = List.copyOf(scheduledExecutions);
+
+                tasksToRemove.forEach(taskCommand -> {
                     Task task = taskCommand.getTask();
                     Gender gender = taskCommand.getGender();
 
@@ -132,15 +158,16 @@ public class TasksManager {
                         runPlayerCommand(taskCommand);
                     } else if (gender.equals(Gender.OPERATOR)) {
                         runOperatorCommand(taskCommand);
-                    } else if(gender.equals(Gender.CONSOLE_PER_USER)) {
+                    } else if (gender.equals(Gender.CONSOLE_PER_USER)) {
                         runConsolePerUserCommand(taskCommand);
                     }
 
-                    final LocalTime lastExecuted = LocalTime.now();
-
-                    task.setLastExecuted(lastExecuted);
+                    task.setLastExecuted(new Date());
                     task.setTimesExecuted(task.getTimesExecuted() + 1);
+                    task.setLastExecutedCommandIndex(task.getCommands().indexOf(taskCommand));
+                    scheduledExecutions.remove(taskCommand);
                 });
+
             }
         };
 
@@ -148,6 +175,7 @@ public class TasksManager {
     }
 
     public void disable() {
+        stopRunner = true;
         runnerThread.stop();
     }
 }

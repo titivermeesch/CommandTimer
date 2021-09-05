@@ -29,6 +29,8 @@ public class TaskTime {
         return time2;
     }
 
+    public boolean isRange() { return getTime2() != null; }
+
     public void setTime2(LocalTime time2) {
         this.time2 = time2;
         task.storeInstance();

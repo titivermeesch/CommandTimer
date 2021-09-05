@@ -1,6 +1,6 @@
 main: me.playbosswar.com.Main
 name: "CommandTimer"
-version: "6.0.0-ALPHA-2"
+version: "6.0.0-ALPHA-3"
 description: "Schedule commands like you want"
 author: PlayBossWar
 api-version: 1.13

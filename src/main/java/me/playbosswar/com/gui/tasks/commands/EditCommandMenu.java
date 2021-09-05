@@ -81,7 +81,8 @@ public class EditCommandMenu implements InventoryProvider {
         List<String> weatherLore = new ArrayList<>();
         weatherLore.add("");
         weatherLore.add("§7Set a limit for the weather condition on");
-        weatherLore.add("§7this command");
+        weatherLore.add("§7this command. This limit will only work");
+        weatherLore.add("§7when the gender is §cNOT§7 set to §eCONSOLE");
         weatherLore.add("");
 
         boolean clear = taskCommand.getWeatherConditions().contains(WorldWeather.CLEAR);

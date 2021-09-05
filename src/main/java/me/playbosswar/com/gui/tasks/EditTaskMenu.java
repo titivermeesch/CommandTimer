@@ -35,7 +35,10 @@ public class EditTaskMenu implements InventoryProvider {
 
         String[] nameLore = new String[]{ "", "§7Change the display name of this task" };
         ItemStack nameItem = Items.generateItem("§bTask name", XMaterial.PAPER, nameLore);
-        ClickableItem clickableNameItem = ClickableItem.of(nameItem, e -> new TaskNameMenu(player, task).INVENTORY.open(player));
+        ClickableItem clickableNameItem = ClickableItem.of(nameItem, e -> {
+            TaskNameMenu taskNameMenu = new TaskNameMenu(player, task);
+            taskNameMenu.INVENTORY.open(player);
+        });
         contents.set(1, 1, clickableNameItem);
 
         String[] scheduleLore = new String[]{ "", "§7Choose when this task will be executed" };
@@ -61,7 +64,8 @@ public class EditTaskMenu implements InventoryProvider {
                 "§7  - Worlds"
         };
         ItemStack generalLimitsItem = Items.generateItem("§bGeneral limits", XMaterial.GOLD_INGOT, generalLimitsLore);
-        ClickableItem clickableGeneralLimitsItem = ClickableItem.of(generalLimitsItem, e -> new GeneralLimitsMenu(task).INVENTORY.open(player));
+        ClickableItem clickableGeneralLimitsItem = ClickableItem.of(generalLimitsItem,
+                                                                    e -> new GeneralLimitsMenu(task).INVENTORY.open(player));
         contents.set(1, 4, clickableGeneralLimitsItem);
 
         boolean isActive = task.isActive();

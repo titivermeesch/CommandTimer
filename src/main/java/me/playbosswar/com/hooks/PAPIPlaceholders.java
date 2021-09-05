@@ -7,9 +7,12 @@ import me.playbosswar.com.tasks.Task;
 import me.playbosswar.com.utils.Messages;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.joda.time.Duration;
+import org.joda.time.Interval;
 
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Date;
 
 public class PAPIPlaceholders extends PlaceholderExpansion {
     private Plugin plugin;
@@ -61,27 +64,29 @@ public class PAPIPlaceholders extends PlaceholderExpansion {
         }
 
         if(commandField.equalsIgnoreCase("seconds")) {
-            return task.getSeconds() + "";
+            return "";
+            // return task.getSeconds() + "";
         }
 
         if(commandField.equalsIgnoreCase("secondsFormat")) {
-            return Tools.getTimeString(task.getSeconds());
+            return "";
+            // return Tools.getTimeString(task.getSeconds());
         }
 
         if(commandField.equalsIgnoreCase("nextExecution")) {
-            LocalTime now = LocalTime.now();
-            LocalTime lastExecution = task.getLastExecuted();
-            long difference = lastExecution.until(now, ChronoUnit.SECONDS);
-            return task.getSeconds() - difference + "";
+            Interval interval = new Interval(task.getLastExecuted().getTime(), new Date().getTime());
+            Duration period = interval.toDuration();
+
+            return task.getInterval().toSeconds() - period.getStandardSeconds() + "";
         }
 
         if(commandField.equalsIgnoreCase("nextExecutionFormat")) {
-            LocalTime now = LocalTime.now();
-            LocalTime lastExecution = task.getLastExecuted();
-            long difference = lastExecution.until(now, ChronoUnit.SECONDS);
-            long timeLeft = task.getSeconds() - difference;
+            Interval interval = new Interval(task.getLastExecuted().getTime(), new Date().getTime());
+            Duration period = interval.toDuration();
 
-            return Tools.getTimeString((int) timeLeft);
+             long timeLeft = task.getInterval().toSeconds() - period.getStandardSeconds();
+
+             return Tools.getTimeString((int) timeLeft);
         }
 
         return null;

@@ -1,8 +1,8 @@
 package me.playbosswar.com.utils;
 
-import com.google.gson.Gson;
 import me.playbosswar.com.Main;
 import me.playbosswar.com.tasks.Task;
+import me.playbosswar.com.utils.gson.GsonConverter;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
@@ -18,7 +18,7 @@ public class Files {
      */
     public static void createDataFolders() {
         File file = new File(pluginFolderPath + "/timers");
-        Boolean created = file.mkdir();
+        boolean created = file.mkdir();
 
         if (created) {
             Messages.sendConsole("Data folder has been created");
@@ -52,12 +52,17 @@ public class Files {
 
                     FileReader fr = new FileReader(file.getPath());
 
-                    Gson gson = new Gson();
+                    GsonConverter gson = new GsonConverter();
                     Task task = gson.fromJson(jsonParser.parse(fr).toString(), Task.class);
                     // We relink the tasks to commands and times because we lose this structure during serializing
                     task.getCommands().forEach(command -> command.setTask(task));
                     task.getTimes().forEach(time -> time.setTask(task));
                     task.getInterval().setTask(task);
+
+                    if(task.isResetExecutionsAfterRestart()) {
+                        task.setTimesExecuted(0);
+                    }
+
                     tasks.add(task);
                 }
             }

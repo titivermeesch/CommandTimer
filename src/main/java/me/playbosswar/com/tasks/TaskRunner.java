@@ -3,18 +3,16 @@ package me.playbosswar.com.tasks;
 import me.playbosswar.com.Main;
 import me.playbosswar.com.Tools;
 import me.playbosswar.com.enums.CommandExecutionMode;
-import me.playbosswar.com.enums.Gender;
-import me.playbosswar.com.hooks.PAPIHook;
 import me.playbosswar.com.utils.Messages;
+import me.playbosswar.com.utils.TaskUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
-import org.bukkit.entity.Player;
+import org.joda.time.Duration;
+import org.joda.time.Interval;
 
-import java.time.DayOfWeek;
-import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -23,7 +21,119 @@ import java.util.TimerTask;
  * Runnable responsible for scheduling tasks
  */
 public class TaskRunner implements Runnable {
-    private static final boolean debug = Main.getPlugin().getConfig().getBoolean("debug");
+    private void processTask(Task task) {
+        if(Main.getTasksManager().stopRunner) {
+            return;
+        }
+
+        Messages.sendDebugConsole("Checking if " + task.getName() + " can be executed");
+
+        if (!task.isActive()) {
+            Messages.sendDebugConsole("Task is not active");
+            return;
+        }
+
+        if (!TaskUtils.checkTaskDaysContainToday(task)) {
+            Messages.sendDebugConsole("Command can not be executed today");
+            return;
+        }
+
+        if (!TaskUtils.checkServerHasEnoughPlayers(task)) {
+            Messages.sendDebugConsole("Server did not reach player limits on task");
+            return;
+        }
+
+        if (task.getTimesExecuted() >= task.getExecutionLimit() && task.getExecutionLimit() != -1) {
+            Messages.sendDebugConsole("Task reached the maximum execution limit");
+            return;
+        }
+
+        if (!Tools.randomCheck(task.getRandom())) {
+            Messages.sendDebugConsole("Task has a random execution chance");
+            return;
+        }
+
+        if (task.getTimes().size() > 0) {
+            Messages.sendDebugConsole("Task is time related, checking if can be executed now");
+
+            for (TaskTime taskTime : task.getTimes()) {
+                if (taskTime.isMinecraftTime()) {
+                    Messages.sendDebugConsole("Task is using minecraft time");
+
+                    World world = Bukkit.getWorld(taskTime.getWorld() == null ? "world" : taskTime.getWorld());
+                    assert world != null;
+                    String minecraftTime = Tools.calculateWorldTime(world);
+
+                    Messages.sendDebugConsole("Current minecraft time is " + minecraftTime);
+
+                    LocalTime current = LocalTime.parse(minecraftTime);
+
+                    if (taskTime.isRange()) {
+                        LocalTime startRange = taskTime.getTime1();
+                        LocalTime endRange = taskTime.getTime2();
+
+                        if (current.isAfter(endRange) || current.isBefore(startRange)) {
+                            return;
+                        }
+                    } else {
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+                        if (!minecraftTime.equals(taskTime.getTime1().format(formatter))) {
+                            return;
+                        }
+                    }
+                } else {
+                    Messages.sendDebugConsole("Found time, checking if execution is needed");
+
+                    LocalTime current = LocalTime.now().withNano(0);
+
+                    if (taskTime.isRange()) {
+                        Messages.sendDebugConsole("Found time range");
+
+                        LocalTime startRange = taskTime.getTime1();
+                        LocalTime endRange = taskTime.getTime2();
+
+                        if (current.isAfter(endRange) || current.isBefore(startRange)) {
+                            return;
+                        }
+                    } else {
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+
+                        if (!current.format(formatter).equals(taskTime.getTime1().format(formatter))) {
+                            return;
+                        }
+                    }
+                }
+            }
+        } else {
+            Interval interval = new Interval(task.getLastExecuted().getTime(), new Date().getTime());
+            Duration period = interval.toDuration();
+
+            if (period.getStandardSeconds() < task.getInterval().toSeconds()) {
+                Messages.sendDebugConsole("Timer has been executed before. Last execution " + period.getStandardSeconds() + "s ago");
+                return;
+            }
+        }
+
+        // If it remains -1, that means that all commands should be executed
+        int selectedCommandIndex = -1;
+        if(task.getCommandExecutionMode().equals(CommandExecutionMode.RANDOM)) {
+            selectedCommandIndex = Tools.getRandomInt(0, task.getCommands().size() - 1);
+        } else if(task.getCommandExecutionMode().equals(CommandExecutionMode.ORDERED)) {
+            int currentLatestCommandIndex = task.getLastExecutedCommandIndex();
+
+            if(currentLatestCommandIndex == task.getCommands().size() - 1) {
+                selectedCommandIndex = 0;
+            } else {
+                selectedCommandIndex = currentLatestCommandIndex + 1;
+            }
+        }
+
+        if(selectedCommandIndex == -1) {
+            task.getCommands().forEach(taskCommand -> Main.getTasksManager().addTaskCommandExecution(taskCommand));
+        } else {
+            Main.getTasksManager().addTaskCommandExecution(task.getCommands().get(selectedCommandIndex));
+        }
+    }
 
     @Override
     public void run() {
@@ -33,241 +143,9 @@ public class TaskRunner implements Runnable {
             public void run() {
                 List<Task> tasks = Main.getTasksManager().getLoadedTasks();
 
-                for (Task timer : tasks) {
-                    if (debug) {
-                        Messages.sendConsole("Checking if " + timer.getName() + " can be executed");
-                    }
-
-                    DayOfWeek today = LocalDate.now().getDayOfWeek();
-
-                    // Check if the command can be executed on this day
-                    if (timer.getDays().size() > 0 && !timer.getDays().contains(today.toString())) {
-                        if (debug) {
-                            Messages.sendConsole("Command can not be executed today");
-                        }
-
-                        continue;
-                    }
-
-                    if (timer.getMinPlayers() != -1 && Bukkit.getOnlinePlayers().size() < timer.getMinPlayers()) {
-                        if (debug) {
-                            Messages.sendConsole("Timer has minPlayers limit which is not reached");
-                        }
-                        continue;
-                    }
-
-                    if (timer.getMaxPlayers() != -1 && Bukkit.getOnlinePlayers().size() > timer.getMaxPlayers()) {
-                        if (debug) {
-                            Messages.sendConsole("Timer has maxPlayers limit which went beyond limit");
-                        }
-                        continue;
-                    }
-
-                    // Check if the command can be executed at this time
-                    if (timer.getTimes().size() > 0) {
-                        if (debug) {
-                            Messages.sendConsole("Timer is time related, checking if can be executed now");
-                        }
-
-                        Boolean shouldBlock = true;
-
-                        // Handle minecraft world time
-                        // if (timer.getUseMinecraftTime()) {
-                        if (true) {
-                            if (debug) {
-                                Messages.sendConsole("Timer is using minecraft time");
-                            }
-
-                            for (String worldName : timer.getWorlds()) {
-                                World world = Bukkit.getWorld(worldName == null ? "world" : worldName);
-                                assert world != null;
-                                String minecraftTime = Tools.calculateWorldTime(world);
-
-                                if (debug) {
-                                    Messages.sendConsole("Current minecraft time is " + minecraftTime);
-                                }
-
-                                for (TaskTime time : timer.getTimes()) {
-                                    LocalTime current = LocalTime.parse(minecraftTime);
-
-                                    if (time.getTime2() != null) {
-                                        LocalTime startRange = time.getTime1();
-                                        LocalTime endRange = time.getTime2();
-
-                                        if (current.isAfter(startRange) && current.isBefore(endRange)) {
-                                            shouldBlock = false;
-                                        }
-                                    } else if (minecraftTime.equals(time)) {
-                                        shouldBlock = false;
-                                    }
-                                }
-                            }
-                        }
-
-                        // Handle real world time
-                        for (TaskTime time : timer.getTimes()) {
-                            if (debug) {
-                                Messages.sendConsole("Found time " + time + ", checking if execution is needed");
-                            }
-
-                            LocalTime current = LocalTime.now().withNano(0);
-
-                            if (time.getTime2() != null) {
-                                if (debug) {
-                                    Messages.sendConsole("Found time range");
-                                }
-
-                                LocalTime startRange = time.getTime1();
-                                LocalTime endRange = time.getTime2();
-
-                                if (current.isAfter(startRange) && current.isBefore(endRange)) {
-                                    if (debug) {
-                                        Messages.sendConsole("Time is in range, continue processing...");
-                                    }
-
-                                    shouldBlock = false;
-                                }
-                            }
-
-                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-
-                            if (debug) {
-                                Messages.sendConsole("Time for timer is: " + time);
-                                Messages.sendConsole("Current time is: " + current.format(formatter));
-                            }
-
-                            if (current.format(formatter).equals(time)) {
-                                if (debug) {
-                                    Messages.sendConsole("Times are equal, continue processing...");
-                                }
-
-                                shouldBlock = false;
-                            }
-                        }
-
-                        if (shouldBlock) {
-                            if (debug) {
-                                Messages.sendConsole("Times are not equal, skipping");
-                            }
-                            continue;
-                        }
-                    }
-
-                    // If timer has already been executed to much
-                    if (timer.getExecutionLimit() != -1 && timer.getExecutionLimit() <= timer.getTimesExecuted()) {
-                        if (debug) {
-                            Messages.sendConsole("Timer execution limit reached");
-                        }
-
-                        continue;
-                    }
-
-                    LocalTime lastTimeExecuted = timer.getLastExecuted();
-                    Duration secondsSinceLastExecution = Duration.between(lastTimeExecuted, LocalTime.now());
-
-                    // If the last execution happened less that timer seconds ago
-
-                    if (true) {
-                        // if (secondsSinceLastExecution.getSeconds() < timer.getSeconds()) {
-                        if (debug) {
-                            Messages.sendConsole("Timer has been executed before");
-                        }
-
-                        continue;
-                    }
-
-                    if (!Tools.randomCheck(timer.getRandom())) {
-                        if (debug) {
-                            Messages.sendConsole("Timer has random value and didn't meet treshold");
-                        }
-
-                        continue;
-                    }
-
-                    // Gender timerGender = timer.getGender();
-                    Gender timerGender = Gender.CONSOLE;
-                    boolean selectRandomCommand = timer.getCommandExecutionMode().equals(CommandExecutionMode.RANDOM);
-                    int selectedCommand = Tools.getRandomInt(0, timer.getCommands().size() - 1);
-
-                    if (debug && selectRandomCommand) {
-                        Messages.sendConsole("Timer has random command selection enabled");
-                    }
-
-                    if (timerGender.equals(Gender.CONSOLE)) {
-                        int i = 0;
-                        for (TaskCommand command : timer.getCommands()) {
-
-                            if (selectRandomCommand && i != selectedCommand) {
-                                i++;
-                                continue;
-                            }
-
-                            // if (timer.getExecutePerUser()) {
-                            if (true) {
-                                for (Player p : Bukkit.getOnlinePlayers()) {
-                                    if (timer.getRequiredPermission() != "" && p.hasPermission(timer.getRequiredPermission())) {
-                                        Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(),
-                                                                           PAPIHook.parsePAPI(command.getCommand(), p));
-                                    }
-                                }
-                            } else {
-                                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(),
-                                                                   PAPIHook.parsePAPI(command.getCommand(), null));
-                            }
-
-                            i++;
-                        }
-                    } else if (timerGender.equals(Gender.PLAYER)) {
-                        int i = 0;
-                        for (TaskCommand command : timer.getCommands()) {
-                            if (selectRandomCommand && i != selectedCommand) {
-                                i++;
-                                continue;
-                            }
-
-                            for (Player p : Bukkit.getOnlinePlayers()) {
-                                if (!timer.getRequiredPermission().equals("") && p.hasPermission(timer.getRequiredPermission())) {
-                                    p.performCommand(PAPIHook.parsePAPI(command.getCommand(), p));
-                                }
-                            }
-                            i++;
-                        }
-                    } else if (timerGender.equals(Gender.OPERATOR)) {
-                        int i = 0;
-                        for (TaskCommand command : timer.getCommands()) {
-                            if (selectRandomCommand && i != selectedCommand) {
-                                i++;
-                                continue;
-                            }
-
-                            for (Player p : Bukkit.getOnlinePlayers()) {
-                                boolean isAlreadyOp = p.isOp();
-
-                                try {
-
-                                    if (!isAlreadyOp) {
-                                        p.setOp(true);
-                                    }
-
-                                    p.performCommand(PAPIHook.parsePAPI(command.getCommand(), p));
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                } finally {
-                                    if (!isAlreadyOp) {
-                                        p.setOp(false);
-                                    }
-                                }
-                            }
-                            i++;
-                        }
-                    }
-
-                    final LocalTime lastExecuted = LocalTime.now();
-
-                    timer.setLastExecuted(lastExecuted);
-                    timer.setTimesExecuted(timer.getTimesExecuted() + 1);
-                }
+                tasks.forEach(task -> processTask(task));
             }
-        }, 1000);
+            // Sync runner with the clock
+        }, System.currentTimeMillis() % 1000, 1000);
     }
 }

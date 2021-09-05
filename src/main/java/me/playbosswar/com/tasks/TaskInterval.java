@@ -115,6 +115,13 @@ public class TaskInterval {
         this.task = task;
     }
 
+    public int toSeconds() {
+        int hours = this.hours * 3600;
+        int minutes = this.minutes * 60;
+
+        return hours + minutes + seconds;
+    }
+
     public String toString() {
         String s = "";
 

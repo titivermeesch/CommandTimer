@@ -1,14 +1,15 @@
 package me.playbosswar.com.tasks;
 
-import com.google.gson.Gson;
 import me.playbosswar.com.enums.CommandExecutionMode;
 import me.playbosswar.com.utils.Files;
+import me.playbosswar.com.utils.gson.GsonConverter;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class Task {
     private String name;
@@ -20,7 +21,8 @@ public class Task {
     private ArrayList<String> days = new ArrayList<>();
     private int executionLimit = -1;
     private int timesExecuted = 0;
-    private LocalTime lastExecuted;
+    private int lastExecutedCommandIndex = 0;
+    private Date lastExecuted = new Date();
     private String requiredPermission = "";
     private int minPlayers = -1;
     private int maxPlayers = -1;
@@ -160,11 +162,11 @@ public class Task {
         storeInstance();
     }
 
-    public LocalTime getLastExecuted() {
+    public Date getLastExecuted() {
         return lastExecuted;
     }
 
-    public void setLastExecuted(LocalTime lastExecuted) {
+    public void setLastExecuted(Date lastExecuted) {
         this.lastExecuted = lastExecuted;
         storeInstance();
     }
@@ -251,8 +253,16 @@ public class Task {
         storeInstance();
     }
 
+    public int getLastExecutedCommandIndex() {
+        return lastExecutedCommandIndex;
+    }
+
+    public void setLastExecutedCommandIndex(int lastExecutedCommandIndex) {
+        this.lastExecutedCommandIndex = lastExecutedCommandIndex;
+    }
+
     public void storeInstance() {
-        Gson gson = new Gson();
+        GsonConverter gson = new GsonConverter();
         String json = gson.toJson(this);
 
         try {
