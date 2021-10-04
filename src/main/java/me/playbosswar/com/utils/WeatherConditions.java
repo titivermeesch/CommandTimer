@@ -1,4 +1,4 @@
-package me.playbosswar.com.utils.gson;
+package me.playbosswar.com.utils;
 
 import me.playbosswar.com.enums.WorldWeather;
 import org.bukkit.WeatherType;
@@ -17,6 +17,6 @@ public class WeatherConditions {
             return true;
         }
 
-        return !worldWeathers.contains(WorldWeather.CLEAR);
+        return worldWeathers.contains(WorldWeather.CLEAR);
     }
 }

@@ -18,7 +18,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class AllCommandsMenu implements InventoryProvider {
@@ -88,7 +88,7 @@ public class AllCommandsMenu implements InventoryProvider {
     }
 
     private ClickableItem[] getAllCommands(Player p) {
-        ArrayList<TaskCommand> commands = task.getCommands();
+        List<TaskCommand> commands = task.getCommands();
 
         if (commands == null) {
             return new ClickableItem[0];

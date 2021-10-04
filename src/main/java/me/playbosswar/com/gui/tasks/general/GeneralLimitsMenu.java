@@ -8,10 +8,14 @@ import fr.minuskube.inv.content.InventoryProvider;
 import me.playbosswar.com.Main;
 import me.playbosswar.com.gui.api.GenericNumberMenu;
 import me.playbosswar.com.gui.tasks.EditTaskMenu;
+import me.playbosswar.com.gui.worlds.WorldSelector;
 import me.playbosswar.com.tasks.Task;
+import me.playbosswar.com.utils.Callback;
 import me.playbosswar.com.utils.Items;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.List;
 
 public class GeneralLimitsMenu implements InventoryProvider {
     public final SmartInventory INVENTORY;
@@ -88,6 +92,28 @@ public class GeneralLimitsMenu implements InventoryProvider {
         ClickableItem clickableExecutionLimitItem = ClickableItem.of(executionLimitItem, e -> new ExecutionLimitMenu(player,
                                                                                                                      task));
         contents.set(1, 4, clickableExecutionLimitItem);
+
+        String[] worldLore = {
+                "",
+                "§7Select in which worlds the commands",
+                "§7will be executed.",
+                "§7This will only work if the gender",
+                "§7is §cNOT §7of §eCONSOLE"
+        };
+        ItemStack worldItem = Items.generateItem("§bAffected Worlds", XMaterial.MAP, worldLore);
+        Callback worldCallback = new Callback() {
+            @Override
+            public <T> void execute(T data) {
+                List<String> worlds = (List<String>) data;
+                task.setWorlds(worlds);
+                new GeneralLimitsMenu(task).INVENTORY.open(player);
+            }
+        };
+
+        contents.set(1, 5, ClickableItem.of(worldItem, e -> new WorldSelector(
+                worldCallback,
+                task.getWorlds(),
+                true).INVENTORY.open(player)));
 
         contents.set(1, 7, ClickableItem.of(Items.getBackItem(), e -> new EditTaskMenu(task).INVENTORY.open(player)));
     }

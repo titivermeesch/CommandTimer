@@ -15,16 +15,15 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class WorldSelector implements InventoryProvider {
     public final SmartInventory INVENTORY;
-    private final ArrayList<String> selectedWorlds;
+    private final List<String> selectedWorlds;
     private final Callback callback;
     private final boolean allowMulti;
 
-    public WorldSelector(Callback callback, ArrayList<String> selectedWorlds, boolean allowMulti) {
+    public WorldSelector(Callback callback, List<String> selectedWorlds, boolean allowMulti) {
         this.callback = callback;
         this.selectedWorlds = selectedWorlds;
         this.allowMulti = allowMulti;

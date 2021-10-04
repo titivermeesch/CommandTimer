@@ -1,5 +1,6 @@
 package me.playbosswar.com.tasks;
 
+import me.playbosswar.com.conditionsengine.validations.Validation;
 import me.playbosswar.com.enums.CommandExecutionMode;
 import me.playbosswar.com.utils.Files;
 import me.playbosswar.com.utils.gson.GsonConverter;
@@ -7,18 +8,18 @@ import me.playbosswar.com.utils.gson.GsonConverter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class Task {
     private String name;
-    private ArrayList<TaskCommand> commands = new ArrayList<>();
+    private List<TaskCommand> commands = new ArrayList<>();
     private TaskInterval interval = new TaskInterval(this, 0, 0, 0, 5);
-    private ArrayList<TaskTime> times = new ArrayList<>();
+    private List<TaskTime> times = new ArrayList<>();
     private double random = 1.0;
-    private ArrayList<String> worlds = new ArrayList<>();
-    private ArrayList<String> days = new ArrayList<>();
+    private List<String> worlds = new ArrayList<>();
+    private List<String> days = new ArrayList<>();
     private int executionLimit = -1;
     private int timesExecuted = 0;
     private int lastExecutedCommandIndex = 0;
@@ -29,6 +30,7 @@ public class Task {
     private CommandExecutionMode commandExecutionMode = CommandExecutionMode.ALL;
     private boolean active = false;
     private boolean resetExecutionsAfterRestart = false;
+    private List<Validation> validations = new ArrayList<>();
 
     public Task(String name) {
         this.name = name;
@@ -54,11 +56,11 @@ public class Task {
         storeInstance();
     }
 
-    public ArrayList<TaskCommand> getCommands() {
+    public List<TaskCommand> getCommands() {
         return commands;
     }
 
-    public void setCommands(ArrayList<TaskCommand> commands) {
+    public void setCommands(List<TaskCommand> commands) {
         this.commands = commands;
         storeInstance();
     }
@@ -83,11 +85,11 @@ public class Task {
         storeInstance();
     }
 
-    public ArrayList<TaskTime> getTimes() {
+    public List<TaskTime> getTimes() {
         return times;
     }
 
-    public void setTimes(ArrayList<TaskTime> times) {
+    public void setTimes(List<TaskTime> times) {
         this.times = times;
         storeInstance();
     }
@@ -111,11 +113,11 @@ public class Task {
         storeInstance();
     }
 
-    public ArrayList<String> getWorlds() {
+    public List<String> getWorlds() {
         return worlds;
     }
 
-    public void setWorlds(ArrayList<String> worlds) {
+    public void setWorlds(List<String> worlds) {
         this.worlds = worlds;
         storeInstance();
     }
@@ -125,11 +127,11 @@ public class Task {
         storeInstance();
     }
 
-    public ArrayList<String> getDays() {
+    public List<String> getDays() {
         return days;
     }
 
-    public void setDays(ArrayList<String> days) {
+    public void setDays(List<String> days) {
         this.days = days;
         storeInstance();
     }
@@ -259,6 +261,14 @@ public class Task {
 
     public void setLastExecutedCommandIndex(int lastExecutedCommandIndex) {
         this.lastExecutedCommandIndex = lastExecutedCommandIndex;
+    }
+
+    public List<Validation> getValidations() {
+        return validations;
+    }
+
+    public void setValidations(List<Validation> validations) {
+        this.validations = validations;
     }
 
     public void storeInstance() {
