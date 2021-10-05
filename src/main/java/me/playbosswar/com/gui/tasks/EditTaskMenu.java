@@ -6,11 +6,12 @@ import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
 import me.playbosswar.com.Main;
-import me.playbosswar.com.gui.MainMenu;
 import me.playbosswar.com.gui.tasks.commands.AllCommandsMenu;
 import me.playbosswar.com.gui.tasks.general.GeneralLimitsMenu;
 import me.playbosswar.com.gui.tasks.scheduler.MainScheduleMenu;
+import me.playbosswar.com.gui.validations.ConditionMenu;
 import me.playbosswar.com.tasks.Task;
+import me.playbosswar.com.utils.Callback;
 import me.playbosswar.com.utils.Items;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -67,6 +68,17 @@ public class EditTaskMenu implements InventoryProvider {
         ClickableItem clickableGeneralLimitsItem = ClickableItem.of(generalLimitsItem,
                                                                     e -> new GeneralLimitsMenu(task).INVENTORY.open(player));
         contents.set(1, 4, clickableGeneralLimitsItem);
+
+        ItemStack validationsItem = Items.generateItem("§bCondition", XMaterial.COMPARATOR);
+        ClickableItem clickableValidations = ClickableItem.of(validationsItem,
+                                                              e -> new ConditionMenu(task.getCondition(),
+                                                                                     new Callback() {
+                                                                                         @Override
+                                                                                         public <T> void execute(T data) {
+                                                                                             INVENTORY.open(player);
+                                                                                         }
+                                                                                     }).INVENTORY.open(player));
+        contents.set(1, 5, clickableValidations);
 
         boolean isActive = task.isActive();
         String[] activationLore = new String[]{ "",

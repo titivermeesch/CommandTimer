@@ -3,13 +3,13 @@ package me.playbosswar.com.conditionsengine.validations;
 import java.util.List;
 
 public class Condition {
-    // AND, OR, ...
     private ConditionType conditionType;
-    private List<ConditionPart> conditionParts;
+    private List<Condition> conditions;
+    private SimpleCondition simpleCondition;
 
-    public Condition(ConditionType conditionType, List<ConditionPart> conditionParts) {
+    public Condition(ConditionType conditionType, List<Condition> conditions) {
         this.conditionType = conditionType;
-        this.conditionParts = conditionParts;
+        this.conditions = conditions;
     }
 
     public ConditionType getConditionType() {
@@ -20,11 +20,23 @@ public class Condition {
         this.conditionType = conditionType;
     }
 
-    public List<ConditionPart> getConditionParts() {
-        return conditionParts;
+    public List<Condition> getConditions() {
+        return conditions;
     }
 
-    public void setConditionParts(List<ConditionPart> conditionParts) {
-        this.conditionParts = conditionParts;
+    public void setConditions(List<Condition> conditions) {
+        this.conditions = conditions;
+    }
+
+    public void addCondition(Condition condition) { this.conditions.add(condition); }
+
+    public void removeCondition(Condition condition) { this.conditions.remove(condition); }
+
+    public SimpleCondition getSimpleCondition() {
+        return simpleCondition;
+    }
+
+    public void setSimpleCondition(SimpleCondition simpleCondition) {
+        this.simpleCondition = simpleCondition;
     }
 }

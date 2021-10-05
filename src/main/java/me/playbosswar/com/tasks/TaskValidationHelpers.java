@@ -4,33 +4,45 @@ import me.playbosswar.com.Main;
 import me.playbosswar.com.conditionsengine.ConditionEngineManager;
 import me.playbosswar.com.conditionsengine.ConditionParams;
 import me.playbosswar.com.conditionsengine.validations.Condition;
-import me.playbosswar.com.conditionsengine.validations.ConditionPart;
 import me.playbosswar.com.conditionsengine.validations.ConditionType;
-import me.playbosswar.com.conditionsengine.validations.Validation;
+import me.playbosswar.com.conditionsengine.validations.SimpleCondition;
 import org.bukkit.entity.Player;
 import org.jeasy.rules.api.Facts;
 import org.jeasy.rules.api.Rule;
 
-import java.util.List;
-
 public class TaskValidationHelpers {
-    public static boolean processValidations(List<Validation> validations, Player p) {
-        return validations.stream().allMatch(validation -> {
-            Condition condition = validation.getCondition();
-            List<ConditionPart> conditionParts = condition.getConditionParts();
+    public static boolean processCondition(Condition topCondition, Player p) {
+        if (topCondition.getSimpleCondition() != null) {
+            return checkSimpleCondition(topCondition.getSimpleCondition(), topCondition.getConditionType(), p);
+        }
 
-            if (condition.getConditionType().equals(ConditionType.AND)) {
-                return conditionParts.stream().allMatch(conditionPart -> checkConditionPart(conditionPart, p));
-            }
+        if (topCondition.getConditionType().equals(ConditionType.AND)) {
+            return topCondition.getConditions().stream().allMatch(condition -> {
+                if (condition.getSimpleCondition() != null) {
+                    return checkSimpleCondition(condition.getSimpleCondition(), condition.getConditionType(), p);
+                }
 
-            return conditionParts.stream().anyMatch(conditionPart -> checkConditionPart(conditionPart, p));
-        });
+                return processCondition(condition, p);
+            });
+        }
+
+        if (topCondition.getConditionType().equals(ConditionType.OR)) {
+            return topCondition.getConditions().stream().anyMatch(condition -> {
+                if (condition.getSimpleCondition() != null) {
+                    return checkSimpleCondition(condition.getSimpleCondition(), condition.getConditionType(), p);
+                }
+
+                return processCondition(condition, p);
+            });
+        }
+
+        return false;
     }
 
-    private static boolean checkConditionPart(ConditionPart conditionPart, Player p) {
+    private static boolean checkSimpleCondition(SimpleCondition simpleCondition, ConditionType conditionType, Player p) {
         final ConditionEngineManager conditionEngineManager = Main.getConditionEngineManager();
-        Rule rule = conditionEngineManager.getRule(conditionPart.getRuleExecutor().getRuleName());
-        ConditionParams conditionParams = conditionPart.getConditionParams();
+        Rule rule = conditionEngineManager.getRule(simpleCondition.getRuleExecutor().getRuleName());
+        ConditionParams conditionParams = simpleCondition.getConditionParams();
 
         Facts facts = new Facts();
         facts.put("player", p);
@@ -39,20 +51,6 @@ public class TaskValidationHelpers {
             facts.put("conditionCompare", conditionParams.getConditionCompare());
         }
 
-        if (conditionPart.getConditionType().equals(ConditionType.SIMPLE)) {
-            return rule.evaluate(facts);
-        }
-
-        if (conditionPart.getConditionType().equals(ConditionType.NOT)) {
-            return !rule.evaluate(facts);
-        }
-
-        if (conditionPart.getConditionType().equals(ConditionType.AND)) {
-            return conditionPart.getConditionParts().stream().allMatch(conditionPart1 -> checkConditionPart(conditionPart1, p));
-        }
-
-        // OR CASE
-        return conditionPart.getConditionParts().stream().anyMatch(conditionPart1 -> checkConditionPart(conditionPart1, p));
-
+        return conditionType.equals(ConditionType.SIMPLE) == rule.evaluate(facts);
     }
 }

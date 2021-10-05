@@ -1,6 +1,6 @@
 package me.playbosswar.com.tasks;
 
-import me.playbosswar.com.conditionsengine.validations.Validation;
+import me.playbosswar.com.conditionsengine.validations.Condition;
 import me.playbosswar.com.enums.CommandExecutionMode;
 import me.playbosswar.com.utils.Files;
 import me.playbosswar.com.utils.gson.GsonConverter;
@@ -30,7 +30,7 @@ public class Task {
     private CommandExecutionMode commandExecutionMode = CommandExecutionMode.ALL;
     private boolean active = false;
     private boolean resetExecutionsAfterRestart = false;
-    private List<Validation> validations = new ArrayList<>();
+    private Condition condition;
 
     public Task(String name) {
         this.name = name;
@@ -263,12 +263,12 @@ public class Task {
         this.lastExecutedCommandIndex = lastExecutedCommandIndex;
     }
 
-    public List<Validation> getValidations() {
-        return validations;
+    public Condition getCondition() {
+        return condition;
     }
 
-    public void setValidations(List<Validation> validations) {
-        this.validations = validations;
+    public void setCondition(Condition condition) {
+        this.condition = condition;
     }
 
     public void storeInstance() {

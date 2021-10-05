@@ -75,23 +75,23 @@ public class TasksManager {
         for (Player p : Bukkit.getOnlinePlayers()) {
             if (!permission.equals("") && !p.hasPermission(permission)) {
                 Messages.sendDebugConsole("Stopped execution because player does not have right permissions");
-                return;
+                continue;
             }
 
             if (!WeatherConditions.checkPlayerMatchesWeather(p, taskCommand.getWeatherConditions())) {
                 Messages.sendDebugConsole("Stopped execution because player has wrong weather");
-                return;
+                continue;
             }
 
             if (taskCommand.getTask().getWorlds().size() > 0 && !taskCommand.getTask().getWorlds().contains(p.getWorld().getName())) {
                 Messages.sendDebugConsole("Player is in a world that is not affected by task");
-                return;
+                continue;
             }
 
-            if(taskCommand.getTask().getValidations().size() > 0) {
-                boolean valid = TaskValidationHelpers.processValidations(taskCommand.getTask().getValidations(), p);
-                if(!valid) {
-                    return;
+            if (taskCommand.getTask().getCondition() != null) {
+                boolean valid = TaskValidationHelpers.processCondition(taskCommand.getTask().getCondition(), p);
+                if (!valid) {
+                    continue;
                 }
             }
 
@@ -111,23 +111,23 @@ public class TasksManager {
         for (Player p : Bukkit.getOnlinePlayers()) {
             if (!permission.equals("") && !p.hasPermission(permission)) {
                 Messages.sendDebugConsole("Cannot execute task because player lacks permissions");
-                return;
+                continue;
             }
 
             if (!WeatherConditions.checkPlayerMatchesWeather(p, taskCommand.getWeatherConditions())) {
                 Messages.sendDebugConsole("Player has incorrect weather for his current location");
-                return;
+                continue;
             }
 
             if (taskCommand.getTask().getWorlds().size() > 0 && !taskCommand.getTask().getWorlds().contains(p.getWorld().getName())) {
                 Messages.sendDebugConsole("Player is in a world that is not affected by task");
-                return;
+                continue;
             }
 
-            if(taskCommand.getTask().getValidations().size() > 0) {
-                boolean valid = TaskValidationHelpers.processValidations(taskCommand.getTask().getValidations(), p);
-                if(!valid) {
-                    return;
+            if (taskCommand.getTask().getCondition() != null) {
+                boolean valid = TaskValidationHelpers.processCondition(taskCommand.getTask().getCondition(), p);
+                if (!valid) {
+                    continue;
                 }
             }
 
@@ -147,18 +147,27 @@ public class TasksManager {
                 }
 
                 if (!WeatherConditions.checkPlayerMatchesWeather(p, taskCommand.getWeatherConditions())) {
-                    return;
+                    if (!wasAlreadyOp) {
+                        p.setOp(false);
+                    }
+                    continue;
                 }
 
                 if (taskCommand.getTask().getWorlds().size() > 0 && !taskCommand.getTask().getWorlds().contains(p.getWorld().getName())) {
                     Messages.sendDebugConsole("Player is in a world that is not affected by task");
-                    return;
+                    if (!wasAlreadyOp) {
+                        p.setOp(false);
+                    }
+                    continue;
                 }
 
-                if(taskCommand.getTask().getValidations().size() > 0) {
-                    boolean valid = TaskValidationHelpers.processValidations(taskCommand.getTask().getValidations(), p);
-                    if(!valid) {
-                        return;
+                if (taskCommand.getTask().getCondition() != null) {
+                    boolean valid = TaskValidationHelpers.processCondition(taskCommand.getTask().getCondition(), p);
+                    if (!valid) {
+                        if (!wasAlreadyOp) {
+                            p.setOp(false);
+                        }
+                        continue;
                     }
                 }
 
