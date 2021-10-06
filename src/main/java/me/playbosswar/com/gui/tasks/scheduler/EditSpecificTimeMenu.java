@@ -5,7 +5,7 @@ import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
-import me.playbosswar.com.Main;
+import me.playbosswar.com.CommandTimerPlugin;
 import me.playbosswar.com.gui.worlds.WorldSelector;
 import me.playbosswar.com.tasks.TaskTime;
 import me.playbosswar.com.utils.Callback;
@@ -25,7 +25,7 @@ public class EditSpecificTimeMenu implements InventoryProvider {
         INVENTORY = SmartInventory.builder()
                 .id("task-times-specific")
                 .provider(this)
-                .manager(Main.getInventoryManager())
+                .manager(CommandTimerPlugin.getInstance().getInventoryManager())
                 .size(3, 9)
                 .title("§9§lEdit specific time")
                 .build();

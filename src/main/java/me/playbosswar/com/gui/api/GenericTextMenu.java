@@ -1,6 +1,6 @@
 package me.playbosswar.com.gui.api;
 
-import me.playbosswar.com.Main;
+import me.playbosswar.com.CommandTimerPlugin;
 import net.wesjd.anvilgui.AnvilGUI;
 import org.bukkit.entity.Player;
 
@@ -22,7 +22,7 @@ public class GenericTextMenu {
                 })
                 .text(defaultText)
                 .title(title)
-                .plugin(Main.getPlugin())
+                .plugin(CommandTimerPlugin.getPlugin())
                 .open(player);
     }
 

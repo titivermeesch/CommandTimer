@@ -1,7 +1,7 @@
 package me.playbosswar.com.hooks;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
-import me.playbosswar.com.Main;
+import me.playbosswar.com.CommandTimerPlugin;
 import me.playbosswar.com.Tools;
 import me.playbosswar.com.tasks.Task;
 import me.playbosswar.com.tasks.TaskTime;
@@ -12,7 +12,6 @@ import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.joda.time.Duration;
 import org.joda.time.Interval;
-import org.joda.time.format.PeriodFormat;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -63,7 +62,7 @@ public class PAPIPlaceholders extends PlaceholderExpansion {
         String commandName = identifierParts[0];
         String commandField = identifierParts[1];
 
-        Task task = Main.getTasksManager().getTaskByName(commandName);
+        Task task = CommandTimerPlugin.getInstance().getTasksManager().getTaskByName(commandName);
 
         if (task == null) {
             Messages.sendConsole("Tried to use PAPI placeholder for unknown command: %commandtimer_" + identifier);

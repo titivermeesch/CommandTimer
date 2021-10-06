@@ -5,7 +5,7 @@ import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
-import me.playbosswar.com.Main;
+import me.playbosswar.com.CommandTimerPlugin;
 import me.playbosswar.com.enums.WorldWeather;
 import me.playbosswar.com.gui.tasks.weather.WeatherMenu;
 import me.playbosswar.com.tasks.TaskCommand;
@@ -26,7 +26,7 @@ public class EditCommandMenu implements InventoryProvider {
         INVENTORY = SmartInventory.builder()
                 .id("edit-command")
                 .provider(this)
-                .manager(Main.getInventoryManager())
+                .manager(CommandTimerPlugin.getInstance().getInventoryManager())
                 .size(3, 9)
                 .title("§9§lEdit command")
                 .build();

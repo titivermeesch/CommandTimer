@@ -5,7 +5,7 @@ import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
-import me.playbosswar.com.Main;
+import me.playbosswar.com.CommandTimerPlugin;
 import me.playbosswar.com.gui.tasks.commands.AllCommandsMenu;
 import me.playbosswar.com.gui.tasks.general.GeneralLimitsMenu;
 import me.playbosswar.com.gui.tasks.scheduler.MainScheduleMenu;
@@ -25,7 +25,7 @@ public class EditTaskMenu implements InventoryProvider {
         INVENTORY = SmartInventory.builder()
                 .id("edit-task")
                 .provider(this)
-                .manager(Main.getInventoryManager())
+                .manager(CommandTimerPlugin.getInstance().getInventoryManager())
                 .size(3, 9)
                 .title("§9§lEdit " + task.getName())
                 .build();
@@ -69,16 +69,24 @@ public class EditTaskMenu implements InventoryProvider {
                                                                     e -> new GeneralLimitsMenu(task).INVENTORY.open(player));
         contents.set(1, 4, clickableGeneralLimitsItem);
 
-        ItemStack validationsItem = Items.generateItem("§bCondition", XMaterial.COMPARATOR);
-        ClickableItem clickableValidations = ClickableItem.of(validationsItem,
-                                                              e -> new ConditionMenu(task.getCondition(),
-                                                                                     new Callback() {
-                                                                                         @Override
-                                                                                         public <T> void execute(T data) {
-                                                                                             INVENTORY.open(player);
-                                                                                         }
-                                                                                     }).INVENTORY.open(player));
-        contents.set(1, 5, clickableValidations);
+        Callback conditionItemCallback = new Callback() {
+            @Override
+            public <T> void execute(T data) {
+                INVENTORY.open(player);
+            }
+        };
+        String[] conditionLore = new String[]{ "",
+                "§7Conditions allow you to have an overall",
+                "§7control of when your tasks should be executed",
+                "§7or when not"
+        };
+        ItemStack conditionItem = Items.generateItem("§bCondition", XMaterial.COMPARATOR, conditionLore);
+        ClickableItem clickableCondition = ClickableItem.of(conditionItem,
+                                                            e -> new ConditionMenu(
+                                                                    task.getCondition(),
+                                                                    conditionItemCallback
+                                                            ).INVENTORY.open(player));
+        contents.set(1, 5, clickableCondition);
 
         boolean isActive = task.isActive();
         String[] activationLore = new String[]{ "",

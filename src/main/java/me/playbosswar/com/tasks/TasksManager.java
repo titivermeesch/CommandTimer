@@ -1,6 +1,6 @@
 package me.playbosswar.com.tasks;
 
-import me.playbosswar.com.Main;
+import me.playbosswar.com.CommandTimerPlugin;
 import me.playbosswar.com.enums.Gender;
 import me.playbosswar.com.hooks.PAPIHook;
 import me.playbosswar.com.utils.Files;
@@ -218,7 +218,7 @@ public class TasksManager {
             }
         };
 
-        runnable.runTaskTimer(Main.getPlugin(), 20L, 20L);
+        runnable.runTaskTimer(CommandTimerPlugin.getPlugin(), 20L, 20L);
     }
 
     public void disable() {

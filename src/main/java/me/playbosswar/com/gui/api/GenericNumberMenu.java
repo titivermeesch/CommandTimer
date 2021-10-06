@@ -5,7 +5,7 @@ import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
-import me.playbosswar.com.Main;
+import me.playbosswar.com.CommandTimerPlugin;
 import me.playbosswar.com.utils.Items;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -26,7 +26,7 @@ public class GenericNumberMenu implements InventoryProvider {
         INVENTORY = SmartInventory.builder()
                 .id(UUID.randomUUID().toString())
                 .provider(this)
-                .manager(Main.getInventoryManager())
+                .manager(CommandTimerPlugin.getInstance().getInventoryManager())
                 .size(3, 9)
                 .title(inventoryTitle)
                 .build();

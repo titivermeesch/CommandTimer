@@ -5,25 +5,25 @@ import me.playbosswar.com.commands.MainCommand;
 import me.playbosswar.com.conditionsengine.ConditionEngineManager;
 import me.playbosswar.com.hooks.HooksManager;
 import me.playbosswar.com.hooks.Metrics;
-import me.playbosswar.com.listeners.PlayerWorldTimeTracking;
 import me.playbosswar.com.tasks.TasksManager;
 import me.playbosswar.com.utils.*;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class Main extends JavaPlugin implements Listener {
+public class CommandTimerPlugin extends JavaPlugin implements Listener {
     private static Plugin plugin;
+    private static CommandTimerPlugin instance;
     private static HooksManager hooksManager;
     private static InventoryManager inventoryManager;
     private static TasksManager tasksManager;
     private static ConditionEngineManager conditionEngineManager;
-    private static PlayerWorldTimeTracking playerWorldTimeTracking;
     public static Metrics metrics;
 
     @Override
     public void onEnable() {
         plugin = this;
+        instance = this;
 
         this.loadConfig();
         this.registerCommands();
@@ -31,12 +31,11 @@ public class Main extends JavaPlugin implements Listener {
         Files.createDataFolders();
         Files.deserializeJsonFilesIntoCommandTimers();
 
-        metrics = new Metrics(Main.getPlugin(), 9657);
+        metrics = new Metrics(CommandTimerPlugin.getPlugin(), 9657);
         hooksManager = new HooksManager();
         tasksManager = new TasksManager();
         inventoryManager = new InventoryManager(this);
         conditionEngineManager = new ConditionEngineManager();
-        playerWorldTimeTracking = new PlayerWorldTimeTracking();
         inventoryManager.init();
 
         Tools.printDate();
@@ -46,7 +45,6 @@ public class Main extends JavaPlugin implements Listener {
     @Override
     public void onDisable() {
         tasksManager.disable();
-        playerWorldTimeTracking.cancel();
         conditionEngineManager.onDisable();
         saveDefaultConfig();
         plugin = null;
@@ -65,27 +63,25 @@ public class Main extends JavaPlugin implements Listener {
         return plugin;
     }
 
-    public static HooksManager getHooksManager() {
+    public HooksManager getHooksManager() {
         return hooksManager;
     }
 
-    public static InventoryManager getInventoryManager() {
+    public InventoryManager getInventoryManager() {
         return inventoryManager;
     }
 
-    public static TasksManager getTasksManager() {
+    public TasksManager getTasksManager() {
         return tasksManager;
     }
 
-    public static ConditionEngineManager getConditionEngineManager() {
+    public ConditionEngineManager getConditionEngineManager() {
         return conditionEngineManager;
     }
 
-    public static PlayerWorldTimeTracking getPlayerWorldTimeTracking() {
-        return playerWorldTimeTracking;
-    }
-
-    public static Metrics getMetrics() {
+    public Metrics getMetrics() {
         return metrics;
     }
+
+    public static CommandTimerPlugin getInstance() { return instance; }
 }

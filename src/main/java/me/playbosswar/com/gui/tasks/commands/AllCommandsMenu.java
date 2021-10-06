@@ -6,7 +6,7 @@ import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
 import fr.minuskube.inv.content.Pagination;
-import me.playbosswar.com.Main;
+import me.playbosswar.com.CommandTimerPlugin;
 import me.playbosswar.com.gui.HorizontalIteratorWithBorder;
 import me.playbosswar.com.gui.tasks.EditTaskMenu;
 import me.playbosswar.com.tasks.Task;
@@ -30,7 +30,7 @@ public class AllCommandsMenu implements InventoryProvider {
         INVENTORY = SmartInventory.builder()
                 .id("task-commands")
                 .provider(this)
-                .manager(Main.getInventoryManager())
+                .manager(CommandTimerPlugin.getInstance().getInventoryManager())
                 .size(6, 9)
                 .title("§9§lTask commands")
                 .build();

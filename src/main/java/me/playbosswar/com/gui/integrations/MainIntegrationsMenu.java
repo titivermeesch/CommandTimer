@@ -5,7 +5,7 @@ import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
-import me.playbosswar.com.Main;
+import me.playbosswar.com.CommandTimerPlugin;
 import me.playbosswar.com.gui.MainMenu;
 import me.playbosswar.com.hooks.HookType;
 import me.playbosswar.com.utils.Items;
@@ -24,7 +24,7 @@ public class MainIntegrationsMenu implements InventoryProvider {
         INVENTORY = SmartInventory.builder()
                 .id("main-integrations")
                 .provider(this)
-                .manager(Main.getInventoryManager())
+                .manager(CommandTimerPlugin.getInstance().getInventoryManager())
                 .size(3, 9)
                 .title("§9§lIntegrations")
                 .build();
@@ -35,7 +35,7 @@ public class MainIntegrationsMenu implements InventoryProvider {
 
         int i = 1;
         for (HookType hookType : HookType.values()) {
-            boolean enabled = Main.getHooksManager().isHookEnabled(hookType);
+            boolean enabled = CommandTimerPlugin.getInstance().getHooksManager().isHookEnabled(hookType);
             ItemStack item = enabled ? XMaterial.GREEN_WOOL.parseItem() : XMaterial.RED_WOOL.parseItem();
             ItemMeta meta = item.getItemMeta();
             meta.setDisplayName("§b" + hookType.getDisplayName());

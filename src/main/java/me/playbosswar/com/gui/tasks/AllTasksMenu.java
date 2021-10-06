@@ -6,7 +6,7 @@ import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
 import fr.minuskube.inv.content.Pagination;
-import me.playbosswar.com.Main;
+import me.playbosswar.com.CommandTimerPlugin;
 import me.playbosswar.com.gui.HorizontalIteratorWithBorder;
 import me.playbosswar.com.gui.MainMenu;
 import me.playbosswar.com.tasks.Task;
@@ -26,7 +26,7 @@ public class AllTasksMenu implements InventoryProvider {
         INVENTORY = SmartInventory.builder()
                 .id("all-tasks")
                 .provider(this)
-                .manager(Main.getInventoryManager())
+                .manager(CommandTimerPlugin.getInstance().getInventoryManager())
                 .size(6, 9)
                 .title("§9§lAll tasks")
                 .build();
@@ -49,7 +49,7 @@ public class AllTasksMenu implements InventoryProvider {
     }
 
     private ClickableItem[] getAllTaskItems(Player p) {
-        List<Task> tasks = Main.getTasksManager().getLoadedTasks();
+        List<Task> tasks = CommandTimerPlugin.getInstance().getTasksManager().getLoadedTasks();
 
         ClickableItem[] items = new ClickableItem[tasks.size()];
 
@@ -71,7 +71,7 @@ public class AllTasksMenu implements InventoryProvider {
 
                 if (e.getClick().equals(ClickType.RIGHT)) {
                     try {
-                        Main.getTasksManager().removeTask(task);
+                        CommandTimerPlugin.getInstance().getTasksManager().removeTask(task);
                         this.INVENTORY.open(p);
                     } catch (IOException ioException) {
                         Messages.sendFailedIO(p);

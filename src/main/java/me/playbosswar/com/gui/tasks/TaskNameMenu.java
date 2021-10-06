@@ -1,6 +1,6 @@
 package me.playbosswar.com.gui.tasks;
 
-import me.playbosswar.com.Main;
+import me.playbosswar.com.CommandTimerPlugin;
 import me.playbosswar.com.tasks.Task;
 import net.wesjd.anvilgui.AnvilGUI;
 import org.bukkit.entity.Player;
@@ -17,6 +17,6 @@ public class TaskNameMenu {
                 })
                 .text(task.getName())
                 .title("Write a new task name")
-                .plugin(Main.getPlugin());
+                .plugin(CommandTimerPlugin.getPlugin());
     }
 }

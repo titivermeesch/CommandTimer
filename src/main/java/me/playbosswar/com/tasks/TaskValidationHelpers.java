@@ -1,6 +1,6 @@
 package me.playbosswar.com.tasks;
 
-import me.playbosswar.com.Main;
+import me.playbosswar.com.CommandTimerPlugin;
 import me.playbosswar.com.conditionsengine.ConditionEngineManager;
 import me.playbosswar.com.conditionsengine.ConditionParams;
 import me.playbosswar.com.conditionsengine.validations.Condition;
@@ -40,8 +40,8 @@ public class TaskValidationHelpers {
     }
 
     private static boolean checkSimpleCondition(SimpleCondition simpleCondition, ConditionType conditionType, Player p) {
-        final ConditionEngineManager conditionEngineManager = Main.getConditionEngineManager();
-        Rule rule = conditionEngineManager.getRule(simpleCondition.getRuleExecutor().getRuleName());
+        final ConditionEngineManager conditionEngineManager = CommandTimerPlugin.getInstance().getConditionEngineManager();
+        Rule rule = conditionEngineManager.getRule(simpleCondition.getConditionGroup(), simpleCondition.getRule());
         ConditionParams conditionParams = simpleCondition.getConditionParams();
 
         Facts facts = new Facts();

@@ -5,7 +5,7 @@ import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
-import me.playbosswar.com.Main;
+import me.playbosswar.com.CommandTimerPlugin;
 import me.playbosswar.com.gui.tasks.EditTaskMenu;
 import me.playbosswar.com.tasks.Task;
 import me.playbosswar.com.utils.Items;
@@ -21,7 +21,7 @@ public class MainScheduleMenu implements InventoryProvider {
         INVENTORY = SmartInventory.builder()
                 .id("task-scheduler")
                 .provider(this)
-                .manager(Main.getInventoryManager())
+                .manager(CommandTimerPlugin.getInstance().getInventoryManager())
                 .size(3, 9)
                 .title("§9§lTask scheduler")
                 .build();

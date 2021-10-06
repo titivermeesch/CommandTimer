@@ -12,24 +12,18 @@ public class ConditionHelpers {
      */
     public static boolean calculateConditionCompare(ConditionCompare conditionCompare, double value, double configValue) {
         switch (conditionCompare) {
-            case EQUAL -> {
+            case EQUAL:
                 return value == configValue;
-            }
-            case LESS_THAN -> {
+            case LESS_THAN:
                 return value < configValue;
-            }
-            case GREATER_THAN -> {
+            case GREATER_THAN:
                 return value > configValue;
-            }
-            case LESS_OR_EQUAL_THEN -> {
+            case LESS_OR_EQUAL_THEN:
                 return value <= configValue;
-            }
-            case GREATER_OR_EQUAL_THAN -> {
+            case GREATER_OR_EQUAL_THAN:
                 return value >= configValue;
-            }
-            default -> {
+            default:
                 return false;
-            }
         }
     }
 }

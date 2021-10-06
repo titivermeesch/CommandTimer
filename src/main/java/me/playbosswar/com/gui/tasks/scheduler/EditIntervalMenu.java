@@ -5,7 +5,7 @@ import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
-import me.playbosswar.com.Main;
+import me.playbosswar.com.CommandTimerPlugin;
 import me.playbosswar.com.tasks.TaskInterval;
 import me.playbosswar.com.utils.Items;
 import org.bukkit.entity.Player;
@@ -19,7 +19,7 @@ public class EditIntervalMenu implements InventoryProvider {
         INVENTORY = SmartInventory.builder()
                 .id("task-interval")
                 .provider(this)
-                .manager(Main.getInventoryManager())
+                .manager(CommandTimerPlugin.getInstance().getInventoryManager())
                 .size(5, 9)
                 .title("§9§lTask interval")
                 .build();

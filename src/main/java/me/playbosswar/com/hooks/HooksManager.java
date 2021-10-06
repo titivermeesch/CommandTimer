@@ -1,6 +1,6 @@
 package me.playbosswar.com.hooks;
 
-import me.playbosswar.com.Main;
+import me.playbosswar.com.CommandTimerPlugin;
 import me.playbosswar.com.utils.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
@@ -20,14 +20,14 @@ public class HooksManager implements Listener {
             hookIntoPAPI();
         }
 
-        if(Main.getMetrics().isEnabled()) {
+        if(CommandTimerPlugin.getInstance().getMetrics().isEnabled()) {
             loadedHooks.add(HookType.METRICS);
         }
     }
 
     private void hookIntoPAPI() {
-        Plugin plugin = Main.getPlugin();
-        new PAPIPlaceholders(Main.getPlugin()).register();
+        Plugin plugin = CommandTimerPlugin.getPlugin();
+        new PAPIPlaceholders(CommandTimerPlugin.getPlugin()).register();
         Bukkit.getPluginManager().registerEvents(this, plugin);
         Messages.sendConsole("&eCommandTimer hooked in PlaceholderAPI");
         loadedHooks.add(HookType.PAPI);

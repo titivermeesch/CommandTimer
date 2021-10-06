@@ -6,21 +6,18 @@ import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
 import fr.minuskube.inv.content.Pagination;
-import me.playbosswar.com.Main;
+import me.playbosswar.com.CommandTimerPlugin;
 import me.playbosswar.com.conditionsengine.validations.Condition;
 import me.playbosswar.com.conditionsengine.validations.ConditionType;
+import me.playbosswar.com.conditionsengine.validations.SimpleCondition;
 import me.playbosswar.com.gui.HorizontalIteratorWithBorder;
-import me.playbosswar.com.gui.MainMenu;
-import me.playbosswar.com.gui.tasks.EditTaskMenu;
-import me.playbosswar.com.tasks.Task;
 import me.playbosswar.com.utils.Callback;
 import me.playbosswar.com.utils.Items;
-import me.playbosswar.com.utils.Messages;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ConditionsMenu implements InventoryProvider {
@@ -34,7 +31,7 @@ public class ConditionsMenu implements InventoryProvider {
         INVENTORY = SmartInventory.builder()
                 .id("condition-parts")
                 .provider(this)
-                .manager(Main.getInventoryManager())
+                .manager(CommandTimerPlugin.getInstance().getInventoryManager())
                 .size(6, 9)
                 .title("§9§lCondition Parts")
                 .build();
@@ -57,7 +54,11 @@ public class ConditionsMenu implements InventoryProvider {
 
         ItemStack createItem = Items.generateItem("§bAdd condition", XMaterial.LIME_DYE);
         ClickableItem clickableCreate = ClickableItem.of(createItem, e -> {
-            Condition newCondition = new Condition(ConditionType.SIMPLE, null);
+            Condition newCondition = new Condition(
+                    ConditionType.SIMPLE,
+                    new ArrayList<>(),
+                    new SimpleCondition(condition.getTask()),
+                    condition.getTask());
             this.condition.addCondition(newCondition);
 
             new ConditionMenu(newCondition, internalCallback).INVENTORY.open(player);
@@ -81,7 +82,7 @@ public class ConditionsMenu implements InventoryProvider {
         };
         List<Condition> conditions = this.condition.getConditions();
 
-        if(conditions == null) {
+        if (conditions == null) {
             return new ClickableItem[0];
         }
 
@@ -89,11 +90,34 @@ public class ConditionsMenu implements InventoryProvider {
 
         for (int i = 0; i < items.length; i++) {
             Condition condition = conditions.get(i);
-            String[] lore = new String[]{ "",
-                    "",
-                    "§aLeft-Click to edit",
-                    "§cRight-Click to delete",
-            };
+            ConditionType conditionType = condition.getConditionType();
+
+            String[] lore;
+            if (conditionType.equals(ConditionType.OR) || conditionType.equals(ConditionType.AND)) {
+                lore = new String[]{
+                        "",
+                        "§7Type: §e" + conditionType,
+                        "",
+                        "§aLeft-Click to edit",
+                        "§cRight-Click to delete",
+                };
+            } else {
+                SimpleCondition simpleCondition = condition.getSimpleCondition();
+                String conditionGroup = simpleCondition.getConditionGroup();
+                String rule = simpleCondition.getRule();
+
+                lore = new String[]{ "",
+                        "§7Type: §e" + conditionType,
+                        "",
+                        "§bCurrent configuration:",
+                        "§7 - Condition group: " + (conditionGroup == null ? "§eNot Set" : "§e" + conditionGroup),
+                        "§7 - Rule: " + (rule == null ? "§eNot Set" : "§e" + rule),
+                        "",
+                        "§aLeft-Click to edit",
+                        "§cRight-Click to delete",
+                };
+            }
+
 
             ItemStack item = Items.generateItem("§bCondition " + (i + 1), XMaterial.COMMAND_BLOCK, lore);
             items[i] = ClickableItem.of(item, e -> {

@@ -1,12 +1,13 @@
 plugins {
     id 'java'
     id 'com.github.johnrengelman.shadow' version '7.0.0'
+    id 'maven-publish'
 }
 
 group = 'me.playbosswar.com'
 version = '6.0'
 description = 'CommandTimer'
-sourceCompatibility = '1.16'
+sourceCompatibility = '1.8'
 
 repositories {
     mavenLocal()
@@ -14,7 +15,7 @@ repositories {
         url = 'https://repo1.maven.org/maven2'
     }
     maven {
-        url = 'https://papermc.io/repo/repository/maven-public/'
+        url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
     }
     maven {
         url = 'http://repo.extendedclip.com/content/repositories/placeholderapi/'
@@ -43,7 +44,19 @@ dependencies {
     implementation 'org.apache.commons:commons-lang3:3.8.1'
     implementation 'joda-time:joda-time:2.10.10'
     implementation 'org.jeasy:easy-rules-core:4.1.0'
-    compileOnly 'io.papermc.paper:paper-api:1.17.1-R0.1-SNAPSHOT'
-//    compileOnly 'com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT'
+    implementation 'com.googlecode.json-simple:json-simple:1.1'
+    compileOnly 'org.spigotmc:spigot-api:1.17.1-R0.1-SNAPSHOT'
     compileOnly 'me.clip:placeholderapi:2.10.9'
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = 'me.playbosswar.com'
+            artifactId = 'commandtimer'
+            version = '6.0'
+
+            from components.java
+        }
+    }
 }

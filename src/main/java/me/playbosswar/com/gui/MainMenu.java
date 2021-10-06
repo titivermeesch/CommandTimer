@@ -5,7 +5,7 @@ import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
-import me.playbosswar.com.Main;
+import me.playbosswar.com.CommandTimerPlugin;
 import me.playbosswar.com.gui.integrations.MainIntegrationsMenu;
 import me.playbosswar.com.gui.tasks.AllTasksMenu;
 import me.playbosswar.com.gui.tasks.EditTaskMenu;
@@ -20,7 +20,7 @@ public class MainMenu implements InventoryProvider {
         INVENTORY = SmartInventory.builder()
                 .id("main")
                 .provider(this)
-                .manager(Main.getInventoryManager())
+                .manager(CommandTimerPlugin.getInstance().getInventoryManager())
                 .size(3, 9)
                 .title("§9§lCommandTimer")
                 .build();
@@ -40,7 +40,7 @@ public class MainMenu implements InventoryProvider {
                                                               "§7executed when the conditions meet."
                                                       });
         ClickableItem createItem = ClickableItem.of(createTaskItem, e ->
-                new EditTaskMenu(Main.getTasksManager().createTask()).INVENTORY.open(player)
+                new EditTaskMenu(CommandTimerPlugin.getInstance().getTasksManager().createTask()).INVENTORY.open(player)
         );
         contents.set(1, 1, createItem);
 

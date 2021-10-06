@@ -28,7 +28,7 @@ public class ConditionTypeItem {
         lore.add("");
         lore.add("§7Current: §e" + selectedConditionType);
 
-        ItemStack item = Items.generateItem("§bChange condition type", XMaterial.COMPARATOR, lore.toArray(String[]::new));
+        ItemStack item = Items.generateItem("§bChange condition type", XMaterial.COMPARATOR, lore.toArray(new String[0]));
         return ClickableItem.of(item, e -> {
             ConditionType nextConditionType = ArrayUtils.getNextValueInArray(availableConditionTypes, selectedConditionType);
 

@@ -21,13 +21,31 @@ public class HorizontalIteratorWithBorder implements SlotIterator {
 
     private boolean started = false;
     private boolean allowOverride = true;
-    private int row = 1;
-    private int column = 1;
+    private int row;
+    private int column;
     private final Set<SlotPos> blacklisted = new HashSet<>();
+
+    public HorizontalIteratorWithBorder(Player player, InventoryContents contents, SmartInventory inv, int itemsPerPage, int rowLine, int row, int column) {
+        this.contents = contents;
+        this.inv = inv;
+        this.row = row;
+        this.column = column;
+        Pagination pagination = contents.pagination();
+
+        pagination.setItemsPerPage(itemsPerPage);
+        pagination.addToIterator(this);
+
+        ItemStack backItem = Items.generateItem("§7Back", XMaterial.ARROW);
+        ItemStack nextItem = Items.generateItem("§7Next", XMaterial.ARROW);
+        contents.set(rowLine, 3, ClickableItem.of(backItem, e -> inv.open(player, pagination.previous().getPage())));
+        contents.set(rowLine, 5, ClickableItem.of(nextItem, e -> inv.open(player, pagination.next().getPage())));
+    }
 
     public HorizontalIteratorWithBorder(Player player, InventoryContents contents, SmartInventory inv) {
         this.contents = contents;
         this.inv = inv;
+        this.row = 1;
+        this.column = 1;
         Pagination pagination = contents.pagination();
 
         pagination.setItemsPerPage(28);

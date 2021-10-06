@@ -1,4 +1,4 @@
-main: me.playbosswar.com.Main
+main: me.playbosswar.com.CommandTimerPlugin
 name: "CommandTimer"
 version: "6.0.0-BETA-2"
 description: "Schedule commands like you want"

@@ -1,6 +1,6 @@
 package me.playbosswar.com.tasks;
 
-import me.playbosswar.com.Main;
+import me.playbosswar.com.CommandTimerPlugin;
 import me.playbosswar.com.Tools;
 import me.playbosswar.com.enums.CommandExecutionMode;
 import me.playbosswar.com.utils.Messages;
@@ -22,7 +22,7 @@ import java.util.TimerTask;
  */
 public class TaskRunner implements Runnable {
     private void processTask(Task task) {
-        if(Main.getTasksManager().stopRunner) {
+        if(CommandTimerPlugin.getInstance().getTasksManager().stopRunner) {
             return;
         }
 
@@ -129,9 +129,9 @@ public class TaskRunner implements Runnable {
         }
 
         if(selectedCommandIndex == -1) {
-            task.getCommands().forEach(taskCommand -> Main.getTasksManager().addTaskCommandExecution(taskCommand));
+            task.getCommands().forEach(taskCommand -> CommandTimerPlugin.getInstance().getTasksManager().addTaskCommandExecution(taskCommand));
         } else {
-            Main.getTasksManager().addTaskCommandExecution(task.getCommands().get(selectedCommandIndex));
+            CommandTimerPlugin.getInstance().getTasksManager().addTaskCommandExecution(task.getCommands().get(selectedCommandIndex));
         }
     }
 
@@ -141,7 +141,7 @@ public class TaskRunner implements Runnable {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                List<Task> tasks = Main.getTasksManager().getLoadedTasks();
+                List<Task> tasks = CommandTimerPlugin.getInstance().getTasksManager().getLoadedTasks();
 
                 tasks.forEach(task -> processTask(task));
             }

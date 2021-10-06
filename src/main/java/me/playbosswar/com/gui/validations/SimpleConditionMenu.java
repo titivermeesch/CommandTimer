@@ -5,44 +5,157 @@ import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
-import me.playbosswar.com.Main;
-import me.playbosswar.com.conditionsengine.validations.Condition;
+import fr.minuskube.inv.content.Pagination;
+import me.playbosswar.com.CommandTimerPlugin;
+import me.playbosswar.com.api.ConditionExtension;
 import me.playbosswar.com.conditionsengine.validations.SimpleCondition;
+import me.playbosswar.com.gui.HorizontalIteratorWithBorder;
 import me.playbosswar.com.utils.Callback;
 import me.playbosswar.com.utils.Items;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.inventory.ItemFlag;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.jeasy.rules.api.Rule;
+import org.jeasy.rules.api.Rules;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class SimpleConditionMenu implements InventoryProvider {
     public SmartInventory INVENTORY;
     private final SimpleCondition simpleCondition;
     private final Callback onClose;
+    private String selectedConditionGroup;
+    private String ruleName;
 
     public SimpleConditionMenu(SimpleCondition simpleCondition, Callback onClose) {
         this.simpleCondition = simpleCondition;
         this.onClose = onClose;
+        this.selectedConditionGroup = simpleCondition.getConditionGroup();
+        this.ruleName = simpleCondition.getRule();
         INVENTORY = SmartInventory.builder()
                 .id("simple-condition")
                 .provider(this)
-                .manager(Main.getInventoryManager())
-                .size(3, 9)
+                .manager(CommandTimerPlugin.getInstance().getInventoryManager())
+                .size(6, 9)
                 .title("§9§lSimple Condition")
                 .build();
+    }
+
+    private void changeSelectedConditionGroup(String newGroup) {
+        simpleCondition.setConditionGroup(newGroup);
+        this.selectedConditionGroup = newGroup;
+    }
+
+    private void changeSelectedRule(String rule) {
+        simpleCondition.setRule(rule);
+        this.ruleName = rule;
     }
 
     @Override
     public void init(Player player, InventoryContents contents) {
         contents.fillBorders(ClickableItem.empty(XMaterial.BLUE_STAINED_GLASS_PANE.parseItem()));
+        contents.fillRow(2, ClickableItem.empty(XMaterial.BLUE_STAINED_GLASS_PANE.parseItem()));
 
-        // Select executor
-        // Select compare
-        // Select numeric value
-        // Select string value
+        Pagination pagination = contents.pagination();
+        pagination.setItems(getConditionGroupRules(player));
+        new HorizontalIteratorWithBorder(player, contents, INVENTORY, 14, 5, 3, 1);
 
-        contents.set(2, 8, ClickableItem.of(Items.getBackItem(), e -> onClose.execute(null)));
+        int i = 1;
+        for(ClickableItem clickableItem : getAllConditionGroups(player)) {
+            contents.set(1, i, clickableItem);
+            i++;
+        }
+
+        contents.set(5, 8, ClickableItem.of(Items.getBackItem(), e -> onClose.execute(null)));
     }
 
     @Override
     public void update(Player player, InventoryContents inventoryContents) {
 
+    }
+
+    private ClickableItem[] getConditionGroupRules(Player p) {
+        ConditionExtension conditionExtension = CommandTimerPlugin
+                .getInstance()
+                .getConditionEngineManager()
+                .getConditionExtension(selectedConditionGroup);
+        Rules rules = conditionExtension.getRules();
+        ClickableItem[] items = new ClickableItem[rules.size()];
+
+        List<Rule> rulesList = new ArrayList<>();
+        for (Rule value : rules) {
+            rulesList.add(value);
+        }
+
+        for (int i = 0; i < rulesList.size(); i++) {
+            Rule rule = rulesList.get(i);
+
+            ItemStack item = Items.generateItem(
+                    "§b" + rule.getName(),
+                    XMaterial.COMPARATOR,
+                    new String[]{ "", "§7" + rule.getDescription() });
+
+            // Make item glowing when selected
+            if (this.ruleName.equals(rule.getName())) {
+                item.addUnsafeEnchantment(Enchantment.SILK_TOUCH, 1);
+                ItemMeta meta = item.getItemMeta();
+                meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                item.setItemMeta(meta);
+            }
+
+            items[i] = ClickableItem.of(item, e -> {
+                if (e.getClick().equals(ClickType.LEFT)) {
+                    changeSelectedRule(rule.getName());
+                    this.INVENTORY.open(p);
+                }
+            });
+        }
+
+        return items;
+    }
+
+    private ClickableItem[] getAllConditionGroups(Player p) {
+        List<ConditionExtension> conditionExtensions =
+                CommandTimerPlugin.getInstance().getConditionEngineManager().getConditionExtensions();
+        ClickableItem[] items = new ClickableItem[conditionExtensions.size()];
+
+        for (int i = 0; i < items.length; i++) {
+            ConditionExtension conditionExtension = conditionExtensions.get(i);
+            String conditionGroupName = conditionExtension.getConditionGroupName();
+            List<String> lore = new ArrayList<>();
+            lore.add("");
+            lore.addAll(Arrays.asList(conditionExtension.getDescription()));
+            lore.add("");
+            lore.add("§7Author: §e" + conditionExtension.getAuthor());
+            lore.add("§7Version: §e" + conditionExtension.getVersion());
+            lore.add("§7Amount of rules: §e" + conditionExtension.getRules().size());
+            lore.add("");
+            lore.add("§aLeft-Click to select");
+
+            ItemStack item = Items.generateItem("§b" + conditionGroupName, conditionExtension.getGroupIcon(),
+                                                lore.toArray(new String[0]));
+
+            // Make item glowing when selected
+            if (this.selectedConditionGroup.equals(conditionGroupName)) {
+                item.addUnsafeEnchantment(Enchantment.SILK_TOUCH, 1);
+                ItemMeta meta = item.getItemMeta();
+                meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                item.setItemMeta(meta);
+            }
+
+            items[i] = ClickableItem.of(item, e -> {
+                if (e.getClick().equals(ClickType.LEFT)) {
+                    changeSelectedConditionGroup(conditionGroupName);
+                    this.INVENTORY.open(p);
+                }
+            });
+        }
+
+        return items;
     }
 }
