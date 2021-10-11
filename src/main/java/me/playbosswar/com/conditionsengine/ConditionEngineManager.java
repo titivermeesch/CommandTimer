@@ -3,12 +3,12 @@ package me.playbosswar.com.conditionsengine;
 
 import me.playbosswar.com.CommandTimerPlugin;
 import me.playbosswar.com.api.ConditionExtension;
+import me.playbosswar.com.api.ConditionRule;
+import me.playbosswar.com.api.ConditionRules;
 import me.playbosswar.com.utils.Files;
 import me.playbosswar.com.utils.Futures;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
-import org.jeasy.rules.api.Rule;
-import org.jeasy.rules.api.Rules;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -46,14 +46,14 @@ public class ConditionEngineManager {
         return optional.orElse(null);
     }
 
-    public Rule getRule(String conditionGroup, String ruleName) {
+    public ConditionRule getRule(String conditionGroup, String ruleName) {
         Optional<ConditionExtension> optionalConditionExtension = conditionExtensions.stream()
                 .filter(conditionExtension -> conditionExtension.getConditionGroupName().equals(conditionGroup)).findFirst();
 
         if (optionalConditionExtension.isPresent()) {
-            Rules rules = optionalConditionExtension.get().getRules();
+            ConditionRules rules = optionalConditionExtension.get().getRules();
 
-            for (Rule rule : rules) {
+            for (ConditionRule rule : rules) {
                 if (rule.getName().equals(ruleName)) {
                     return rule;
                 }
@@ -104,7 +104,7 @@ public class ConditionEngineManager {
             Bukkit.getPluginManager().registerEvents(((Listener) condition), CommandTimerPlugin.getPlugin());
         }
 
-        CommandTimerPlugin.getPlugin().getLogger().info("Successfully registered conditions: " + condition.getConditionGroupName());
+        CommandTimerPlugin.getPlugin().getLogger().info("Successfully registered conditions: " + condition.getConditionGroupName() + ", " + condition.getRules().size() + " were addded");
 
         return true;
     }
@@ -112,8 +112,10 @@ public class ConditionEngineManager {
     private void registerAll() {
         Futures.onMainThread(CommandTimerPlugin.getPlugin(), findExpansionsOnDisk(), (classes, exception) -> {
             if (exception != null) {
-                CommandTimerPlugin.getPlugin().getLogger().log(Level.SEVERE, "failed to load class files of expansions",
-                                                               exception);
+                CommandTimerPlugin.getPlugin().getLogger().log(
+                        Level.SEVERE,
+                        "failed to load class files of expansions",
+                        exception);
                 return;
             }
 

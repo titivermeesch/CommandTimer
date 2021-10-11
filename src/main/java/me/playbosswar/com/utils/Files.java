@@ -85,6 +85,10 @@ public class Files {
                     task.getInterval().setTask(task);
                     task.getCondition().setTask(task);
 
+                    if(task.getCondition().getSimpleCondition() != null) {
+                        task.getCondition().getSimpleCondition().setTask(task);
+                    }
+
                     if (task.getCondition().getConditionType().equals(ConditionType.OR) || task.getCondition().getConditionType().equals(ConditionType.AND)) {
                         setTaskOnConditions(task, task.getCondition().getConditions());
                     }

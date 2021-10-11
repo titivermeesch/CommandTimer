@@ -1,6 +1,8 @@
 package me.playbosswar.com.tasks;
 
 import me.playbosswar.com.conditionsengine.validations.Condition;
+import me.playbosswar.com.conditionsengine.validations.ConditionType;
+import me.playbosswar.com.conditionsengine.validations.SimpleCondition;
 import me.playbosswar.com.enums.CommandExecutionMode;
 import me.playbosswar.com.utils.Files;
 import me.playbosswar.com.utils.gson.GsonConverter;
@@ -41,6 +43,7 @@ public class Task {
         this.days.add("FRIDAY");
         this.days.add("SATURDAY");
         this.days.add("SUNDAY");
+        this.condition = new Condition(ConditionType.SIMPLE, new ArrayList<>(), new SimpleCondition(this), this);
         storeInstance();
     }
 

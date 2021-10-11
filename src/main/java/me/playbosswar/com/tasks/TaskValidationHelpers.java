@@ -1,6 +1,7 @@
 package me.playbosswar.com.tasks;
 
 import me.playbosswar.com.CommandTimerPlugin;
+import me.playbosswar.com.api.ConditionRule;
 import me.playbosswar.com.conditionsengine.ConditionEngineManager;
 import me.playbosswar.com.conditionsengine.ConditionParams;
 import me.playbosswar.com.conditionsengine.validations.Condition;
@@ -8,7 +9,6 @@ import me.playbosswar.com.conditionsengine.validations.ConditionType;
 import me.playbosswar.com.conditionsengine.validations.SimpleCondition;
 import org.bukkit.entity.Player;
 import org.jeasy.rules.api.Facts;
-import org.jeasy.rules.api.Rule;
 
 public class TaskValidationHelpers {
     public static boolean processCondition(Condition topCondition, Player p) {
@@ -41,7 +41,7 @@ public class TaskValidationHelpers {
 
     private static boolean checkSimpleCondition(SimpleCondition simpleCondition, ConditionType conditionType, Player p) {
         final ConditionEngineManager conditionEngineManager = CommandTimerPlugin.getInstance().getConditionEngineManager();
-        Rule rule = conditionEngineManager.getRule(simpleCondition.getConditionGroup(), simpleCondition.getRule());
+        ConditionRule rule = conditionEngineManager.getRule(simpleCondition.getConditionGroup(), simpleCondition.getRule());
         ConditionParams conditionParams = simpleCondition.getConditionParams();
 
         Facts facts = new Facts();

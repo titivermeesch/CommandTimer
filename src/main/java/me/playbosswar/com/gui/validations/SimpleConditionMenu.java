@@ -8,6 +8,10 @@ import fr.minuskube.inv.content.InventoryProvider;
 import fr.minuskube.inv.content.Pagination;
 import me.playbosswar.com.CommandTimerPlugin;
 import me.playbosswar.com.api.ConditionExtension;
+import me.playbosswar.com.api.ConditionRule;
+import me.playbosswar.com.api.ConditionRules;
+import me.playbosswar.com.conditionsengine.ConditionParamField;
+import me.playbosswar.com.conditionsengine.validations.Condition;
 import me.playbosswar.com.conditionsengine.validations.SimpleCondition;
 import me.playbosswar.com.gui.HorizontalIteratorWithBorder;
 import me.playbosswar.com.utils.Callback;
@@ -18,11 +22,10 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.jeasy.rules.api.Rule;
-import org.jeasy.rules.api.Rules;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 public class SimpleConditionMenu implements InventoryProvider {
@@ -54,6 +57,23 @@ public class SimpleConditionMenu implements InventoryProvider {
     private void changeSelectedRule(String rule) {
         simpleCondition.setRule(rule);
         this.ruleName = rule;
+
+        ConditionRule conditionRule =
+                CommandTimerPlugin.getInstance().getConditionEngineManager().getRule(this.selectedConditionGroup, rule);
+
+        if (conditionRule.getNeededValues() != null) {
+            ArrayList<ConditionParamField<?>> conditionParamFields = new ArrayList<>();
+            HashMap<String, Class<?>> neededValues = conditionRule.getNeededValues();
+
+            for (String field : neededValues.keySet()) {
+                Class<?> clazz = neededValues.get(field).getClass();
+                ConditionParamField<clazz> conditionParamField = new ConditionParamField<>(field, null);
+            }
+
+            simpleCondition.setConditionParamFields(conditionParamFields);
+            simpleCondition.getTask().storeInstance();
+        }
+
     }
 
     @Override
@@ -66,7 +86,7 @@ public class SimpleConditionMenu implements InventoryProvider {
         new HorizontalIteratorWithBorder(player, contents, INVENTORY, 14, 5, 3, 1);
 
         int i = 1;
-        for(ClickableItem clickableItem : getAllConditionGroups(player)) {
+        for (ClickableItem clickableItem : getAllConditionGroups(player)) {
             contents.set(1, i, clickableItem);
             i++;
         }
@@ -84,16 +104,21 @@ public class SimpleConditionMenu implements InventoryProvider {
                 .getInstance()
                 .getConditionEngineManager()
                 .getConditionExtension(selectedConditionGroup);
-        Rules rules = conditionExtension.getRules();
+
+        if (conditionExtension == null) {
+            return new ClickableItem[0];
+        }
+
+        ConditionRules rules = conditionExtension.getRules();
         ClickableItem[] items = new ClickableItem[rules.size()];
 
-        List<Rule> rulesList = new ArrayList<>();
-        for (Rule value : rules) {
+        List<ConditionRule> rulesList = new ArrayList<>();
+        for (ConditionRule value : rules) {
             rulesList.add(value);
         }
 
         for (int i = 0; i < rulesList.size(); i++) {
-            Rule rule = rulesList.get(i);
+            ConditionRule rule = rulesList.get(i);
 
             ItemStack item = Items.generateItem(
                     "§b" + rule.getName(),
@@ -101,7 +126,7 @@ public class SimpleConditionMenu implements InventoryProvider {
                     new String[]{ "", "§7" + rule.getDescription() });
 
             // Make item glowing when selected
-            if (this.ruleName.equals(rule.getName())) {
+            if (this.ruleName != null && this.ruleName.equals(rule.getName())) {
                 item.addUnsafeEnchantment(Enchantment.SILK_TOUCH, 1);
                 ItemMeta meta = item.getItemMeta();
                 meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
@@ -141,7 +166,7 @@ public class SimpleConditionMenu implements InventoryProvider {
                                                 lore.toArray(new String[0]));
 
             // Make item glowing when selected
-            if (this.selectedConditionGroup.equals(conditionGroupName)) {
+            if (this.selectedConditionGroup != null && this.selectedConditionGroup.equals(conditionGroupName)) {
                 item.addUnsafeEnchantment(Enchantment.SILK_TOUCH, 1);
                 ItemMeta meta = item.getItemMeta();
                 meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);

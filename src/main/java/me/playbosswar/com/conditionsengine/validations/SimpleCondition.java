@@ -1,24 +1,26 @@
 package me.playbosswar.com.conditionsengine.validations;
 
-import me.playbosswar.com.conditionsengine.ConditionParams;
+import me.playbosswar.com.conditionsengine.ConditionParamField;
 import me.playbosswar.com.tasks.Task;
+
+import java.util.ArrayList;
 
 public class SimpleCondition {
     private String conditionGroup;
     private String rule;
-    private ConditionParams conditionParams;
+    private ArrayList<ConditionParamField<?>> conditionParamFields;
     private transient Task task;
 
     public SimpleCondition(Task task) {
         this.task = task;
-        this.conditionParams = new ConditionParams(task);
+        conditionParamFields = new ArrayList<>();
     }
 
-    public SimpleCondition(String conditionGroup, String rule, ConditionParams conditionParams, Task task) {
+    public SimpleCondition(String conditionGroup, String rule, ArrayList<ConditionParamField<?>> conditionParamFields, Task task) {
         this.conditionGroup = conditionGroup;
         this.rule = rule;
-        this.conditionParams = conditionParams;
         this.task = task;
+        this.conditionParamFields = conditionParamFields;
     }
 
     private void storeInstance() { task.storeInstance(); }
@@ -41,13 +43,12 @@ public class SimpleCondition {
         storeInstance();
     }
 
-    public ConditionParams getConditionParams() {
-        return conditionParams;
+    public ArrayList<ConditionParamField<?>> getConditionParamFields() {
+        return conditionParamFields;
     }
 
-    public void setConditionParams(ConditionParams conditionParams) {
-        this.conditionParams = conditionParams;
-        storeInstance();
+    public void setConditionParamFields(ArrayList<ConditionParamField<?>> conditionParamFields) {
+        this.conditionParamFields = conditionParamFields;
     }
 
     public void setTask(Task task) {

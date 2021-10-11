@@ -62,8 +62,8 @@ public abstract class ConditionExtension {
      * @return list of rules
      */
     @NotNull
-    public Rules getRules() {
-        return new Rules();
+    public ConditionRules getRules() {
+        return new ConditionRules();
     }
 
     @NotNull
