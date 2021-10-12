@@ -127,13 +127,8 @@ public class ConditionsMenu implements InventoryProvider {
                 }
 
                 if (e.getClick().equals(ClickType.RIGHT)) {
-                    //                    try {
-                    //                        Main.getTasksManager().removeTask(task);
-                    //                        this.INVENTORY.open(p);
-                    //                    } catch (IOException ioException) {
-                    //                        Messages.sendFailedIO(p);
-                    //                        ioException.printStackTrace();
-                    //                    }
+                    this.condition.removeCondition(condition);
+                    this.INVENTORY.open(p);
                 }
             });
         }

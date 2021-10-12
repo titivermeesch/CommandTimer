@@ -10,8 +10,8 @@ import me.playbosswar.com.CommandTimerPlugin;
 import me.playbosswar.com.api.ConditionExtension;
 import me.playbosswar.com.api.ConditionRule;
 import me.playbosswar.com.api.ConditionRules;
+import me.playbosswar.com.api.NeededValue;
 import me.playbosswar.com.conditionsengine.ConditionParamField;
-import me.playbosswar.com.conditionsengine.validations.Condition;
 import me.playbosswar.com.conditionsengine.validations.SimpleCondition;
 import me.playbosswar.com.gui.HorizontalIteratorWithBorder;
 import me.playbosswar.com.utils.Callback;
@@ -25,7 +25,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 public class SimpleConditionMenu implements InventoryProvider {
@@ -50,6 +49,15 @@ public class SimpleConditionMenu implements InventoryProvider {
     }
 
     private void changeSelectedConditionGroup(String newGroup) {
+        String conditionGroup = simpleCondition.getConditionGroup();
+        if(conditionGroup != null && conditionGroup.equals(newGroup)) {
+            simpleCondition.setConditionGroup(null);
+            simpleCondition.setRule(null);
+            this.selectedConditionGroup = null;
+            this.ruleName = null;
+            return;
+        }
+
         simpleCondition.setConditionGroup(newGroup);
         this.selectedConditionGroup = newGroup;
     }
@@ -61,18 +69,23 @@ public class SimpleConditionMenu implements InventoryProvider {
         ConditionRule conditionRule =
                 CommandTimerPlugin.getInstance().getConditionEngineManager().getRule(this.selectedConditionGroup, rule);
 
-        if (conditionRule.getNeededValues() != null) {
-            ArrayList<ConditionParamField<?>> conditionParamFields = new ArrayList<>();
-            HashMap<String, Class<?>> neededValues = conditionRule.getNeededValues();
-
-            for (String field : neededValues.keySet()) {
-                Class<?> clazz = neededValues.get(field).getClass();
-                ConditionParamField<clazz> conditionParamField = new ConditionParamField<>(field, null);
-            }
-
-            simpleCondition.setConditionParamFields(conditionParamFields);
+        if (conditionRule.getNeededValues() == null) {
+            simpleCondition.setConditionParamFields(null);
             simpleCondition.getTask().storeInstance();
+            return;
         }
+
+        ArrayList<ConditionParamField<?>> conditionParamFields = new ArrayList<>();
+        ArrayList<NeededValue<?>> neededValues = conditionRule.getNeededValues();
+
+        for (NeededValue<?> neededValue : neededValues) {
+            conditionParamFields.add(new ConditionParamField<>(
+                    neededValue.getName(),
+                    neededValue.getDefaultValue()));
+        }
+
+        simpleCondition.setConditionParamFields(conditionParamFields);
+        simpleCondition.getTask().storeInstance();
 
     }
 

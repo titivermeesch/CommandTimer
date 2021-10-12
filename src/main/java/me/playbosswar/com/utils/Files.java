@@ -1,7 +1,6 @@
 package me.playbosswar.com.utils;
 
 import me.playbosswar.com.CommandTimerPlugin;
-import me.playbosswar.com.conditionsengine.ConditionParams;
 import me.playbosswar.com.conditionsengine.validations.Condition;
 import me.playbosswar.com.conditionsengine.validations.ConditionType;
 import me.playbosswar.com.tasks.Task;
@@ -26,10 +25,12 @@ public class Files {
      * Create folder to store all the timers in
      */
     public static void createDataFolders() {
-        File file = new File(pluginFolderPath + "/timers");
-        boolean created = file.mkdir();
+        File timersFile = new File(pluginFolderPath + "/timers");
+        File conditionsFile = new File(pluginFolderPath + "/conditions");
+        boolean created = timersFile.mkdir();
+        boolean created2 = conditionsFile.mkdir();
 
-        if (created) {
+        if (created && created2) {
             Messages.sendConsole("Data folder has been created");
         } else {
             Messages.sendConsole("We could not create the data folder. If it already exists ignore this.");
@@ -52,10 +53,6 @@ public class Files {
             condition.setTask(task);
             if (condition.getConditionType().equals(ConditionType.SIMPLE) || condition.getConditionType().equals(ConditionType.NOT)) {
                 condition.getSimpleCondition().setTask(task);
-                ConditionParams conditionParams = condition.getSimpleCondition().getConditionParams();
-                if(conditionParams != null) {
-                    conditionParams.setTask(task);
-                }
             } else {
                 setTaskOnConditions(task, condition.getConditions());
             }

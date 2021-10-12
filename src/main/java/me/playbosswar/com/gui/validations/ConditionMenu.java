@@ -6,9 +6,16 @@ import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
 import me.playbosswar.com.CommandTimerPlugin;
+import me.playbosswar.com.api.ConditionRule;
+import me.playbosswar.com.api.NeededValue;
+import me.playbosswar.com.conditionsengine.ConditionCompare;
+import me.playbosswar.com.conditionsengine.ConditionParamField;
 import me.playbosswar.com.conditionsengine.validations.Condition;
 import me.playbosswar.com.conditionsengine.validations.ConditionType;
 import me.playbosswar.com.conditionsengine.validations.SimpleCondition;
+import me.playbosswar.com.gui.tasks.TaskNameMenu;
+import me.playbosswar.com.gui.validations.inputs.ConditionCompareItem;
+import me.playbosswar.com.gui.validations.inputs.DoubleInputMenu;
 import me.playbosswar.com.utils.Callback;
 import me.playbosswar.com.utils.Items;
 import org.bukkit.entity.Player;
@@ -16,12 +23,12 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class ConditionMenu implements InventoryProvider {
     public SmartInventory INVENTORY;
     private final Condition condition;
     private final Callback onClose;
-
 
     public ConditionMenu(Condition condition, Callback onClose) {
         this.condition = condition;
@@ -61,6 +68,8 @@ public class ConditionMenu implements InventoryProvider {
                 });
         contents.set(1, 1, conditionTypeItem);
 
+        contents.set(2, 8, ClickableItem.of(Items.getBackItem(), e -> onClose.execute(null)));
+
         if (condition.getConditionType().equals(ConditionType.AND) || condition.getConditionType().equals(ConditionType.OR)) {
             String[] conditionPartsLore = new String[]{ "",
                     "§7Condition parts allow you to create complex",
@@ -80,7 +89,7 @@ public class ConditionMenu implements InventoryProvider {
 
             String conditionGroup = simpleCondition.getConditionGroup();
             String rule = simpleCondition.getRule();
-            String[] simpleConditionLore = new String[]{"",
+            String[] simpleConditionLore = new String[]{ "",
                     "§7A simple condition is a basic comparison between",
                     "§72 values. For example §oplayer is OP -> true/false",
                     "",
@@ -88,18 +97,74 @@ public class ConditionMenu implements InventoryProvider {
                     "§7 - Condition group: " + (conditionGroup == null ? "§eNot Set" : "§e" + conditionGroup),
                     "§7 - Rule: " + (rule == null ? "§eNot Set" : "§e" + rule),
             };
-            ItemStack simpleConditionItem = Items.generateItem("§bConfigure condition", XMaterial.CRAFTING_TABLE, simpleConditionLore);
+            ItemStack simpleConditionItem = Items.generateItem("§bConfigure condition", XMaterial.CRAFTING_TABLE,
+                                                               simpleConditionLore);
             ClickableItem clickableSimpleCondition = ClickableItem.of(simpleConditionItem,
                                                                       e -> new SimpleConditionMenu(
                                                                               simpleCondition,
                                                                               internalCallback).INVENTORY.open(player));
             contents.set(1, 2, clickableSimpleCondition);
 
+            ArrayList<ConditionParamField<?>> conditionParamFields = simpleCondition.getConditionParamFields();
+            if (conditionParamFields != null && conditionParamFields.size() > 0) {
+                ConditionRule conditionRule =
+                        CommandTimerPlugin.getInstance().getConditionEngineManager().getRule(simpleCondition.getConditionGroup(), rule);
+
+                if(conditionRule == null) {
+                    return;
+                }
+
+                ArrayList<NeededValue<?>> neededValues = conditionRule.getNeededValues();
+                int i = 3;
+                for (ConditionParamField<?> conditionParamField : conditionParamFields) {
+                    Optional<NeededValue<?>> optionalNeededValue =
+                            neededValues.stream().filter(v -> v.getName().equals(conditionParamField.getName())).findFirst();
+
+                    if (!optionalNeededValue.isPresent()) {
+                        continue;
+                    }
+
+                    NeededValue<?> neededValue = optionalNeededValue.get();
+
+                    if (neededValue.getType() == ConditionCompare.class) {
+                        ConditionParamField<ConditionCompare> conditionCompareParamField =
+                                (ConditionParamField<ConditionCompare>) conditionParamField;
+                        ClickableItem clickableConditionCompare = ConditionCompareItem.get(
+                                conditionCompareParamField,
+                                conditionCompare -> {
+                                    conditionCompareParamField.setValue(conditionCompare);
+                                    condition.getTask().storeInstance();
+                                    this.INVENTORY.open(player);
+                                });
+                        contents.set(1, i, clickableConditionCompare);
+                        i++;
+                        continue;
+                    }
+
+                    // From this point, we should treat native types only
+                    String[] lore = new String[]{ "",
+                            "§7Current value: §e" + conditionParamField.getValue(),
+                            "",
+                            "§aLeft-Click to edit" };
+                    ItemStack item = Items.generateItem("§7Set value: §e" + neededValue.getLabel(), XMaterial.PAPER, lore);
+                    ClickableItem clickableItem = ClickableItem.of(item, e -> {
+                        if (neededValue.getType() == Double.class) {
+                            DoubleInputMenu doubleInputMenu = new DoubleInputMenu(
+                                    player,
+                                    (ConditionParamField<Double>) conditionParamField,
+                                    condition,
+                                    internalCallback);
+                            doubleInputMenu.INVENTORY.open(player);
+                        }
+                    });
+
+                    contents.set(1, i, clickableItem);
+                    i++;
+                }
+            }
+
 
         }
-
-        contents.set(2, 8, ClickableItem.of(Items.getBackItem(), e -> onClose.execute(null)));
-
     }
 
     @Override
