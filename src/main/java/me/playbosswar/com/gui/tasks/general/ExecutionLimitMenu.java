@@ -16,11 +16,9 @@ import java.util.UUID;
 
 public class ExecutionLimitMenu implements InventoryProvider {
     private final SmartInventory inventory;
-    private final Player player;
     private final Task task;
 
     public ExecutionLimitMenu(Player player, Task task) {
-        this.player = player;
         this.task = task;
         this.inventory = SmartInventory.builder()
                 .id(UUID.randomUUID().toString())

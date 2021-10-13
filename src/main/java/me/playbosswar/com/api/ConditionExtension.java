@@ -83,7 +83,7 @@ public abstract class ConditionExtension {
 
     /**
      * Manually register a condition. The conditions will register themselves if the file is placed
-     * under CommandTimer/conditions
+     * under CommandTimer/extensions
      *
      * @return boolean if registration went through
      */

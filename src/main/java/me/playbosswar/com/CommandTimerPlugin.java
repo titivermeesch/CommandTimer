@@ -29,7 +29,6 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
         this.registerCommands();
 
         Files.createDataFolders();
-        Files.deserializeJsonFilesIntoCommandTimers();
 
         metrics = new Metrics(CommandTimerPlugin.getPlugin(), 9657);
         hooksManager = new HooksManager();
@@ -37,6 +36,7 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
         inventoryManager = new InventoryManager(this);
         conditionEngineManager = new ConditionEngineManager();
         inventoryManager.init();
+        Files.deserializeJsonFilesIntoCommandTimers();
 
         Tools.printDate();
         Messages.sendConsole("&e" + getDescription().getVersion() + "&a loaded!");

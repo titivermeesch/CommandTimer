@@ -12,11 +12,4 @@ public class TaskUtils {
 
         return task.getDays().contains(today.toString());
     }
-
-    public static boolean checkServerHasEnoughPlayers(Task task) {
-        boolean minPlayersLimit = task.getMinPlayers() == -1 || Bukkit.getOnlinePlayers().size() >= task.getMinPlayers();
-        boolean maxPlayersLimit = task.getMaxPlayers() == -1 || Bukkit.getOnlinePlayers().size() <= task.getMaxPlayers();
-
-        return minPlayersLimit && maxPlayersLimit;
-    }
 }

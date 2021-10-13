@@ -26,9 +26,6 @@ public class Task {
     private int timesExecuted = 0;
     private int lastExecutedCommandIndex = 0;
     private Date lastExecuted = new Date();
-    private String requiredPermission = "";
-    private int minPlayers = -1;
-    private int maxPlayers = -1;
     private CommandExecutionMode commandExecutionMode = CommandExecutionMode.ALL;
     private boolean active = false;
     private boolean resetExecutionsAfterRestart = false;
@@ -173,33 +170,6 @@ public class Task {
 
     public void setLastExecuted(Date lastExecuted) {
         this.lastExecuted = lastExecuted;
-        storeInstance();
-    }
-
-    public String getRequiredPermission() {
-        return requiredPermission;
-    }
-
-    public void setRequiredPermission(String requiredPermission) {
-        this.requiredPermission = requiredPermission;
-        storeInstance();
-    }
-
-    public int getMinPlayers() {
-        return minPlayers;
-    }
-
-    public void setMinPlayers(int minPlayers) {
-        this.minPlayers = minPlayers;
-        storeInstance();
-    }
-
-    public int getMaxPlayers() {
-        return maxPlayers;
-    }
-
-    public void setMaxPlayers(int maxPlayers) {
-        this.maxPlayers = maxPlayers;
         storeInstance();
     }
 

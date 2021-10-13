@@ -1,8 +1,7 @@
 package me.playbosswar.com.tasks;
 
 import me.playbosswar.com.CommandTimerPlugin;
-import me.playbosswar.com.Tools;
-import me.playbosswar.com.enums.CommandExecutionMode;
+import me.playbosswar.com.utils.Tools;
 import me.playbosswar.com.utils.Messages;
 import me.playbosswar.com.utils.TaskUtils;
 import org.bukkit.Bukkit;
@@ -22,7 +21,8 @@ import java.util.TimerTask;
  */
 public class TaskRunner implements Runnable {
     private void processTask(Task task) {
-        if(CommandTimerPlugin.getInstance().getTasksManager().stopRunner) {
+        TasksManager tasksManager = CommandTimerPlugin.getInstance().getTasksManager();
+        if (tasksManager.stopRunner) {
             return;
         }
 
@@ -35,11 +35,6 @@ public class TaskRunner implements Runnable {
 
         if (!TaskUtils.checkTaskDaysContainToday(task)) {
             Messages.sendDebugConsole("Command can not be executed today");
-            return;
-        }
-
-        if (!TaskUtils.checkServerHasEnoughPlayers(task)) {
-            Messages.sendDebugConsole("Server did not reach player limits on task");
             return;
         }
 
@@ -109,29 +104,19 @@ public class TaskRunner implements Runnable {
             Duration period = interval.toDuration();
 
             if (period.getStandardSeconds() < task.getInterval().toSeconds()) {
-                Messages.sendDebugConsole("Timer has been executed before. Last execution " + period.getStandardSeconds() + "s ago");
+                Messages.sendDebugConsole("Timer has been executed before. Last execution " + period.getStandardSeconds() + "s " +
+                                                  "ago");
                 return;
             }
         }
 
         // If it remains -1, that means that all commands should be executed
-        int selectedCommandIndex = -1;
-        if(task.getCommandExecutionMode().equals(CommandExecutionMode.RANDOM)) {
-            selectedCommandIndex = Tools.getRandomInt(0, task.getCommands().size() - 1);
-        } else if(task.getCommandExecutionMode().equals(CommandExecutionMode.ORDERED)) {
-            int currentLatestCommandIndex = task.getLastExecutedCommandIndex();
+        int selectedCommandIndex = tasksManager.getNextTaskCommandIndex(task);
 
-            if(currentLatestCommandIndex == task.getCommands().size() - 1) {
-                selectedCommandIndex = 0;
-            } else {
-                selectedCommandIndex = currentLatestCommandIndex + 1;
-            }
-        }
-
-        if(selectedCommandIndex == -1) {
-            task.getCommands().forEach(taskCommand -> CommandTimerPlugin.getInstance().getTasksManager().addTaskCommandExecution(taskCommand));
+        if (selectedCommandIndex == -1) {
+            task.getCommands().forEach(tasksManager::addTaskCommandExecution);
         } else {
-            CommandTimerPlugin.getInstance().getTasksManager().addTaskCommandExecution(task.getCommands().get(selectedCommandIndex));
+            tasksManager.addTaskCommandExecution(task.getCommands().get(selectedCommandIndex));
         }
     }
 

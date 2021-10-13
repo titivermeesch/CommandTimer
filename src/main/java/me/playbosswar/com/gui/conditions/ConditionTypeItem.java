@@ -1,4 +1,4 @@
-package me.playbosswar.com.gui.validations;
+package me.playbosswar.com.gui.conditions;
 
 import com.cryptomorin.xseries.XMaterial;
 import fr.minuskube.inv.ClickableItem;

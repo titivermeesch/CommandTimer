@@ -4,10 +4,6 @@ public class ConditionParamField<T> {
     private final String name;
     private T value;
 
-    public ConditionParamField(String name) {
-        this.name = name;
-    }
-
     public ConditionParamField(String name, T value) {
         this.name = name;
         this.value = value;

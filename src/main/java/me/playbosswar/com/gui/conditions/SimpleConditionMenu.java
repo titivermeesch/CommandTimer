@@ -1,4 +1,4 @@
-package me.playbosswar.com.gui.validations;
+package me.playbosswar.com.gui.conditions;
 
 import com.cryptomorin.xseries.XMaterial;
 import fr.minuskube.inv.ClickableItem;
@@ -86,7 +86,6 @@ public class SimpleConditionMenu implements InventoryProvider {
 
         simpleCondition.setConditionParamFields(conditionParamFields);
         simpleCondition.getTask().storeInstance();
-
     }
 
     @Override
@@ -95,7 +94,7 @@ public class SimpleConditionMenu implements InventoryProvider {
         contents.fillRow(2, ClickableItem.empty(XMaterial.BLUE_STAINED_GLASS_PANE.parseItem()));
 
         Pagination pagination = contents.pagination();
-        pagination.setItems(getConditionGroupRules(player));
+        pagination.setItems(getActiveRules(player));
         new HorizontalIteratorWithBorder(player, contents, INVENTORY, 14, 5, 3, 1);
 
         int i = 1;
@@ -112,7 +111,7 @@ public class SimpleConditionMenu implements InventoryProvider {
 
     }
 
-    private ClickableItem[] getConditionGroupRules(Player p) {
+    private ClickableItem[] getActiveRules(Player p) {
         ConditionExtension conditionExtension = CommandTimerPlugin
                 .getInstance()
                 .getConditionEngineManager()

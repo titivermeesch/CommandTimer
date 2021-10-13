@@ -30,7 +30,7 @@ public class ConditionEngineManager {
     private final File folder;
 
     public ConditionEngineManager() {
-        this.folder = new File(CommandTimerPlugin.getPlugin().getDataFolder(), "conditions");
+        this.folder = new File(CommandTimerPlugin.getPlugin().getDataFolder(), "extensions");
         registerAll();
     }
 
@@ -146,7 +146,7 @@ public class ConditionEngineManager {
 
     @NotNull
     public CompletableFuture<@NotNull List<@Nullable Class<? extends ConditionExtension>>> findExpansionsOnDisk() {
-        return Arrays.stream(folder.listFiles((dir, name) -> name.endsWith(".jar")))
+        return Arrays.stream(Objects.requireNonNull(folder.listFiles((dir, name) -> name.endsWith(".jar"))))
                 .map(this::findExpansionInFile)
                 .collect(Futures.collector());
     }

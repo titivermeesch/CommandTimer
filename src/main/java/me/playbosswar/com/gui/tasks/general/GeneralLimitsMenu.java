@@ -6,7 +6,6 @@ import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
 import me.playbosswar.com.CommandTimerPlugin;
-import me.playbosswar.com.gui.api.GenericNumberMenu;
 import me.playbosswar.com.gui.tasks.EditTaskMenu;
 import me.playbosswar.com.gui.worlds.WorldSelector;
 import me.playbosswar.com.tasks.Task;
@@ -36,62 +35,31 @@ public class GeneralLimitsMenu implements InventoryProvider {
     public void init(Player player, InventoryContents contents) {
         contents.fillBorders(ClickableItem.empty(XMaterial.BLUE_STAINED_GLASS_PANE.parseItem()));
 
-        String[] minPlayersLore = {
-                "",
-                "§7Define the minimum amount of players that",
-                "§7are required to execute the task",
-                "",
-                "§7Current value: §e" + task.getMinPlayers()
-        };
-        ItemStack minPlayersItem = Items.generateItem("§bMinimum players", XMaterial.ZOMBIE_HEAD, minPlayersLore);
-        ClickableItem clickableMinPlayersItem = ClickableItem.of(minPlayersItem, e ->
-                new GenericNumberMenu(player, "§9§lMinimum players", task.getMinPlayers(), v -> {
-                    task.setMinPlayers(v);
-                    refresh(player);
-                }));
-        contents.set(1, 1, clickableMinPlayersItem);
-
-        String[] maxPlayersLore = {
-                "",
-                "§7Define the maximum amount of players that",
-                "§7can be online to execute the task",
-                "",
-                "§7Current value: §e" + task.getMaxPlayers()
-        };
-        ItemStack maxPlayersItem = Items.generateItem("§bMaximum players", XMaterial.ZOMBIE_HEAD, maxPlayersLore);
-        ClickableItem clickableMaxPlayersItem = ClickableItem.of(maxPlayersItem, e ->
-                new GenericNumberMenu(player, "§9§lMaximum players", task.getMaxPlayers(), v -> {
-                    task.setMaxPlayers(v);
-                    refresh(player);
-                }));
-        contents.set(1, 2, clickableMaxPlayersItem);
-
-        String[] permissionLore = {
-                "",
-                "§7Configure a permission that players need",
-                "§7for the command to be executed for them.",
-                "",
-                "§7You can start your permission with a - to",
-                "§7Exclude a permission",
-                "",
-                "§7Current value: §e" + (task.getRequiredPermission().equals("") ? "Not set" : task.getRequiredPermission())
-        };
-        ItemStack permissionItem = Items.generateItem("§bRequired permission", XMaterial.DIAMOND_HELMET, permissionLore);
-        ClickableItem clickablePermissionItem = ClickableItem.of(permissionItem, e -> new EditPermissionMenu(player, task));
-        contents.set(1, 3, clickablePermissionItem);
-
         String[] executionLimitLore = {
                 "",
                 "§7Set a limit on how many times",
                 "§7a task can be executed in total",
                 "",
                 "§7Current limit: §e" + task.getExecutionLimit(),
-                "§7Reset on restart: §e" + task.isResetExecutionsAfterRestart()
+                "§7Current times executed: §e" + task.getTimesExecuted(),
+                "§7Reset on restart: §e" + task.isResetExecutionsAfterRestart(),
+                "",
+                "§aLeft-Click to edit",
+                "§aRight-Click to reset the times executed",
         };
         ItemStack executionLimitItem = Items.generateItem("§bExecution limit", XMaterial.DIAMOND_AXE, executionLimitLore);
-        ClickableItem clickableExecutionLimitItem = ClickableItem.of(executionLimitItem, e -> new ExecutionLimitMenu(player,
-                                                                                                                     task));
-        contents.set(1, 4, clickableExecutionLimitItem);
+        ClickableItem clickableExecutionLimitItem = ClickableItem.of(executionLimitItem, e -> {
+            if (e.isLeftClick()) {
+                new ExecutionLimitMenu(player, task);
+                return;
+            }
+
+            if(e.isRightClick()) {
+                task.setTimesExecuted(0);
+                this.INVENTORY.open(player);
+            }
+        });
+        contents.set(1, 1, clickableExecutionLimitItem);
 
         String[] worldLore = {
                 "",
@@ -110,7 +78,7 @@ public class GeneralLimitsMenu implements InventoryProvider {
             }
         };
 
-        contents.set(1, 5, ClickableItem.of(worldItem, e -> new WorldSelector(
+        contents.set(1, 2, ClickableItem.of(worldItem, e -> new WorldSelector(
                 worldCallback,
                 task.getWorlds(),
                 true).INVENTORY.open(player)));

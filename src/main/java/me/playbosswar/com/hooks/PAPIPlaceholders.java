@@ -2,7 +2,7 @@ package me.playbosswar.com.hooks;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.playbosswar.com.CommandTimerPlugin;
-import me.playbosswar.com.Tools;
+import me.playbosswar.com.utils.Tools;
 import me.playbosswar.com.tasks.Task;
 import me.playbosswar.com.tasks.TaskTime;
 import me.playbosswar.com.utils.Messages;

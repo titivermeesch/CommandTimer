@@ -1,11 +1,9 @@
-package me.playbosswar.com.gui.validations.inputs;
+package me.playbosswar.com.gui.conditions.inputs;
 
 import com.cryptomorin.xseries.XMaterial;
 import fr.minuskube.inv.ClickableItem;
 import me.playbosswar.com.conditionsengine.ConditionCompare;
 import me.playbosswar.com.conditionsengine.ConditionParamField;
-import me.playbosswar.com.conditionsengine.validations.Condition;
-import me.playbosswar.com.conditionsengine.validations.ConditionType;
 import me.playbosswar.com.utils.ArrayUtils;
 import me.playbosswar.com.utils.Items;
 import org.bukkit.inventory.ItemStack;

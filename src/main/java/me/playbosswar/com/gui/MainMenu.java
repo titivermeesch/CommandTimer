@@ -66,7 +66,7 @@ public class MainMenu implements InventoryProvider {
         ItemStack infoItem = Items.generateItem("§bGeneral information",
                                                 XMaterial.REDSTONE_TORCH,
                                                 new String[]{ "",
-                                                        "§7Version: 6.0.0-BETA-3" });
+                                                        "§7Version: 6.0.0-BETA-4" });
         contents.set(1, 7, ClickableItem.empty(infoItem));
     }
 

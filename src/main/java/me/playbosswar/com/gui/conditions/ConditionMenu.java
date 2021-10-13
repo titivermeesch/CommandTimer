@@ -1,4 +1,4 @@
-package me.playbosswar.com.gui.validations;
+package me.playbosswar.com.gui.conditions;
 
 import com.cryptomorin.xseries.XMaterial;
 import fr.minuskube.inv.ClickableItem;
@@ -13,9 +13,9 @@ import me.playbosswar.com.conditionsengine.ConditionParamField;
 import me.playbosswar.com.conditionsengine.validations.Condition;
 import me.playbosswar.com.conditionsengine.validations.ConditionType;
 import me.playbosswar.com.conditionsengine.validations.SimpleCondition;
-import me.playbosswar.com.gui.tasks.TaskNameMenu;
-import me.playbosswar.com.gui.validations.inputs.ConditionCompareItem;
-import me.playbosswar.com.gui.validations.inputs.DoubleInputMenu;
+import me.playbosswar.com.gui.conditions.inputs.ConditionCompareItem;
+import me.playbosswar.com.gui.conditions.inputs.DoubleInputMenu;
+import me.playbosswar.com.gui.conditions.inputs.StringInputMenu;
 import me.playbosswar.com.utils.Callback;
 import me.playbosswar.com.utils.Items;
 import org.bukkit.entity.Player;
@@ -110,7 +110,7 @@ public class ConditionMenu implements InventoryProvider {
                 ConditionRule conditionRule =
                         CommandTimerPlugin.getInstance().getConditionEngineManager().getRule(simpleCondition.getConditionGroup(), rule);
 
-                if(conditionRule == null) {
+                if (conditionRule == null) {
                     return;
                 }
 
@@ -150,11 +150,20 @@ public class ConditionMenu implements InventoryProvider {
                     ClickableItem clickableItem = ClickableItem.of(item, e -> {
                         if (neededValue.getType() == Double.class) {
                             DoubleInputMenu doubleInputMenu = new DoubleInputMenu(
-                                    player,
                                     (ConditionParamField<Double>) conditionParamField,
                                     condition,
                                     internalCallback);
                             doubleInputMenu.INVENTORY.open(player);
+                            return;
+                        }
+
+                        if (neededValue.getType() == String.class) {
+                            StringInputMenu stringInputMenu =
+                                    new StringInputMenu(
+                                            (ConditionParamField<String>) conditionParamField,
+                                            condition,
+                                            internalCallback);
+                            stringInputMenu.INVENTORY.open(player);
                         }
                     });
 

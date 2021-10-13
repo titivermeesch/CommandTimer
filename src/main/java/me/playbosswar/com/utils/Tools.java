@@ -1,4 +1,4 @@
-package me.playbosswar.com;
+package me.playbosswar.com.utils;
 
 import me.playbosswar.com.utils.*;
 import org.bukkit.World;

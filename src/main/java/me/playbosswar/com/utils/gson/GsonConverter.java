@@ -23,10 +23,6 @@ public class GsonConverter {
         return gson.toJson(obj);
     }
 
-    public <T> T fromJson(Reader reader, Type valueType) {
-        return gson.fromJson(reader, valueType);
-    }
-
     public <T> T fromJson(String string, Type valueType) {
         return gson.fromJson(string, valueType);
     }

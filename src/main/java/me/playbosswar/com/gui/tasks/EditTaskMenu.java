@@ -9,7 +9,7 @@ import me.playbosswar.com.CommandTimerPlugin;
 import me.playbosswar.com.gui.tasks.commands.AllCommandsMenu;
 import me.playbosswar.com.gui.tasks.general.GeneralLimitsMenu;
 import me.playbosswar.com.gui.tasks.scheduler.MainScheduleMenu;
-import me.playbosswar.com.gui.validations.ConditionMenu;
+import me.playbosswar.com.gui.conditions.ConditionMenu;
 import me.playbosswar.com.tasks.Task;
 import me.playbosswar.com.utils.Callback;
 import me.playbosswar.com.utils.Items;
