@@ -1,7 +1,6 @@
 package me.playbosswar.com.hooks;
 
 import me.clip.placeholderapi.PlaceholderAPI;
-import me.playbosswar.com.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
