@@ -19,14 +19,18 @@ import java.util.Optional;
 public class TaskValidationHelpers {
     public static boolean processCondition(Condition topCondition, @Nullable Player p) {
         ConditionType conditionType = topCondition.getConditionType();
-        if (conditionType.equals(ConditionType.SIMPLE) || conditionType.equals(ConditionType.NOT)) {
-            return checkSimpleCondition(topCondition.getSimpleCondition(), conditionType, p);
+        if (conditionType.equals(ConditionType.SIMPLE)) {
+            return checkSimpleCondition(topCondition.getSimpleCondition(), p);
+        }
+
+        if (conditionType.equals(ConditionType.NOT)) {
+            return !checkSimpleCondition(topCondition.getSimpleCondition(), p);
         }
 
         if (conditionType.equals(ConditionType.AND)) {
             return topCondition.getConditions().stream().allMatch(condition -> {
                 if (condition.getSimpleCondition() != null) {
-                    return checkSimpleCondition(condition.getSimpleCondition(), condition.getConditionType(), p);
+                    return checkSimpleCondition(condition.getSimpleCondition(), p);
                 }
 
                 return processCondition(condition, p);
@@ -36,7 +40,7 @@ public class TaskValidationHelpers {
         if (conditionType.equals(ConditionType.OR)) {
             return topCondition.getConditions().stream().anyMatch(condition -> {
                 if (condition.getSimpleCondition() != null) {
-                    return checkSimpleCondition(condition.getSimpleCondition(), condition.getConditionType(), p);
+                    return checkSimpleCondition(condition.getSimpleCondition(), p);
                 }
 
                 return processCondition(condition, p);
@@ -46,8 +50,7 @@ public class TaskValidationHelpers {
         return false;
     }
 
-    private static boolean checkSimpleCondition(SimpleCondition simpleCondition, ConditionType conditionType,
-                                                @Nullable Player p) {
+    private static boolean checkSimpleCondition(SimpleCondition simpleCondition, @Nullable Player p) {
         final ConditionEngineManager conditionEngineManager = CommandTimerPlugin.getInstance().getConditionEngineManager();
         ConditionRule rule = conditionEngineManager.getRule(simpleCondition.getConditionGroup(), simpleCondition.getRule());
         ArrayList<ConditionParamField<?>> conditionParams = simpleCondition.getConditionParamFields();
@@ -93,6 +96,6 @@ public class TaskValidationHelpers {
             }
         }
 
-        return conditionType.equals(ConditionType.SIMPLE) == rule.evaluate(facts);
+        return rule.evaluate(facts);
     }
 }
