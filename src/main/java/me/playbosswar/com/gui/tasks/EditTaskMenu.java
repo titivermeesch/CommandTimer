@@ -59,10 +59,7 @@ public class EditTaskMenu implements InventoryProvider {
                 "§7limit when the task can be executed.",
                 "",
                 "§bAvailable limits:",
-                "§7  - Amount of players online",
-                "§7  - Required permission",
                 "§7  - Maximum executions",
-                "§7  - Worlds"
         };
         ItemStack generalLimitsItem = Items.generateItem("§bGeneral limits", XMaterial.GOLD_INGOT, generalLimitsLore);
         ClickableItem clickableGeneralLimitsItem = ClickableItem.of(generalLimitsItem,
