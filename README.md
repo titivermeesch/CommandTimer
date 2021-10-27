@@ -25,6 +25,10 @@ various conditions.
 - `/cmt deactivate <task>` will disable/deactivate the specified task (equals the deactivate button in GUI)
 - `/cmt execute <task>` will directly execute a task without taking into account timers and intervals
 
+## Permissions
+
+`commandtimer.use` gives access to every feature of the plugin
+
 ## Extensions
 
 Extensions come in form of a jar file. These extensions will hook into the CommandTimer API and will bring more
