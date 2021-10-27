@@ -1,26 +1,44 @@
 package me.playbosswar.com.utils;
 
-import me.playbosswar.com.Main;
-import org.json.simple.JSONObject;
+import me.playbosswar.com.CommandTimerPlugin;
+import me.playbosswar.com.api.ConditionRule;
+import me.playbosswar.com.api.NeededValue;
+import me.playbosswar.com.conditionsengine.ConditionCompare;
+import me.playbosswar.com.conditionsengine.ConditionEngineManager;
+import me.playbosswar.com.conditionsengine.ConditionParamField;
+import me.playbosswar.com.conditionsengine.validations.Condition;
+import me.playbosswar.com.conditionsengine.validations.ConditionType;
+import me.playbosswar.com.conditionsengine.validations.SimpleCondition;
+import me.playbosswar.com.tasks.Task;
+import me.playbosswar.com.utils.gson.GsonConverter;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.*;
-import java.nio.file.FileAlreadyExistsException;
-import java.time.LocalTime;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.jar.JarEntry;
+import java.util.jar.JarInputStream;
 
 public class Files {
-    static String pluginFolderPath = Main.getPlugin().getDataFolder().getPath();
+    static String pluginFolderPath = CommandTimerPlugin.getPlugin().getDataFolder().getPath();
 
     /**
      * Create folder to store all the timers in
      */
     public static void createDataFolders() {
-        File file = new File(pluginFolderPath + "/timers");
-        Boolean created = file.mkdir();
+        File timersFile = new File(pluginFolderPath + "/timers");
+        File extensionsFolder = new File(pluginFolderPath + "/extensions");
+        boolean created = timersFile.mkdir();
+        boolean created2 = extensionsFolder.mkdir();
 
-        if (created) {
+        if (created && created2) {
             Messages.sendConsole("Data folder has been created");
         } else {
             Messages.sendConsole("We could not create the data folder. If it already exists ignore this.");
@@ -31,147 +49,67 @@ public class Files {
      * Returns timer json file
      *
      * @param name
+     *
      * @return
      */
-    public static String getTimerFile(String name) {
+    public static String getTaskFile(String name) {
         return pluginFolderPath + "/timers/" + name + ".json";
     }
 
-    /**
-     * Check if a file with name already exists
-     *
-     * @param name
-     * @return
-     */
-    public static Boolean commandTimerFileExists(String name) {
-        File file = new File(getTimerFile(name));
-        return file.exists();
+//    private static void setTypesOnConditionParams(SimpleCondition simpleCondition) {
+//        ConditionEngineManager conditionEngineManager = CommandTimerPlugin.getInstance().getConditionEngineManager();
+//        ConditionRule rule = conditionEngineManager.getRule(simpleCondition.getConditionGroup(), simpleCondition.getRule());
+//        ArrayList<ConditionParamField<?>> conditionParamFields = simpleCondition.getConditionParamFields();
+//
+//        if(rule == null) {
+//            return;
+//        }
+//
+//        if(conditionParamFields != null && conditionParamFields.size() > 0) {
+//            // Comes from extension
+//            ArrayList<NeededValue<?>> neededValues = rule.getNeededValues();
+//
+//            for(ConditionParamField<?> conditionParamField : conditionParamFields) {
+//                Optional<NeededValue<?>> optionalNeededValue =
+//                        neededValues.stream().filter(v -> v.getName().equals(conditionParamField.getName())).findFirst();
+//
+//                if (!optionalNeededValue.isPresent()) {
+//                    continue;
+//                }
+//
+//                NeededValue<?> neededValue = optionalNeededValue.get();
+//                if (neededValue.getType() == ConditionCompare.class) {
+//                    conditionParamField.setValue(ConditionCompare.valueOf((String) conditionParamField.getValue()));
+//                    continue;
+//                }
+//
+//                if (neededValue.getType() == Double.class) {
+//                    facts.put(conditionParamField.getName(), (Double) conditionParamField.getValue());
+//                }
+//
+//                if (neededValue.getType() == String.class) {
+//                    facts.put(conditionParamField.getName(), (String) conditionParamField.getValue());
+//                }
+//            }
+//        }
+//    }
+
+    private static void setTaskOnConditions(Task task, List<Condition> conditions) {
+        conditions.forEach(condition -> {
+            condition.setTask(task);
+            if (condition.getConditionType().equals(ConditionType.SIMPLE) || condition.getConditionType().equals(ConditionType.NOT)) {
+                condition.getSimpleCondition().setTask(task);
+            } else {
+                setTaskOnConditions(task, condition.getConditions());
+            }
+        });
     }
 
-    /**
-     * Create a new data file to store timer data
-     *
-     * @param name
-     * @throws IOException
-     */
-    public static void createNewCommandTimerDataFile(String name) throws IOException {
-        if (commandTimerFileExists(name)) {
-            throw new FileAlreadyExistsException(name);
-        }
-
-        FileWriter jsonFile = new FileWriter(getTimerFile(name));
-        JSONObject commandTimer = new JSONObject();
-
-        ArrayList<String> days = new ArrayList<>();
-
-        days.add("MONDAY");
-        days.add("TUESDAY");
-        days.add("WEDNESDAY");
-        days.add("THURSDAY");
-        days.add("FRIDAY");
-        days.add("SATURDAY");
-        days.add("SUNDAY");
-
-        commandTimer.put("name", name);
-        commandTimer.put("days", days);
-
-        jsonFile.write(commandTimer.toJSONString());
-        jsonFile.flush();
-    }
-
-    public static void removeExistingCommandTimer(String name) throws IOException {
-        File file = new File(getTimerFile(name));
-
-        if (!commandTimerFileExists(name)) {
-            throw new FileNotFoundException();
-        }
-
-        boolean deleted = file.delete();
-
-        if (!deleted) {
-            throw new IOException();
-        }
-    }
-
-    public static void changeDataInFile(String timerName, String key, String value) throws IOException, ParseException {
-        String timerFile = getTimerFile(timerName);
-
-        Reader reader = new FileReader(timerFile);
-
-        JSONParser parser = new JSONParser();
-        JSONObject commandTimer = (JSONObject) parser.parse(reader);
-
-        commandTimer.put(key, value);
-
-        FileWriter jsonFile = new FileWriter(getTimerFile(timerName));
-        jsonFile.write(commandTimer.toJSONString());
-        jsonFile.flush();
-    }
-
-    public static void changeDataInFile(String timerName, String key, int value) throws IOException, ParseException {
-        String timerFile = getTimerFile(timerName);
-
-        Reader reader = new FileReader(timerFile);
-
-        JSONParser parser = new JSONParser();
-        JSONObject commandTimer = (JSONObject) parser.parse(reader);
-
-        commandTimer.put(key, value);
-
-        FileWriter jsonFile = new FileWriter(getTimerFile(timerName));
-        jsonFile.write(commandTimer.toJSONString());
-        jsonFile.flush();
-    }
-
-    public static void changeDataInFile(String timerName, String key, Boolean value) throws IOException, ParseException {
-        String timerFile = getTimerFile(timerName);
-
-        Reader reader = new FileReader(timerFile);
-
-        JSONParser parser = new JSONParser();
-        JSONObject commandTimer = (JSONObject) parser.parse(reader);
-
-        commandTimer.put(key, value);
-
-        FileWriter jsonFile = new FileWriter(getTimerFile(timerName));
-        jsonFile.write(commandTimer.toJSONString());
-        jsonFile.flush();
-    }
-
-    public static void changeDataInFile(String timerName, String key, ArrayList<String> values) throws IOException, ParseException {
-        String timerFile = getTimerFile(timerName);
-
-        Reader reader = new FileReader(timerFile);
-
-        JSONParser parser = new JSONParser();
-        JSONObject commandTimer = (JSONObject) parser.parse(reader);
-
-        commandTimer.put(key, values);
-
-        FileWriter jsonFile = new FileWriter(getTimerFile(timerName));
-        jsonFile.write(commandTimer.toJSONString());
-        jsonFile.flush();
-    }
-
-    public static void changeDataInFile(String timerName, String key, double value) throws IOException, ParseException {
-        String timerFile = getTimerFile(timerName);
-
-        Reader reader = new FileReader(timerFile);
-
-        JSONParser parser = new JSONParser();
-        JSONObject commandTimer = (JSONObject) parser.parse(reader);
-
-        commandTimer.put(key, value);
-
-        FileWriter jsonFile = new FileWriter(getTimerFile(timerName));
-        jsonFile.write(commandTimer.toJSONString());
-        jsonFile.flush();
-    }
-
-    public static void deserializeJsonFilesIntoCommandTimers() {
+    public static List<Task> deserializeJsonFilesIntoCommandTimers() {
         File dir = new File(pluginFolderPath + "/timers");
         File[] directoryListing = dir.listFiles();
         JSONParser jsonParser = new JSONParser();
+        List<Task> tasks = new ArrayList<>();
 
         try {
             if (directoryListing != null && directoryListing.length > 0) {
@@ -181,58 +119,76 @@ public class Files {
                     }
 
                     FileReader fr = new FileReader(file.getPath());
-                    JSONObject o = (JSONObject) jsonParser.parse(fr);
 
-                    CommandTimer t = new CommandTimer((String) o.get("name"));
+                    GsonConverter gson = new GsonConverter();
+                    Task task = gson.fromJson(jsonParser.parse(fr).toString(), Task.class);
+                    // We relink the tasks to commands and times because we lose this structure during serializing
+                    task.getCommands().forEach(command -> command.setTask(task));
+                    task.getTimes().forEach(time -> time.setTask(task));
+                    task.getInterval().setTask(task);
+                    Condition condition = task.getCondition();
+                    condition.setTask(task);
 
-                    t.setExecutionLimit(((Number) o.getOrDefault("executionLimit", -1)).intValue());
-
-                    t.setExecutePerUser((Boolean) o.getOrDefault("executePerUser", false));
-
-                    t.setUseMinecraftTime((Boolean) o.getOrDefault("useMinecraftTime", false));
-
-                    t.setSelectRandomCommand((Boolean) o.getOrDefault("selectRandomCommand", false));
-
-                    t.setSeconds(((Number) o.getOrDefault("seconds", 5)).intValue());
-
-                    t.setMinPlayers(((Number) o.getOrDefault("minPlayers", -1)).intValue());
-
-                    t.setMaxPlayers(((Number) o.getOrDefault("maxPlayers", -1)).intValue());
-
-                    t.setGender(Gender.valueOf((String) o.getOrDefault("gender", "OPERATOR")));
-
-                    t.setRandom((Double) o.getOrDefault("random", 1.0));
-
-                    t.setTimesExecuted(0);
-
-                    ArrayList<String> commands = (ArrayList<String>) o.getOrDefault("commands", new ArrayList<String>());
-                    t.setCommands(commands);
-
-                    ArrayList<String> days = (ArrayList<String>) o.getOrDefault("days", new ArrayList<String>());
-                    t.setDays(days);
-
-                    ArrayList<String> times = (ArrayList<String>) o.getOrDefault("times", new ArrayList<String>());
-                    t.setTimes(times);
-
-                    ArrayList<String> worlds = (ArrayList<String>) o.getOrDefault("worlds", new ArrayList<String>());
-                    t.setWorlds(worlds);
-
-                    String permission = (String) o.getOrDefault("requiredPermission", "");
-                    t.setRequiredPermission(permission);
-
-                    String lastExecuted = (String) o.getOrDefault("lastExecuted", "");
-
-                    if (!lastExecuted.equals("")) {
-                        LocalTime lastExecutedTime = LocalTime.parse(lastExecuted);
-                        t.setLastExecuted(lastExecutedTime);
+                    SimpleCondition simpleCondition = condition.getSimpleCondition();
+                    if(simpleCondition != null) {
+                        simpleCondition.setTask(task);
                     }
 
-                    TimerManager.addCommandTimer(t);
-                    Messages.sendConsole("Timer " + t.getName() + " has been loaded");
+                    if (condition.getConditionType().equals(ConditionType.OR) || condition.getConditionType().equals(ConditionType.AND)) {
+                        setTaskOnConditions(task, condition.getConditions());
+                    }
+
+                    if (task.isResetExecutionsAfterRestart()) {
+                        task.setTimesExecuted(0);
+                    }
+
+                    tasks.add(task);
                 }
             }
         } catch (IOException | ParseException e) {
             e.printStackTrace();
         }
+
+        return tasks;
+    }
+
+    @Nullable
+    public static <T> Class<? extends T> findClass(@NotNull final File file,
+                                                   @NotNull final Class<T> clazz) throws IOException, ClassNotFoundException {
+        if (!file.exists()) {
+            return null;
+        }
+
+        final URL jar = file.toURI().toURL();
+        final URLClassLoader loader = new URLClassLoader(new URL[]{ jar }, clazz.getClassLoader());
+        final List<String> matches = new ArrayList<>();
+        final List<Class<? extends T>> classes = new ArrayList<>();
+
+        try (final JarInputStream stream = new JarInputStream(jar.openStream())) {
+            JarEntry entry;
+            while ((entry = stream.getNextJarEntry()) != null) {
+                final String name = entry.getName();
+                if (name.isEmpty() || !name.endsWith(".class")) {
+                    continue;
+                }
+
+                matches.add(name.substring(0, name.lastIndexOf('.')).replace('/', '.'));
+            }
+
+            for (final String match : matches) {
+                try {
+                    final Class<?> loaded = loader.loadClass(match);
+                    if (clazz.isAssignableFrom(loaded)) {
+                        classes.add(loaded.asSubclass(clazz));
+                    }
+                } catch (final NoClassDefFoundError ignored) {
+                }
+            }
+        }
+        if (classes.isEmpty()) {
+            loader.close();
+            return null;
+        }
+        return classes.get(0);
     }
 }

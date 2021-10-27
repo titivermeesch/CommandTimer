@@ -1,0 +1,62 @@
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '7.0.0'
+    id 'maven-publish'
+}
+
+group = 'me.playbosswar.com'
+version = '6.0'
+description = 'CommandTimer'
+sourceCompatibility = '1.8'
+
+repositories {
+    mavenLocal()
+    maven {
+        url = 'https://repo1.maven.org/maven2'
+    }
+    maven {
+        url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
+    }
+    maven {
+        url = 'http://repo.extendedclip.com/content/repositories/placeholderapi/'
+        allowInsecureProtocol = true
+    }
+    maven {
+        url = 'https://repo.codemc.io/repository/maven-snapshots/'
+    }
+}
+
+shadowJar {
+    dependencies {
+        include(dependency('net.wesjd:anvilgui:1.5.3-SNAPSHOT'))
+        include(dependency('fr.minuskube.inv:smart-invs:1.2.7'))
+        include(dependency('com.github.cryptomorin:XSeries:8.4.0'))
+        include(dependency('joda-time:joda-time:2.10.10'))
+        include(dependency('org.jeasy:easy-rules-core:4.1.0'))
+    }
+}
+
+dependencies {
+    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'com.github.cryptomorin:XSeries:8.4.0'
+    implementation 'fr.minuskube.inv:smart-invs:1.2.7'
+    implementation 'net.wesjd:anvilgui:1.5.3-SNAPSHOT'
+    implementation 'org.apache.commons:commons-lang3:3.8.1'
+    implementation 'joda-time:joda-time:2.10.10'
+    implementation 'org.jeasy:easy-rules-core:4.1.0'
+    implementation 'com.googlecode.json-simple:json-simple:1.1'
+    compileOnly 'org.spigotmc:spigot-api:1.17.1-R0.1-SNAPSHOT'
+    compileOnly 'me.clip:placeholderapi:2.10.9'
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = 'me.playbosswar.com'
+            artifactId = 'commandtimer'
+            version = '6.0'
+
+            from components.java
+        }
+    }
+}
