@@ -20,7 +20,6 @@ public class Task {
     private TaskInterval interval = new TaskInterval(this, 0, 0, 0, 5);
     private List<TaskTime> times = new ArrayList<>();
     private double random = 1.0;
-    private List<String> worlds = new ArrayList<>();
     private List<String> days = new ArrayList<>();
     private int executionLimit = -1;
     private int timesExecuted = 0;
@@ -110,20 +109,6 @@ public class Task {
 
     public void setRandom(double random) {
         this.random = random;
-        storeInstance();
-    }
-
-    public List<String> getWorlds() {
-        return worlds;
-    }
-
-    public void setWorlds(List<String> worlds) {
-        this.worlds = worlds;
-        storeInstance();
-    }
-
-    public void addWorld(String world) {
-        this.worlds.add(world);
         storeInstance();
     }
 

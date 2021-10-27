@@ -7,7 +7,6 @@ import me.playbosswar.com.hooks.PAPIHook;
 import me.playbosswar.com.utils.Files;
 import me.playbosswar.com.utils.Messages;
 import me.playbosswar.com.utils.Tools;
-import me.playbosswar.com.utils.WeatherConditions;
 import org.apache.commons.lang.RandomStringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -78,16 +77,6 @@ public class TasksManager {
         String command = taskCommand.getCommand();
 
         for (Player p : Bukkit.getOnlinePlayers()) {
-            if (!WeatherConditions.checkPlayerMatchesWeather(p, taskCommand.getWeatherConditions())) {
-                Messages.sendDebugConsole("Stopped execution because player has wrong weather");
-                continue;
-            }
-
-            if (taskCommand.getTask().getWorlds().size() > 0 && !taskCommand.getTask().getWorlds().contains(p.getWorld().getName())) {
-                Messages.sendDebugConsole("Player is in a world that is not affected by task");
-                continue;
-            }
-
             if (taskCommand.getTask().getCondition() != null) {
                 boolean valid = TaskValidationHelpers.processCondition(taskCommand.getTask().getCondition(), p);
                 if (!valid) {
@@ -117,19 +106,10 @@ public class TasksManager {
         String command = taskCommand.getCommand();
 
         for (Player p : Bukkit.getOnlinePlayers()) {
-            if (!WeatherConditions.checkPlayerMatchesWeather(p, taskCommand.getWeatherConditions())) {
-                Messages.sendDebugConsole("Player has incorrect weather for his current location");
-                continue;
-            }
-
-            if (taskCommand.getTask().getWorlds().size() > 0 && !taskCommand.getTask().getWorlds().contains(p.getWorld().getName())) {
-                Messages.sendDebugConsole("Player is in a world that is not affected by task");
-                continue;
-            }
-
             if (taskCommand.getTask().getCondition() != null) {
                 boolean valid = TaskValidationHelpers.processCondition(taskCommand.getTask().getCondition(), p);
                 if (!valid) {
+                    Messages.sendDebugConsole("Conditions did not match");
                     continue;
                 }
             }
@@ -145,28 +125,11 @@ public class TasksManager {
             boolean wasAlreadyOp = p.isOp();
 
             try {
-                if (!wasAlreadyOp) {
-                    p.setOp(true);
-                }
-
-                if (!WeatherConditions.checkPlayerMatchesWeather(p, taskCommand.getWeatherConditions())) {
-                    if (!wasAlreadyOp) {
-                        p.setOp(false);
-                    }
-                    continue;
-                }
-
-                if (taskCommand.getTask().getWorlds().size() > 0 && !taskCommand.getTask().getWorlds().contains(p.getWorld().getName())) {
-                    Messages.sendDebugConsole("Player is in a world that is not affected by task");
-                    if (!wasAlreadyOp) {
-                        p.setOp(false);
-                    }
-                    continue;
-                }
-
                 if (taskCommand.getTask().getCondition() != null) {
                     boolean valid = TaskValidationHelpers.processCondition(taskCommand.getTask().getCondition(), p);
                     if (!valid) {
+                        Messages.sendDebugConsole("Conditions did not match");
+
                         if (!wasAlreadyOp) {
                             p.setOp(false);
                         }
@@ -175,8 +138,6 @@ public class TasksManager {
                 }
 
                 p.performCommand(PAPIHook.parsePAPI(command, p));
-            } catch (Exception e) {
-                e.printStackTrace();
             } finally {
                 if (!wasAlreadyOp) {
                     p.setOp(false);

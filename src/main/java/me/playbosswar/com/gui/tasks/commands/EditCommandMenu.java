@@ -6,16 +6,10 @@ import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
 import me.playbosswar.com.CommandTimerPlugin;
-import me.playbosswar.com.enums.WorldWeather;
-import me.playbosswar.com.gui.tasks.weather.WeatherMenu;
 import me.playbosswar.com.tasks.TaskCommand;
 import me.playbosswar.com.utils.Items;
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class EditCommandMenu implements InventoryProvider {
     public SmartInventory INVENTORY;
@@ -77,26 +71,6 @@ public class EditCommandMenu implements InventoryProvider {
             this.INVENTORY.open(player);
         });
         contents.set(1, 2, clickableGenderItem);
-
-        List<String> weatherLore = new ArrayList<>();
-        weatherLore.add("");
-        weatherLore.add("§7Set a limit for the weather condition on");
-        weatherLore.add("§7this command. This limit will only work");
-        weatherLore.add("§7when the gender is §cNOT§7 set to §eCONSOLE");
-        weatherLore.add("");
-
-        boolean clear = taskCommand.getWeatherConditions().contains(WorldWeather.CLEAR);
-        boolean rain = taskCommand.getWeatherConditions().contains(WorldWeather.RAINING);
-        boolean thunder = taskCommand.getWeatherConditions().contains(WorldWeather.THUNDER);
-
-        if (clear || rain || thunder) {
-            weatherLore.add("§7Current: §e" + StringUtils.join(taskCommand.getWeatherConditions(), ", "));
-        }
-        String[] weatherLoreArray = weatherLore.toArray(new String[0]);
-        ItemStack weatherItem = Items.generateItem("§bWeather conditions", XMaterial.WATER_BUCKET, weatherLoreArray);
-        ClickableItem clickableWeatherItem = ClickableItem.of(weatherItem,
-                                                              e -> new WeatherMenu(taskCommand).INVENTORY.open(player));
-        contents.set(1, 3, clickableWeatherItem);
 
         contents.set(1, 7, ClickableItem.of(Items.getBackItem(),
                                             e -> new AllCommandsMenu(taskCommand.getTask()).INVENTORY.open(player)));

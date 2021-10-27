@@ -13,7 +13,6 @@ import me.playbosswar.com.tasks.Task;
 import me.playbosswar.com.tasks.TaskCommand;
 import me.playbosswar.com.enums.Gender;
 import me.playbosswar.com.utils.Items;
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
@@ -49,7 +48,7 @@ public class AllCommandsMenu implements InventoryProvider {
         String[] addItemLore = new String[]{ "",
                 "§7Add a new command that will be",
                 "§7executed on your specified schedule" };
-        ItemStack addItem = Items.generateItem("§bAdd command", XMaterial.LIME_DYE, addItemLore);
+        ItemStack addItem = Items.generateItem("§bAdd command", XMaterial.ANVIL, addItemLore);
         ClickableItem clickableAddItem = ClickableItem.of(addItem, e -> {
             TaskCommand taskCommand = new TaskCommand(task, UUID.randomUUID(), "my command", Gender.CONSOLE);
             task.addCommand(taskCommand);
@@ -102,7 +101,6 @@ public class AllCommandsMenu implements InventoryProvider {
             String[] lore = new String[]{
                     "",
                     "§7Gender: §e" + taskCommand.getGender(),
-                    "§7Weather: §e" + StringUtils.join(taskCommand.getWeatherConditions(), ", "),
                     "",
                     "§aLeft-Click to edit",
                     "§cRight-Click to delete"

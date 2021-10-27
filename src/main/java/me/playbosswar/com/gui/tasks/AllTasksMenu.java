@@ -40,6 +40,22 @@ public class AllTasksMenu implements InventoryProvider {
         pagination.setItems(getAllTaskItems(player));
         new HorizontalIteratorWithBorder(player, contents, INVENTORY);
 
+        ItemStack createTaskItem = Items.generateItem("§bCreate task",
+                                                      XMaterial.ANVIL,
+                                                      new String[]{ "",
+                                                              "§7A task consists of:",
+                                                              "§7  - A set of conditions",
+                                                              "§7  - One or more commands",
+                                                              "",
+                                                              "§7Based on how you configure it, the commands " +
+                                                                      "will be",
+                                                              "§7executed when the conditions meet."
+                                                      });
+        ClickableItem createItem = ClickableItem.of(createTaskItem, e ->
+                new EditTaskMenu(CommandTimerPlugin.getInstance().getTasksManager().createTask()).INVENTORY.open(player)
+        );
+        contents.set(0, 0, createItem);
+
         contents.set(5, 8, ClickableItem.of(Items.getBackItem(), e -> new MainMenu().INVENTORY.open(player)));
     }
 

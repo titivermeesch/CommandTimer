@@ -1,10 +1,7 @@
 package me.playbosswar.com.tasks;
 
-import me.playbosswar.com.enums.WorldWeather;
 import me.playbosswar.com.enums.Gender;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 public class TaskCommand {
@@ -12,16 +9,12 @@ public class TaskCommand {
     private String command;
     private Gender gender;
     private transient Task task;
-    private List<WorldWeather> weatherConditions = new ArrayList<>();
 
     public TaskCommand(Task task, UUID uuid, String command, Gender gender) {
         this.task = task;
         this.uuid = uuid;
         this.command = command;
         this.gender = gender;
-        weatherConditions.add(WorldWeather.CLEAR);
-        weatherConditions.add(WorldWeather.THUNDER);
-        weatherConditions.add(WorldWeather.RAINING);
     }
 
     public String getCommand() {
@@ -74,25 +67,6 @@ public class TaskCommand {
 
     public Task getTask() {
         return task;
-    }
-
-    public List<WorldWeather> getWeatherConditions() {
-        return weatherConditions;
-    }
-
-    public void setWeatherConditions(List<WorldWeather> weatherConditions) {
-        this.weatherConditions = weatherConditions;
-        task.storeInstance();
-    }
-
-    public void toggleWeatherCondition(WorldWeather weather) {
-        if(weatherConditions.contains(weather)) {
-            weatherConditions.remove(weather);
-        } else {
-            weatherConditions.add(weather);
-        }
-
-        task.storeInstance();
     }
 
     public UUID getUuid() {

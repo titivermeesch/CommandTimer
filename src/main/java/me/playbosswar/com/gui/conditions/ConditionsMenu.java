@@ -52,7 +52,7 @@ public class ConditionsMenu implements InventoryProvider {
         pagination.setItems(getAllConditions(player));
         new HorizontalIteratorWithBorder(player, contents, INVENTORY);
 
-        ItemStack createItem = Items.generateItem("§bAdd condition", XMaterial.LIME_DYE);
+        ItemStack createItem = Items.generateItem("§bAdd condition", XMaterial.ANVIL);
         ClickableItem clickableCreate = ClickableItem.of(createItem, e -> {
             Condition newCondition = new Condition(
                     ConditionType.SIMPLE,

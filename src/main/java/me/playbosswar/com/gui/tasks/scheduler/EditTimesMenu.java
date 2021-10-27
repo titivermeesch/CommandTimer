@@ -44,7 +44,7 @@ public class EditTimesMenu implements InventoryProvider {
         String[] addItemLore = new String[]{ "",
                 "§7Add a new specific time at which your task",
                 "§7should be executed" };
-        ItemStack addItem = Items.generateItem("§bAdd specific time", XMaterial.LIME_DYE, addItemLore);
+        ItemStack addItem = Items.generateItem("§bAdd specific time", XMaterial.ANVIL, addItemLore);
         ClickableItem clickableAddItem = ClickableItem.of(addItem, e -> {
             TaskTime taskTime = new TaskTime(task, LocalTime.parse("14:00:00"), false);
             task.addTime(taskTime);
