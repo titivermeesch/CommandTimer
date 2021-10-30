@@ -24,6 +24,7 @@ various conditions.
 - `/cmt activate <task>` will enable/activate the specified task (equals the activate button in GUI)
 - `/cmt deactivate <task>` will disable/deactivate the specified task (equals the deactivate button in GUI)
 - `/cmt execute <task>` will directly execute a task without taking into account timers and intervals
+- `/cmt time` will show the Minecraft time of the world you are in
 
 ## Permissions
 
