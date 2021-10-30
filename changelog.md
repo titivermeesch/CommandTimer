@@ -1,3 +1,18 @@
+# 6.0.2
+
+- Take into account interval when working with time ranges
+- Add /cmt time command
+
+# 6.0.1
+
+CommandTimer would not take into account all fixes times that are configured. This has now been fixed.
+
+# 6.0
+
+- Support for 1.8-1.17
+- Fix all the reported bugs from the past few months
+- Introduce a brand new extensions system to enhance the different limits to prevent commands from running.
+
 # 5.2
 
 - Compiled against 1.16.4
