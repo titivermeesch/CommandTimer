@@ -48,6 +48,7 @@ public class TaskRunner implements Runnable {
             return;
         }
 
+        boolean blockTime = true;
         if (task.getTimes().size() > 0) {
             Messages.sendDebugConsole("Task is time related, checking if can be executed now");
 
@@ -67,13 +68,13 @@ public class TaskRunner implements Runnable {
                         LocalTime startRange = taskTime.getTime1();
                         LocalTime endRange = taskTime.getTime2();
 
-                        if (current.isAfter(endRange) || current.isBefore(startRange)) {
-                            return;
+                        if (!(current.isAfter(endRange) || current.isBefore(startRange))) {
+                            blockTime = false;
                         }
                     } else {
                         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-                        if (!minecraftTime.equals(taskTime.getTime1().format(formatter))) {
-                            return;
+                        if (minecraftTime.equals(taskTime.getTime1().format(formatter))) {
+                            blockTime = false;
                         }
                     }
                 } else {
@@ -87,14 +88,19 @@ public class TaskRunner implements Runnable {
                         LocalTime startRange = taskTime.getTime1();
                         LocalTime endRange = taskTime.getTime2();
 
-                        if (current.isAfter(endRange) || current.isBefore(startRange)) {
-                            return;
+                        if (!(current.isAfter(endRange) || current.isBefore(startRange))) {
+                            blockTime = false;
                         }
                     } else {
                         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 
-                        if (!current.format(formatter).equals(taskTime.getTime1().format(formatter))) {
-                            return;
+                        String currentFormat = current.format(formatter);
+                        String time1Format = taskTime.getTime1().format(formatter);
+
+                        if (!currentFormat.equals(time1Format)) {
+                            Messages.sendDebugConsole("Time " + currentFormat + " does not correspond to " + time1Format);
+                        } else {
+                            blockTime = false;
                         }
                     }
                 }
@@ -108,6 +114,11 @@ public class TaskRunner implements Runnable {
                                                   "ago");
                 return;
             }
+        }
+
+        if(blockTime) {
+            Messages.sendDebugConsole("Execution has been blocked because times do not correspond");
+            return;
         }
 
         // If it remains -1, that means that all commands should be executed
