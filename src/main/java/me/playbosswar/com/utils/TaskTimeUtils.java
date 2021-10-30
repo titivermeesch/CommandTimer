@@ -1,6 +1,9 @@
 package me.playbosswar.com.utils;
 
+import me.playbosswar.com.tasks.Task;
 import me.playbosswar.com.tasks.TaskTime;
+import org.joda.time.Duration;
+import org.joda.time.Interval;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -32,5 +35,12 @@ public class TaskTimeUtils {
 
             return acc;
         });
+    }
+
+    public static boolean hasPassedInterval(Task task) {
+        Interval interval = new Interval(task.getLastExecuted().getTime(), new Date().getTime());
+        Duration period = interval.toDuration();
+
+        return period.getStandardSeconds() >= task.getInterval().toSeconds();
     }
 }

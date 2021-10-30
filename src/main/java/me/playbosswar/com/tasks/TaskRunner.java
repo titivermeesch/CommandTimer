@@ -1,17 +1,15 @@
 package me.playbosswar.com.tasks;
 
 import me.playbosswar.com.CommandTimerPlugin;
+import me.playbosswar.com.utils.TaskTimeUtils;
 import me.playbosswar.com.utils.Tools;
 import me.playbosswar.com.utils.Messages;
 import me.playbosswar.com.utils.TaskUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
-import org.joda.time.Duration;
-import org.joda.time.Interval;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -68,8 +66,11 @@ public class TaskRunner implements Runnable {
                         LocalTime startRange = taskTime.getTime1();
                         LocalTime endRange = taskTime.getTime2();
 
-                        if (!(current.isAfter(endRange) || current.isBefore(startRange))) {
-                            blockTime = false;
+                        if (current.isBefore(endRange) && current.isAfter(startRange)) {
+                            boolean hasPassedInterval = TaskTimeUtils.hasPassedInterval(task);
+                            if (hasPassedInterval) {
+                                blockTime = false;
+                            }
                         }
                     } else {
                         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
@@ -88,8 +89,11 @@ public class TaskRunner implements Runnable {
                         LocalTime startRange = taskTime.getTime1();
                         LocalTime endRange = taskTime.getTime2();
 
-                        if (!(current.isAfter(endRange) || current.isBefore(startRange))) {
-                            blockTime = false;
+                        if(current.isBefore(endRange) && current.isAfter(startRange)) {
+                            boolean hasPassedInterval = TaskTimeUtils.hasPassedInterval(task);
+                            if (hasPassedInterval) {
+                                blockTime = false;
+                            }
                         }
                     } else {
                         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
@@ -106,17 +110,14 @@ public class TaskRunner implements Runnable {
                 }
             }
         } else {
-            Interval interval = new Interval(task.getLastExecuted().getTime(), new Date().getTime());
-            Duration period = interval.toDuration();
-
-            if (period.getStandardSeconds() < task.getInterval().toSeconds()) {
-                Messages.sendDebugConsole("Timer has been executed before. Last execution " + period.getStandardSeconds() + "s " +
-                                                  "ago");
+            boolean hasPassedInterval = TaskTimeUtils.hasPassedInterval(task);
+            if (!hasPassedInterval) {
+                Messages.sendDebugConsole("Timer has been executed before");
                 return;
             }
         }
 
-        if(blockTime) {
+        if (blockTime) {
             Messages.sendDebugConsole("Execution has been blocked because times do not correspond");
             return;
         }
