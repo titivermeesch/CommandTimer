@@ -5,6 +5,7 @@ import me.playbosswar.com.gui.MainMenu;
 import me.playbosswar.com.tasks.Task;
 import me.playbosswar.com.tasks.TasksManager;
 import me.playbosswar.com.utils.Messages;
+import me.playbosswar.com.utils.Tools;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -23,14 +24,25 @@ public class MainCommand implements CommandExecutor {
 
         TasksManager tasksManager = CommandTimerPlugin.getInstance().getTasksManager();
 
-        if(args.length == 0 && sender instanceof Player) {
+        if (args.length == 0 && sender instanceof Player) {
             new MainMenu().INVENTORY.open((Player) sender);
             return true;
         }
 
-        if(args.length == 1) {
-            if(args[0].equalsIgnoreCase("help")) {
+        if (args.length == 1) {
+            if (args[0].equalsIgnoreCase("help")) {
                 Messages.sendHelpMessage(sender);
+                return true;
+            }
+
+            if (args[0].equalsIgnoreCase("time")) {
+                if (!(sender instanceof Player)) {
+                    Messages.sendNeedToBePlayer(sender);
+                    return true;
+                }
+
+                Player p = (Player) sender;
+                Messages.sendMessage(sender, "Minecraft Time: " + Tools.calculateWorldTime(p.getWorld()));
                 return true;
             }
         }
