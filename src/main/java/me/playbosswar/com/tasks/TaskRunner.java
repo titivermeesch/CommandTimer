@@ -110,6 +110,7 @@ public class TaskRunner implements Runnable {
                 }
             }
         } else {
+            blockTime = false;
             boolean hasPassedInterval = TaskTimeUtils.hasPassedInterval(task);
             if (!hasPassedInterval) {
                 Messages.sendDebugConsole("Timer has been executed before");

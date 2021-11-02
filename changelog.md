@@ -1,3 +1,7 @@
+# 6.0.3
+
+- Fix interval not working after bugfix in 6.0.2
+
 # 6.0.2
 
 - Take into account interval when working with time ranges
