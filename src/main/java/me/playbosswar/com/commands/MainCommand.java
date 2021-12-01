@@ -2,6 +2,7 @@ package me.playbosswar.com.commands;
 
 import me.playbosswar.com.CommandTimerPlugin;
 import me.playbosswar.com.gui.MainMenu;
+import me.playbosswar.com.permissions.PermissionUtils;
 import me.playbosswar.com.tasks.Task;
 import me.playbosswar.com.tasks.TasksManager;
 import me.playbosswar.com.utils.Messages;
@@ -12,12 +13,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Date;
-
 public class MainCommand implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String s, String[] args) {
-        if (!sender.hasPermission("commandtimer.use")) {
+        if (!PermissionUtils.playerHasSomeAccess(sender)) {
             Messages.sendNoPermission(sender);
             return true;
         }
@@ -25,6 +24,11 @@ public class MainCommand implements CommandExecutor {
         TasksManager tasksManager = CommandTimerPlugin.getInstance().getTasksManager();
 
         if (args.length == 0 && sender instanceof Player) {
+            if(!sender.hasPermission("commandtimer.manage")) {
+                Messages.sendNoPermission(sender);
+                return true;
+            }
+
             new MainMenu().INVENTORY.open((Player) sender);
             return true;
         }
@@ -58,18 +62,33 @@ public class MainCommand implements CommandExecutor {
             }
 
             if (action.equalsIgnoreCase("activate")) {
+                if(!sender.hasPermission("commandtimer.activate") && !sender.hasPermission("commandtimer.toggle")) {
+                    Messages.sendNoPermission(sender);
+                    return true;
+                }
+
                 task.setActive(true);
                 Messages.sendMessage(sender, "§aTask has been activated");
                 return true;
             }
 
             if (action.equalsIgnoreCase("deactivate")) {
+                if(!sender.hasPermission("commandtimer.deactivate") && !sender.hasPermission("commandtimer.toggle")) {
+                    Messages.sendNoPermission(sender);
+                    return true;
+                }
+
                 task.setActive(false);
                 Messages.sendMessage(sender, "§aTask has been deactivated");
                 return true;
             }
 
             if (action.equalsIgnoreCase("execute")) {
+                if(!sender.hasPermission("commandtimer.execute")) {
+                    Messages.sendNoPermission(sender);
+                    return true;
+                }
+
                 int selectedCommandIndex = tasksManager.getNextTaskCommandIndex(task);
                 if (selectedCommandIndex == -1) {
                     task.getCommands().forEach(tasksManager::addTaskCommandExecution);

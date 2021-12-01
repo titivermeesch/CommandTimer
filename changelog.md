@@ -1,3 +1,8 @@
+# 6.1
+
+- Add permissions commandtimer.manage, execute, activate/deactivate and toggle
+- Show server time in main GUI
+
 # 6.0.3
 
 - Fix interval not working after bugfix in 6.0.2

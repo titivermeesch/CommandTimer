@@ -8,10 +8,11 @@ import fr.minuskube.inv.content.InventoryProvider;
 import me.playbosswar.com.CommandTimerPlugin;
 import me.playbosswar.com.gui.integrations.MainIntegrationsMenu;
 import me.playbosswar.com.gui.tasks.AllTasksMenu;
-import me.playbosswar.com.gui.tasks.EditTaskMenu;
 import me.playbosswar.com.utils.Items;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+
+import java.text.SimpleDateFormat;
 
 public class MainMenu implements InventoryProvider {
     public SmartInventory INVENTORY;
@@ -49,10 +50,14 @@ public class MainMenu implements InventoryProvider {
                                                                    e -> new MainIntegrationsMenu().INVENTORY.open(player));
         contents.set(1, 2, clickableIntegrationsItem);
 
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+        String currentTime = sdf.format(new java.util.Date());
         ItemStack infoItem = Items.generateItem("§bGeneral information",
                                                 XMaterial.REDSTONE_TORCH,
                                                 new String[]{ "",
-                                                        "§7Version: " + CommandTimerPlugin.getPlugin().getDescription().getVersion() });
+                                                        "§7Version: §e" + CommandTimerPlugin.getPlugin().getDescription().getVersion(),
+                                                        "§7Time: §e" + currentTime
+                                                });
         contents.set(1, 7, ClickableItem.empty(infoItem));
     }
 

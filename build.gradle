@@ -18,6 +18,9 @@ repositories {
         url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
     }
     maven {
+        url = "https://oss.sonatype.org/content/repositories/snapshots/"
+    }
+    maven {
         url = 'http://repo.extendedclip.com/content/repositories/placeholderapi/'
         allowInsecureProtocol = true
     }
@@ -37,16 +40,15 @@ shadowJar {
 }
 
 dependencies {
-    implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'com.github.cryptomorin:XSeries:8.4.0'
     implementation 'fr.minuskube.inv:smart-invs:1.2.7'
     implementation 'net.wesjd:anvilgui:1.5.3-SNAPSHOT'
-    implementation 'org.apache.commons:commons-lang3:3.8.1'
     implementation 'joda-time:joda-time:2.10.10'
     implementation 'org.jeasy:easy-rules-core:4.1.0'
     implementation 'com.googlecode.json-simple:json-simple:1.1'
     compileOnly 'org.spigotmc:spigot-api:1.17.1-R0.1-SNAPSHOT'
     compileOnly 'me.clip:placeholderapi:2.10.9'
+    compileOnly 'org.jetbrains:annotations:16.0.2'
 }
 
 publishing {
