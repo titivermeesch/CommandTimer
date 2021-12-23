@@ -1,3 +1,8 @@
+## 6.1.1
+
+- Compile against 1.18
+- fix lastExecuted task bug
+
 # 6.1
 
 - Add permissions commandtimer.manage, execute, activate/deactivate and toggle
