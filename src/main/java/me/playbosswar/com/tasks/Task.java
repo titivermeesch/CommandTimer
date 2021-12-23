@@ -164,6 +164,7 @@ public class Task {
 
     public void setActive(boolean active) {
         this.active = active;
+        this.lastExecuted = new Date();
         storeInstance();
     }
 
