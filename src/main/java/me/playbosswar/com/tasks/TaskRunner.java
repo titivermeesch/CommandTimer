@@ -55,7 +55,6 @@ public class TaskRunner implements Runnable {
                     Messages.sendDebugConsole("Task is using minecraft time");
 
                     World world = Bukkit.getWorld(taskTime.getWorld() == null ? "world" : taskTime.getWorld());
-                    assert world != null;
                     String minecraftTime = Tools.calculateWorldTime(world);
 
                     Messages.sendDebugConsole("Current minecraft time is " + minecraftTime);
