@@ -42,6 +42,10 @@ public class Tools {
      * Get world time
      */
     public static String calculateWorldTime(World w) {
+        if (w == null) {
+            return "00:00";
+        }
+
         long gameTime = w.getTime();
         long hours = gameTime / 1000 + 6;
         long minutes = (gameTime % 1000) * 60 / 1000;
@@ -69,7 +73,8 @@ public class Tools {
         int m = (seconds % 3600) / 60;
         int s = seconds % 60;
         String sh = (h > 0 ? h + " " + "h" : "");
-        String sm = (m < 10 && m > 0 && h > 0 ? "0" : "") + (m > 0 ? (h > 0 && s == 0 ? String.valueOf(m) : m + " " + "min") : "");
+        String sm = (m < 10 && m > 0 && h > 0 ? "0" : "") + (m > 0 ? (h > 0 && s == 0 ? String.valueOf(m) : m + " " + "min") :
+                "");
         String ss = (s == 0 && (h > 0 || m > 0) ? "" : (s < 10 && (h > 0 || m > 0) ? "0" : "") + s + " " + "sec");
         return sh + (h > 0 ? " " : "") + sm + (m > 0 ? " " : "") + ss;
     }

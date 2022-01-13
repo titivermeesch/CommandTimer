@@ -1,3 +1,12 @@
+## 6.1.2 - 13/01/2022
+
+- Fix bug when server has a lot of plugins and task is based on world time
+
+## 6.1.1
+
+- Compile against 1.18
+- fix lastExecuted task bug
+
 # 6.1
 
 - Add permissions commandtimer.manage, execute, activate/deactivate and toggle
