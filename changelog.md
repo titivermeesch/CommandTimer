@@ -1,3 +1,7 @@
+## 6.1.3 - 21/01/2022
+
+- Correctly save task executions when plugin restarts
+
 ## 6.1.2 - 13/01/2022
 
 - Fix bug when server has a lot of plugins and task is based on world time
