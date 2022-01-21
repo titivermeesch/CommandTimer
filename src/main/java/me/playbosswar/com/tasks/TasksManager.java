@@ -204,6 +204,7 @@ public class TasksManager {
     }
 
     public void disable() {
+        loadedTasks.forEach(Task::storeInstance);
         stopRunner = true;
         runnerThread.stop();
     }
