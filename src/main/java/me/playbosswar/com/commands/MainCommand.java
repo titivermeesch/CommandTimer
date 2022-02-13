@@ -1,12 +1,15 @@
 package me.playbosswar.com.commands;
 
 import me.playbosswar.com.CommandTimerPlugin;
+import me.playbosswar.com.enums.CommandExecutionMode;
 import me.playbosswar.com.gui.MainMenu;
 import me.playbosswar.com.permissions.PermissionUtils;
+import me.playbosswar.com.tasks.CommandIntervalExecutorRunnable;
 import me.playbosswar.com.tasks.Task;
 import me.playbosswar.com.tasks.TasksManager;
 import me.playbosswar.com.utils.Messages;
 import me.playbosswar.com.utils.Tools;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -24,7 +27,7 @@ public class MainCommand implements CommandExecutor {
         TasksManager tasksManager = CommandTimerPlugin.getInstance().getTasksManager();
 
         if (args.length == 0 && sender instanceof Player) {
-            if(!sender.hasPermission("commandtimer.manage")) {
+            if (!sender.hasPermission("commandtimer.manage")) {
                 Messages.sendNoPermission(sender);
                 return true;
             }
@@ -62,7 +65,7 @@ public class MainCommand implements CommandExecutor {
             }
 
             if (action.equalsIgnoreCase("activate")) {
-                if(!sender.hasPermission("commandtimer.activate") && !sender.hasPermission("commandtimer.toggle")) {
+                if (!sender.hasPermission("commandtimer.activate") && !sender.hasPermission("commandtimer.toggle")) {
                     Messages.sendNoPermission(sender);
                     return true;
                 }
@@ -73,7 +76,7 @@ public class MainCommand implements CommandExecutor {
             }
 
             if (action.equalsIgnoreCase("deactivate")) {
-                if(!sender.hasPermission("commandtimer.deactivate") && !sender.hasPermission("commandtimer.toggle")) {
+                if (!sender.hasPermission("commandtimer.deactivate") && !sender.hasPermission("commandtimer.toggle")) {
                     Messages.sendNoPermission(sender);
                     return true;
                 }
@@ -84,8 +87,19 @@ public class MainCommand implements CommandExecutor {
             }
 
             if (action.equalsIgnoreCase("execute")) {
-                if(!sender.hasPermission("commandtimer.execute")) {
+                if (!sender.hasPermission("commandtimer.execute")) {
                     Messages.sendNoPermission(sender);
+                    return true;
+                }
+
+                if (task.getCommandExecutionMode().equals(CommandExecutionMode.INTERVAL)) {
+                    Bukkit.getScheduler().runTaskTimer(
+                            CommandTimerPlugin.getPlugin(),
+                            new CommandIntervalExecutorRunnable(task),
+                            0,
+                            task.getCommandExecutionInterval().toSeconds() * 20L);
+
+                    Messages.sendMessage(sender, "§aTask is being executed. Not all commands may be executed at once.");
                     return true;
                 }
 

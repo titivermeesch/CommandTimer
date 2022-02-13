@@ -1,6 +1,7 @@
 package me.playbosswar.com.tasks;
 
 import me.playbosswar.com.CommandTimerPlugin;
+import me.playbosswar.com.enums.CommandExecutionMode;
 import me.playbosswar.com.utils.TaskTimeUtils;
 import me.playbosswar.com.utils.Tools;
 import me.playbosswar.com.utils.Messages;
@@ -88,7 +89,7 @@ public class TaskRunner implements Runnable {
                         LocalTime startRange = taskTime.getTime1();
                         LocalTime endRange = taskTime.getTime2();
 
-                        if(current.isBefore(endRange) && current.isAfter(startRange)) {
+                        if (current.isBefore(endRange) && current.isAfter(startRange)) {
                             boolean hasPassedInterval = TaskTimeUtils.hasPassedInterval(task);
                             if (hasPassedInterval) {
                                 blockTime = false;
@@ -119,6 +120,15 @@ public class TaskRunner implements Runnable {
 
         if (blockTime) {
             Messages.sendDebugConsole("Execution has been blocked because times do not correspond");
+            return;
+        }
+
+        if (task.getCommandExecutionMode().equals(CommandExecutionMode.INTERVAL)) {
+            Bukkit.getScheduler().runTaskTimer(
+                    CommandTimerPlugin.getPlugin(),
+                    new CommandIntervalExecutorRunnable(task),
+                    0,
+                    task.getCommandExecutionInterval().toSeconds() * 20L);
             return;
         }
 

@@ -9,13 +9,18 @@ import me.playbosswar.com.CommandTimerPlugin;
 import me.playbosswar.com.tasks.TaskInterval;
 import me.playbosswar.com.utils.Items;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
+
+import java.util.function.Consumer;
 
 public class EditIntervalMenu implements InventoryProvider {
     public final SmartInventory INVENTORY;
     private final TaskInterval interval;
+    private final Consumer<InventoryClickEvent> consumer;
 
-    public EditIntervalMenu(TaskInterval interval) {
+    public EditIntervalMenu(TaskInterval interval, Consumer<InventoryClickEvent> consumer) {
         this.interval = interval;
+        this.consumer = consumer;
         INVENTORY = SmartInventory.builder()
                 .id("task-interval")
                 .provider(this)
@@ -73,8 +78,7 @@ public class EditIntervalMenu implements InventoryProvider {
             refresh(player);
         }));
 
-        contents.set(4, 8, ClickableItem.of(Items.getBackItem(),
-                                            e -> new MainScheduleMenu(interval.getTask()).INVENTORY.open(player)));
+        contents.set(4, 8, ClickableItem.of(Items.getBackItem(), consumer));
 
     }
 
@@ -83,5 +87,5 @@ public class EditIntervalMenu implements InventoryProvider {
 
     }
 
-    private void refresh(Player player) { this.INVENTORY.open(player); }
+    private void refresh(Player player) {this.INVENTORY.open(player);}
 }
