@@ -26,6 +26,7 @@ public class Task {
     private int lastExecutedCommandIndex = 0;
     private Date lastExecuted = new Date();
     private CommandExecutionMode commandExecutionMode = CommandExecutionMode.ALL;
+    private TaskInterval commandExecutionInterval = new TaskInterval(this, 0, 0, 0, 1);
     private boolean active = false;
     private boolean resetExecutionsAfterRestart = false;
     private Condition condition;
@@ -122,7 +123,7 @@ public class Task {
     }
 
     public void toggleDay(String day) {
-        if(days.contains(day)) {
+        if (days.contains(day)) {
             days.remove(day);
         } else {
             days.add(day);
@@ -195,6 +196,12 @@ public class Task {
         }
 
         if (commandExecutionMode.equals(CommandExecutionMode.RANDOM)) {
+            commandExecutionMode = CommandExecutionMode.INTERVAL;
+            storeInstance();
+            return;
+        }
+
+        if (commandExecutionMode.equals(CommandExecutionMode.INTERVAL)) {
             commandExecutionMode = CommandExecutionMode.ALL;
             storeInstance();
         }
@@ -228,6 +235,14 @@ public class Task {
 
     public void setCondition(Condition condition) {
         this.condition = condition;
+    }
+
+    public TaskInterval getCommandExecutionInterval() {
+        return commandExecutionInterval;
+    }
+
+    public void setCommandExecutionInterval(TaskInterval commandExecutionInterval) {
+        this.commandExecutionInterval = commandExecutionInterval;
     }
 
     public void storeInstance() {

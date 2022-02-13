@@ -13,4 +13,8 @@ public enum CommandExecutionMode {
      * Commands are executed one by one on each task in random order
      */
     RANDOM,
+    /**
+     * Commands are executed in order with a specific interval
+     */
+    INTERVAL,
 }

@@ -7,8 +7,10 @@ import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
 import fr.minuskube.inv.content.Pagination;
 import me.playbosswar.com.CommandTimerPlugin;
+import me.playbosswar.com.enums.CommandExecutionMode;
 import me.playbosswar.com.gui.HorizontalIteratorWithBorder;
 import me.playbosswar.com.gui.tasks.EditTaskMenu;
+import me.playbosswar.com.gui.tasks.scheduler.EditIntervalMenu;
 import me.playbosswar.com.tasks.Task;
 import me.playbosswar.com.tasks.TaskCommand;
 import me.playbosswar.com.enums.Gender;
@@ -71,12 +73,26 @@ public class AllCommandsMenu implements InventoryProvider {
                 "§7  - §eRANDOM: §7Same as above, but will pick a random",
                 "§7    command at each execution.",
                 "",
-                "§7Current mode: §e" + task.getCommandExecutionMode().toString()
+                "§7  - §eINTERVAL: §7Execute each command in order with",
+                "§7    an interval in between.",
+                "§7    See ORDERED for more information",
+                "",
+                "§7Current mode: §e" + task.getCommandExecutionMode().toString(),
+                task.getCommandExecutionMode().equals(CommandExecutionMode.INTERVAL) ?
+                        "§7Current interval: §e" + task.getCommandExecutionInterval().toString() : "",
+                "",
+                "§aLeft-click to switch",
+                task.getCommandExecutionMode().equals(CommandExecutionMode.INTERVAL) ? "§aRight-click to change interval" : ""
         };
         ItemStack selectModeItem = Items.generateItem("§bExecution mode", XMaterial.DIAMOND_SHOVEL, selectModeLore);
         ClickableItem clickableSelectModeItem = ClickableItem.of(selectModeItem, e -> {
-            task.switchCommandExecutionMode();
-            this.INVENTORY.open(player);
+            if (e.getClick().equals(ClickType.LEFT)) {
+                task.switchCommandExecutionMode();
+                this.INVENTORY.open(player);
+                return;
+            }
+
+            new EditIntervalMenu(task.getCommandExecutionInterval(), e2 -> new AllCommandsMenu(task).INVENTORY.open(player)).INVENTORY.open(player);
         });
         contents.set(0, 8, clickableSelectModeItem);
     }

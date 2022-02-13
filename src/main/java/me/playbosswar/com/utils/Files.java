@@ -1,11 +1,6 @@
 package me.playbosswar.com.utils;
 
 import me.playbosswar.com.CommandTimerPlugin;
-import me.playbosswar.com.api.ConditionRule;
-import me.playbosswar.com.api.NeededValue;
-import me.playbosswar.com.conditionsengine.ConditionCompare;
-import me.playbosswar.com.conditionsengine.ConditionEngineManager;
-import me.playbosswar.com.conditionsengine.ConditionParamField;
 import me.playbosswar.com.conditionsengine.validations.Condition;
 import me.playbosswar.com.conditionsengine.validations.ConditionType;
 import me.playbosswar.com.conditionsengine.validations.SimpleCondition;
@@ -20,9 +15,7 @@ import java.io.*;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 
@@ -56,44 +49,6 @@ public class Files {
         return pluginFolderPath + "/timers/" + name + ".json";
     }
 
-//    private static void setTypesOnConditionParams(SimpleCondition simpleCondition) {
-//        ConditionEngineManager conditionEngineManager = CommandTimerPlugin.getInstance().getConditionEngineManager();
-//        ConditionRule rule = conditionEngineManager.getRule(simpleCondition.getConditionGroup(), simpleCondition.getRule());
-//        ArrayList<ConditionParamField<?>> conditionParamFields = simpleCondition.getConditionParamFields();
-//
-//        if(rule == null) {
-//            return;
-//        }
-//
-//        if(conditionParamFields != null && conditionParamFields.size() > 0) {
-//            // Comes from extension
-//            ArrayList<NeededValue<?>> neededValues = rule.getNeededValues();
-//
-//            for(ConditionParamField<?> conditionParamField : conditionParamFields) {
-//                Optional<NeededValue<?>> optionalNeededValue =
-//                        neededValues.stream().filter(v -> v.getName().equals(conditionParamField.getName())).findFirst();
-//
-//                if (!optionalNeededValue.isPresent()) {
-//                    continue;
-//                }
-//
-//                NeededValue<?> neededValue = optionalNeededValue.get();
-//                if (neededValue.getType() == ConditionCompare.class) {
-//                    conditionParamField.setValue(ConditionCompare.valueOf((String) conditionParamField.getValue()));
-//                    continue;
-//                }
-//
-//                if (neededValue.getType() == Double.class) {
-//                    facts.put(conditionParamField.getName(), (Double) conditionParamField.getValue());
-//                }
-//
-//                if (neededValue.getType() == String.class) {
-//                    facts.put(conditionParamField.getName(), (String) conditionParamField.getValue());
-//                }
-//            }
-//        }
-//    }
-
     private static void setTaskOnConditions(Task task, List<Condition> conditions) {
         conditions.forEach(condition -> {
             condition.setTask(task);
@@ -126,11 +81,12 @@ public class Files {
                     task.getCommands().forEach(command -> command.setTask(task));
                     task.getTimes().forEach(time -> time.setTask(task));
                     task.getInterval().setTask(task);
+                    task.getCommandExecutionInterval().setTask(task);
                     Condition condition = task.getCondition();
                     condition.setTask(task);
 
                     SimpleCondition simpleCondition = condition.getSimpleCondition();
-                    if(simpleCondition != null) {
+                    if (simpleCondition != null) {
                         simpleCondition.setTask(task);
                     }
 

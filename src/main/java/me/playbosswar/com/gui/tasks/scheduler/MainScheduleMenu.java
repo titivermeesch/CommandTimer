@@ -40,8 +40,11 @@ public class MainScheduleMenu implements InventoryProvider {
                 "§7Current: §e" + task.getInterval().toString()
         };
         ItemStack intervalItem = Items.generateItem("§bInterval", XMaterial.CLOCK, intervalItemLore);
-        ClickableItem clickableSecondsItem = ClickableItem.of(intervalItem,
-                                                              e -> new EditIntervalMenu(task.getInterval()).INVENTORY.open(player));
+        ClickableItem clickableSecondsItem = ClickableItem.of(
+                intervalItem,
+                e -> new EditIntervalMenu(
+                        task.getInterval(),
+                        e2 -> new MainScheduleMenu(task).INVENTORY.open(player)).INVENTORY.open(player));
         contents.set(1, 1, clickableSecondsItem);
 
         String[] hoursLore = new String[]{ "",
