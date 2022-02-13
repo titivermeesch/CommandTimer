@@ -30,7 +30,7 @@ public class TaskInterval {
     }
 
     public void decrementDays() {
-        if(days == 0) {
+        if (days == 0) {
             return;
         }
 
@@ -53,7 +53,7 @@ public class TaskInterval {
     }
 
     public void decrementHours() {
-        if(hours == 0) {
+        if (hours == 0) {
             return;
         }
 
@@ -76,7 +76,7 @@ public class TaskInterval {
     }
 
     public void decrementMinutes() {
-        if(minutes == 0) {
+        if (minutes == 0) {
             return;
         }
 
@@ -99,7 +99,7 @@ public class TaskInterval {
     }
 
     public void decrementSeconds() {
-        if(seconds == 0) {
+        if (seconds == 0) {
             return;
         }
 
@@ -116,28 +116,29 @@ public class TaskInterval {
     }
 
     public int toSeconds() {
+        int days = this.days * 86400;
         int hours = this.hours * 3600;
         int minutes = this.minutes * 60;
 
-        return hours + minutes + seconds;
+        return days + hours + minutes + seconds;
     }
 
     public String toString() {
         String s = "";
 
-        if(days > 0) {
+        if (days > 0) {
             s += days + " days ";
         }
 
-        if(hours > 0) {
+        if (hours > 0) {
             s += hours + " hours ";
         }
 
-        if(minutes > 0) {
+        if (minutes > 0) {
             s += minutes + " minutes ";
         }
 
-        if(seconds > 0) {
+        if (seconds > 0) {
             s += seconds + " seconds ";
         }
 
