@@ -1,3 +1,8 @@
+## 6.2 - 12/02/2022
+
+- Take into account day interval when calculating when command should be executed
+- Add new command execution mode: INTERVAL
+
 ## 6.1.3 - 21/01/2022
 
 - Correctly save task executions when plugin restarts
