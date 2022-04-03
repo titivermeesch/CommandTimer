@@ -9,7 +9,7 @@ java {
 }
 
 group = 'me.playbosswar.com'
-version = '6.2'
+version = '6.2.1'
 description = 'CommandTimer'
 
 repositories {
@@ -27,28 +27,33 @@ repositories {
     maven {
         url = 'https://repo.codemc.io/repository/maven-snapshots/'
     }
+
+//    maven {
+//        url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
+//    }
 }
 
 shadowJar {
     dependencies {
-        include(dependency('net.wesjd:anvilgui:1.5.3-SNAPSHOT'))
+        include(dependency('net.wesjd:anvilgui:1.5.3-20220302.153253-5'))
         include(dependency('fr.minuskube.inv:smart-invs:1.2.7'))
-        include(dependency('com.github.cryptomorin:XSeries:8.5.0.1'))
+        include(dependency('com.github.cryptomorin:XSeries:8.6.2'))
         include(dependency('joda-time:joda-time:2.10.13'))
         include(dependency('org.jeasy:easy-rules-core:4.1.0'))
     }
 }
 
 dependencies {
-    implementation 'com.github.cryptomorin:XSeries:8.5.0.1'
+    implementation 'com.github.cryptomorin:XSeries:8.6.2'
     implementation 'fr.minuskube.inv:smart-invs:1.2.7'
-    implementation 'net.wesjd:anvilgui:1.5.3-SNAPSHOT'
+    implementation 'net.wesjd:anvilgui:1.5.3-20220302.153253-5'
     implementation 'joda-time:joda-time:2.10.13'
     implementation 'org.jeasy:easy-rules-core:4.1.0'
     implementation 'com.googlecode.json-simple:json-simple:1.1.1'
-    compileOnly 'io.papermc.paper:paper-api:1.18.1-R0.1-SNAPSHOT'
+    compileOnly 'io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT'
+//    compileOnly 'org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT'
     compileOnly 'me.clip:placeholderapi:2.10.9'
-    compileOnly 'org.jetbrains:annotations:22.0.0'
+    compileOnly 'org.jetbrains:annotations:23.0.0'
 }
 
 publishing {
