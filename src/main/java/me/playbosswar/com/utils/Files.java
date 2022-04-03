@@ -5,6 +5,7 @@ import me.playbosswar.com.conditionsengine.validations.Condition;
 import me.playbosswar.com.conditionsengine.validations.ConditionType;
 import me.playbosswar.com.conditionsengine.validations.SimpleCondition;
 import me.playbosswar.com.tasks.Task;
+import me.playbosswar.com.tasks.TaskInterval;
 import me.playbosswar.com.utils.gson.GsonConverter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -60,6 +61,25 @@ public class Files {
         });
     }
 
+    private static void healTask(Task task) {
+        TaskInterval defaultInterval = new TaskInterval(task, 0, 0, 0, 5);
+        if(task.getCommands() == null) {
+            task.setCommands(new ArrayList<>());
+        }
+
+        if(task.getInterval() == null) {
+            task.setInterval(defaultInterval);
+        }
+
+        if(task.getTimes() == null) {
+            task.setTimes(new ArrayList<>());
+        }
+
+        if(task.getCommandExecutionInterval() == null) {
+            task.setCommandExecutionInterval(defaultInterval);
+        }
+    }
+
     public static List<Task> deserializeJsonFilesIntoCommandTimers() {
         File dir = new File(pluginFolderPath + "/timers");
         File[] directoryListing = dir.listFiles();
@@ -77,6 +97,7 @@ public class Files {
 
                     GsonConverter gson = new GsonConverter();
                     Task task = gson.fromJson(jsonParser.parse(fr).toString(), Task.class);
+                    healTask(task);
                     // We relink the tasks to commands and times because we lose this structure during serializing
                     task.getCommands().forEach(command -> command.setTask(task));
                     task.getTimes().forEach(time -> time.setTask(task));
