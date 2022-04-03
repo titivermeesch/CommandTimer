@@ -1,3 +1,5 @@
+## 6.2.2 - 03/04/2022
+
 ## 6.2 - 12/02/2022
 
 - Take into account day interval when calculating when command should be executed
