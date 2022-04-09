@@ -3,4 +3,5 @@ target
 build
 /.gradle/
 /.idea/modules/commandtimer.main.iml
+/.idea/modules/commandtimer.test.iml
 /.idea/dictionaries/triver.xml
