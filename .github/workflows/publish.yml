@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - master
-      - v6.2.2
 jobs:
   Build-Java-8:
     runs-on: ubuntu-latest
@@ -17,28 +16,27 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           path: build/libs/commandtimer-java8.jar
-#  Build-Java-17:
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions/checkout@v3
-#      - uses: actions/setup-java@v3
-#        with:
-#          distribution: 'adopt'
-#          java-version: '17'
-#      - run: gradle :shadowJar
-#      - uses: actions/upload-artifact@v2
-#        with:
-#          path: build/libs/commandtimer-java17.jar
+  Build-Java-17:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'adopt'
+          java-version: '17'
+      - run: gradle :shadowJar
+      - uses: actions/upload-artifact@v2
+        with:
+          path: build/libs/commandtimer-java17.jar
   Release:
     needs:
       - Build-Java-8
-#      - Build-Java-17
+      - Build-Java-17
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/download-artifact@v3
       - run: ls -la
-#      - run: gh release create ${{ env.GITHUB_HEAD_REF }} *.jar
-      - run: gh release create v6.2.2 artifact/*.jar
+      - run: gh release create ${{ env.GITHUB_HEAD_REF }} -t ${{ env.GITHUB_HEAD_REF }} *.jar
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
