@@ -40,3 +40,5 @@ jobs:
       - uses: actions/download-artifact@v3
       - run: ls
       - run: gh release create ${{ env.GITHUB_HEAD_REF }} *.jar
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
