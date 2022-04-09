@@ -31,4 +31,4 @@ jobs:
       - Build-Java-17
     runs-on: ubuntu-latest
     steps:
-      - run: ls build/libs/
+      - run: ls ./build/libs/
