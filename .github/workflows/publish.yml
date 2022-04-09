@@ -38,10 +38,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/download-artifact@v3
       - run: ls -la
-      - run: ls artifact
-      - run: cp artifact artifact.zip
-      - run: unzip artifact.zip
 #      - run: gh release create ${{ env.GITHUB_HEAD_REF }} *.jar
-      - run: gh release create v6.2.2 *.jar
+      - run: gh release create v6.2.2 artifact/*.jar
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
