@@ -7,6 +7,7 @@ import me.playbosswar.com.conditionsengine.validations.SimpleCondition;
 import me.playbosswar.com.tasks.Task;
 import me.playbosswar.com.tasks.TaskInterval;
 import me.playbosswar.com.utils.gson.GsonConverter;
+import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.simple.parser.JSONParser;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
+import java.util.logging.Level;
 
 public class Files {
     static String pluginFolderPath = CommandTimerPlugin.getPlugin().getDataFolder().getPath();
@@ -41,10 +43,6 @@ public class Files {
 
     /**
      * Returns timer json file
-     *
-     * @param name
-     *
-     * @return
      */
     public static String getTaskFile(String name) {
         return pluginFolderPath + "/timers/" + name + ".json";
@@ -63,19 +61,19 @@ public class Files {
 
     private static void healTask(Task task) {
         TaskInterval defaultInterval = new TaskInterval(task, 0, 0, 0, 5);
-        if(task.getCommands() == null) {
+        if (task.getCommands() == null) {
             task.setCommands(new ArrayList<>());
         }
 
-        if(task.getInterval() == null) {
+        if (task.getInterval() == null) {
             task.setInterval(defaultInterval);
         }
 
-        if(task.getTimes() == null) {
+        if (task.getTimes() == null) {
             task.setTimes(new ArrayList<>());
         }
 
-        if(task.getCommandExecutionInterval() == null) {
+        if (task.getCommandExecutionInterval() == null) {
             task.setCommandExecutionInterval(defaultInterval);
         }
     }
@@ -93,36 +91,42 @@ public class Files {
                         continue;
                     }
 
-                    FileReader fr = new FileReader(file.getPath());
+                    try {
+                        System.out.println("Processing task " + file.getName());
+                        FileReader fr = new FileReader(file.getPath());
 
-                    GsonConverter gson = new GsonConverter();
-                    Task task = gson.fromJson(jsonParser.parse(fr).toString(), Task.class);
-                    healTask(task);
-                    // We relink the tasks to commands and times because we lose this structure during serializing
-                    task.getCommands().forEach(command -> command.setTask(task));
-                    task.getTimes().forEach(time -> time.setTask(task));
-                    task.getInterval().setTask(task);
-                    task.getCommandExecutionInterval().setTask(task);
-                    Condition condition = task.getCondition();
-                    condition.setTask(task);
+                        GsonConverter gson = new GsonConverter();
+                        Task task = gson.fromJson(jsonParser.parse(fr).toString(), Task.class);
+                        healTask(task);
+                        // We relink the tasks to commands and times because we lose this structure during serializing
+                        task.getCommands().forEach(command -> command.setTask(task));
+                        task.getTimes().forEach(time -> time.setTask(task));
+                        task.getInterval().setTask(task);
+                        task.getCommandExecutionInterval().setTask(task);
+                        Condition condition = task.getCondition();
+                        condition.setTask(task);
 
-                    SimpleCondition simpleCondition = condition.getSimpleCondition();
-                    if (simpleCondition != null) {
-                        simpleCondition.setTask(task);
+                        SimpleCondition simpleCondition = condition.getSimpleCondition();
+                        if (simpleCondition != null) {
+                            simpleCondition.setTask(task);
+                        }
+
+                        if (condition.getConditionType().equals(ConditionType.OR) || condition.getConditionType().equals(ConditionType.AND)) {
+                            setTaskOnConditions(task, condition.getConditions());
+                        }
+
+                        if (task.isResetExecutionsAfterRestart()) {
+                            task.setTimesExecuted(0);
+                        }
+
+                        tasks.add(task);
+                    } catch (ParseException e) {
+                        Bukkit.getLogger().log(Level.SEVERE, "Failed to process " + file.getName());
                     }
 
-                    if (condition.getConditionType().equals(ConditionType.OR) || condition.getConditionType().equals(ConditionType.AND)) {
-                        setTaskOnConditions(task, condition.getConditions());
-                    }
-
-                    if (task.isResetExecutionsAfterRestart()) {
-                        task.setTimesExecuted(0);
-                    }
-
-                    tasks.add(task);
                 }
             }
-        } catch (IOException | ParseException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -145,7 +149,7 @@ public class Files {
             JarEntry entry;
             while ((entry = stream.getNextJarEntry()) != null) {
                 final String name = entry.getName();
-                if (name.isEmpty() || !name.endsWith(".class")) {
+                if (!name.endsWith(".class")) {
                     continue;
                 }
 

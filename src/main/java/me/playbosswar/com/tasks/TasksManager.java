@@ -6,9 +6,11 @@ import me.playbosswar.com.enums.Gender;
 import me.playbosswar.com.hooks.PAPIHook;
 import me.playbosswar.com.utils.Files;
 import me.playbosswar.com.utils.Messages;
+import me.playbosswar.com.utils.StringEnhancer;
 import me.playbosswar.com.utils.Tools;
 import org.apache.commons.lang.RandomStringUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandException;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.Nullable;
@@ -73,7 +75,7 @@ public class TasksManager {
         this.runnerThread = thread;
     }
 
-    private void runConsolePerUserCommand(TaskCommand taskCommand) {
+    private void runConsolePerUserCommand(TaskCommand taskCommand) throws CommandException {
         String command = taskCommand.getCommand();
 
         for (Player p : Bukkit.getOnlinePlayers()) {
@@ -89,7 +91,7 @@ public class TasksManager {
         }
     }
 
-    private void runConsoleCommand(TaskCommand taskCommand) {
+    private void runConsoleCommand(TaskCommand taskCommand) throws CommandException {
         if (taskCommand.getTask().getCondition() != null) {
             boolean valid = TaskValidationHelpers.processCondition(taskCommand.getTask().getCondition(), null);
             if (!valid) {
@@ -114,7 +116,13 @@ public class TasksManager {
                 }
             }
 
-            p.performCommand(PAPIHook.parsePAPI(command, p));
+            String parsedCommand = PAPIHook.parsePAPI(command, p);
+            boolean executed = p.performCommand(parsedCommand);
+
+            if (!executed) {
+                String errorMessage = new StringEnhancer("Failed to execute command {command}").add("taskName", command).parse();
+                throw new CommandException(errorMessage);
+            }
         }
     }
 
