@@ -2,3 +2,5 @@ target
 .DS_Store
 build
 /.gradle/
+/.idea/modules/commandtimer.main.iml
+/.idea/dictionaries/triver.xml
