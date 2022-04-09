@@ -16,7 +16,6 @@ jobs:
       - run: gradle :shadowJar -b java8-build.gradle
       - uses: actions/upload-artifact@v2
         with:
-          name: java8
           path: build/libs/commandtimer-java8.jar
   Build-Java-17:
     runs-on: ubuntu-latest
@@ -29,7 +28,6 @@ jobs:
       - run: gradle :shadowJar
       - uses: actions/upload-artifact@v2
         with:
-          name: java17
           path: build/libs/commandtimer-java17.jar
   Release:
     needs:
@@ -39,6 +37,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/download-artifact@v3
+      - run: unzip artifact
       - run: ls
 #      - run: gh release create ${{ env.GITHUB_HEAD_REF }} *.jar
       - run: gh release create v6.2.2 *.jar
