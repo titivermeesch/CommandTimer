@@ -13,6 +13,5 @@ jobs:
         with:
           distribution: 'adopt'
           java-version: '8'
-      - run: ls
-      - run: java -version
       - run: gradle :shadowJar -b java8-build.gradle
+      - run: ls
