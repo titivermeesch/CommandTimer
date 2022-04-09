@@ -38,6 +38,7 @@ shadowJar {
         include(dependency('org.jeasy:easy-rules-core:4.1.0'))
         include(dependency('org.apache.commons:commons-text:1.9'))
     }
+    archiveFileName = "commandtimer-java17.jar"
 }
 
 dependencies {
