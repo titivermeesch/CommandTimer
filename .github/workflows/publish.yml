@@ -6,7 +6,9 @@ on:
       - v6.2.2
 jobs:
   Build-Java-8:
-    runs-on: jdk-8
+    runs-on: ubuntu-latest
+    container: jdk-8
     steps:
       - uses: actions/checkout@v3
       - run: ls
+      - run: java -version
