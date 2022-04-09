@@ -18,6 +18,9 @@ repositories {
         url = 'https://repo1.maven.org/maven2'
     }
     maven {
+        url = 'https://papermc.io/repo/repository/maven-public/'
+    }
+    maven {
         url = 'http://repo.extendedclip.com/content/repositories/placeholderapi/'
         allowInsecureProtocol = true
     }
