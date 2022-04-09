@@ -25,3 +25,10 @@ jobs:
           java-version: '17'
       - run: gradle :shadowJar
       - run: ls
+  Release:
+    needs:
+      - Build-Java-8
+      - Build-Java-17
+    runs-on: ubuntu-latest
+    steps:
+      - run: ls build/libs/
