@@ -1,3 +1,9 @@
+## 6.2.2 - 09/04/2022
+
+- Setup Github Actions for auto building plugin files
+- Add better error logging during parsing and command execution
+- Add auto healing support when to tasks coming from older versions
+
 ## 6.2 - 12/02/2022
 
 - Take into account day interval when calculating when command should be executed

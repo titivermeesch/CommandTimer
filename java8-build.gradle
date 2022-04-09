@@ -5,7 +5,7 @@ plugins {
 }
 
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+    toolchain.languageVersion.set(JavaLanguageVersion.of(8))
 }
 
 group = 'me.playbosswar.com'
@@ -27,6 +27,10 @@ repositories {
     maven {
         url = 'https://repo.codemc.io/repository/maven-snapshots/'
     }
+
+    maven {
+        url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
+    }
 }
 
 shadowJar {
@@ -38,7 +42,7 @@ shadowJar {
         include(dependency('org.jeasy:easy-rules-core:4.1.0'))
         include(dependency('org.apache.commons:commons-text:1.9'))
     }
-    archiveFileName = "commandtimer-java17.jar"
+    archiveFileName = "commandtimer-java8.jar"
 }
 
 dependencies {
@@ -49,7 +53,7 @@ dependencies {
     implementation 'org.jeasy:easy-rules-core:4.1.0'
     implementation 'com.googlecode.json-simple:json-simple:1.1.1'
     implementation 'org.apache.commons:commons-text:1.9'
-    compileOnly 'io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT'
+    compileOnly 'org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT'
     compileOnly 'me.clip:placeholderapi:2.10.9'
     compileOnly 'org.jetbrains:annotations:23.0.0'
 }
