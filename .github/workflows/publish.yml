@@ -14,11 +14,10 @@ jobs:
           distribution: 'adopt'
           java-version: '8'
       - run: gradle :shadowJar -b java8-build.gradle
-      - run: ls
       - uses: actions/upload-artifact@v2
         with:
           name: java8
-          path: builds/libs/commandtimer-java8.jar
+          path: build/libs/commandtimer-java8.jar
   Build-Java-17:
     runs-on: ubuntu-latest
     steps:
@@ -28,11 +27,10 @@ jobs:
           distribution: 'adopt'
           java-version: '17'
       - run: gradle :shadowJar
-      - run: ls
       - uses: actions/upload-artifact@v2
         with:
           name: java17
-          path: builds/libs/commandtimer-java17.jar
+          path: build/libs/commandtimer-java17.jar
   Release:
     needs:
       - Build-Java-8
