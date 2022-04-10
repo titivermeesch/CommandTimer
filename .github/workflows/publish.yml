@@ -38,7 +38,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/download-artifact@v3
+      - run: echo "PLUGIN_VERSION=$(./scripts/get-version.sh)" >> $GITHUB_ENV
       - run: ls -la
-      - run: gh release create ${{ github.head_ref }} -t ${{ github.head_ref }} *.jar
+      - run: gh release create ${{ env.PLUGIN_VERSION }} -t ${{ env.PLUGIN_VERSION }} *.jar
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
