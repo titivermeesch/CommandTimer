@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - master
-      - v6.2.2
 jobs:
   Build-Java-8:
     runs-on: ubuntu-latest
@@ -39,7 +38,6 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/download-artifact@v3
       - run: echo "PLUGIN_VERSION=$(./scripts/get-version.sh)" >> $GITHUB_ENV
-      - run: ls -la
       - run: gh release create ${{ env.PLUGIN_VERSION }} -t ${{ env.PLUGIN_VERSION }} artifact/*.jar
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
