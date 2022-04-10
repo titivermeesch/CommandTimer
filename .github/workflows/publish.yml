@@ -3,10 +3,12 @@ on:
   push:
     branches:
       - master
+      - v6.2.2
 jobs:
   Build-Java-8:
     runs-on: ubuntu-latest
     steps:
+      - run: echo '${{ toJSON(github) }}'
       - uses: actions/checkout@v3
       - uses: actions/setup-java@v3
         with:
