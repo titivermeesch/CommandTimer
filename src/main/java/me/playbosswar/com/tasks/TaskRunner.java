@@ -11,6 +11,7 @@ import org.bukkit.World;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -134,11 +135,16 @@ public class TaskRunner implements Runnable {
 
         // If it remains -1, that means that all commands should be executed
         int selectedCommandIndex = tasksManager.getNextTaskCommandIndex(task);
+        task.setLastExecuted(new Date());
+        task.setTimesExecuted(task.getTimesExecuted() + 1);
 
         if (selectedCommandIndex == -1) {
+            task.setLastExecutedCommandIndex(0);
             task.getCommands().forEach(tasksManager::addTaskCommandExecution);
         } else {
-            tasksManager.addTaskCommandExecution(task.getCommands().get(selectedCommandIndex));
+            TaskCommand taskCommand = task.getCommands().get(selectedCommandIndex);
+            task.setLastExecutedCommandIndex(task.getCommands().indexOf(taskCommand));
+            tasksManager.addTaskCommandExecution(taskCommand);
         }
     }
 

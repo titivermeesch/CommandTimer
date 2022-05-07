@@ -15,10 +15,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,19 +48,12 @@ public class TasksManager {
     }
 
     public void removeTask(Task task) throws IOException {
-        File file = new File(Files.getTaskFile(task.getName()));
-
-        if (!file.exists()) {
-            return;
+        try {
+            java.nio.file.Files.delete(Path.of(Files.getTaskFile(task.getName())));
+            loadedTasks.remove(task);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-
-        boolean deleted = file.delete();
-
-        if (!deleted) {
-            throw new IOException();
-        }
-
-        loadedTasks.remove(task);
     }
 
     public List<Task> getLoadedTasks() {
@@ -167,7 +159,6 @@ public class TasksManager {
                 final List<TaskCommand> tasksToRemove = new ArrayList<>(scheduledExecutions);
 
                 tasksToRemove.forEach(taskCommand -> {
-                    Task task = taskCommand.getTask();
                     Gender gender = taskCommand.getGender();
 
                     // Choose correct gender executor
@@ -181,9 +172,6 @@ public class TasksManager {
                         runConsolePerUserCommand(taskCommand);
                     }
 
-                    task.setLastExecuted(new Date());
-                    task.setTimesExecuted(task.getTimesExecuted() + 1);
-                    task.setLastExecutedCommandIndex(task.getCommands().indexOf(taskCommand));
                     scheduledExecutions.remove(taskCommand);
                 });
 

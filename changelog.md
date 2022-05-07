@@ -1,3 +1,8 @@
+## 6.2.3 - 07/05/2022
+
+- Enhance error logging when file deletion fails
+- Update the way command runners work to prevent double command executions
+
 ## 6.2.2 - 09/04/2022
 
 - Setup Github Actions for auto building plugin files
