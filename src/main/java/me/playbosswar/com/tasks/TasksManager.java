@@ -17,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -49,7 +50,7 @@ public class TasksManager {
 
     public void removeTask(Task task) throws IOException {
         try {
-            java.nio.file.Files.delete(Path.of(Files.getTaskFile(task.getName())));
+            java.nio.file.Files.delete(Paths.get(Files.getTaskFile(task.getName())));
             loadedTasks.remove(task);
         } catch (IOException e) {
             e.printStackTrace();
