@@ -1,3 +1,7 @@
+## 6.2.4 - 22/06/2022
+
+- Support Spigot 1.19
+
 ## 6.2.3 - 07/05/2022
 
 - Enhance error logging when file deletion fails
