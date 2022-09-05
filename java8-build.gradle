@@ -9,7 +9,7 @@ java {
 }
 
 group = 'me.playbosswar.com'
-version = '6.2.2'
+version = '6.3'
 description = 'CommandTimer'
 
 repositories {
@@ -35,7 +35,6 @@ repositories {
 
 shadowJar {
     dependencies {
-        include(dependency('net.wesjd:anvilgui:1.5.3-20220609.032626-7'))
         include(dependency('fr.minuskube.inv:smart-invs:1.2.7'))
         include(dependency('com.github.cryptomorin:XSeries:8.6.2'))
         include(dependency('joda-time:joda-time:2.10.13'))
@@ -48,7 +47,6 @@ shadowJar {
 dependencies {
     implementation 'com.github.cryptomorin:XSeries:8.6.2'
     implementation 'fr.minuskube.inv:smart-invs:1.2.7'
-    implementation 'net.wesjd:anvilgui:1.5.3-20220609.032626-7'
     implementation 'joda-time:joda-time:2.10.13'
     implementation 'org.jeasy:easy-rules-core:4.1.0'
     implementation 'com.googlecode.json-simple:json-simple:1.1.1'
@@ -63,7 +61,7 @@ publishing {
         maven(MavenPublication) {
             groupId = 'me.playbosswar.com'
             artifactId = 'commandtimer'
-            version = '6.0'
+            version = '6.3'
 
             from components.java
         }

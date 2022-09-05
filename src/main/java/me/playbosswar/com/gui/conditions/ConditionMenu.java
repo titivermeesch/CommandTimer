@@ -14,10 +14,10 @@ import me.playbosswar.com.conditionsengine.validations.Condition;
 import me.playbosswar.com.conditionsengine.validations.ConditionType;
 import me.playbosswar.com.conditionsengine.validations.SimpleCondition;
 import me.playbosswar.com.gui.conditions.inputs.ConditionCompareItem;
-import me.playbosswar.com.gui.conditions.inputs.DoubleInputMenu;
-import me.playbosswar.com.gui.conditions.inputs.StringInputMenu;
+import me.playbosswar.com.gui.tasks.general.TextInputConversationPrompt;
 import me.playbosswar.com.utils.Callback;
 import me.playbosswar.com.utils.Items;
+import org.bukkit.conversations.ConversationFactory;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -44,12 +44,7 @@ public class ConditionMenu implements InventoryProvider {
 
     @Override
     public void init(Player player, InventoryContents contents) {
-        final Callback internalCallback = new Callback() {
-            @Override
-            public <T> void execute(T data) {
-                INVENTORY.open(player);
-            }
-        };
+        final Callback internalCallback = (Callback<String>) data -> INVENTORY.open(player);
 
         contents.fillBorders(ClickableItem.empty(XMaterial.BLUE_STAINED_GLASS_PANE.parseItem()));
 
@@ -71,7 +66,7 @@ public class ConditionMenu implements InventoryProvider {
         contents.set(2, 8, ClickableItem.of(Items.getBackItem(), e -> onClose.execute(null)));
 
         if (condition.getConditionType().equals(ConditionType.AND) || condition.getConditionType().equals(ConditionType.OR)) {
-            String[] conditionPartsLore = new String[]{ "",
+            String[] conditionPartsLore = new String[]{"",
                     "§7Condition parts allow you to create complex",
                     "§7conditions to fit your needs. They can",
                     "§7also be nested to give you endless",
@@ -82,14 +77,14 @@ public class ConditionMenu implements InventoryProvider {
             };
             ItemStack conditionsItem = Items.generateItem("§bCondition parts", XMaterial.CRAFTING_TABLE, conditionPartsLore);
             ClickableItem clickableConditions = ClickableItem.of(conditionsItem,
-                                                                 e -> new ConditionsMenu(condition, internalCallback).INVENTORY.open(player));
+                    e -> new ConditionsMenu(condition, internalCallback).INVENTORY.open(player));
             contents.set(1, 2, clickableConditions);
         } else {
             SimpleCondition simpleCondition = condition.getSimpleCondition();
 
             String conditionGroup = simpleCondition.getConditionGroup();
             String rule = simpleCondition.getRule();
-            String[] simpleConditionLore = new String[]{ "",
+            String[] simpleConditionLore = new String[]{"",
                     "§7A simple condition is a basic comparison between",
                     "§72 values. For example §oplayer is OP -> true/false",
                     "",
@@ -98,11 +93,11 @@ public class ConditionMenu implements InventoryProvider {
                     "§7 - Rule: " + (rule == null ? "§eNot Set" : "§e" + rule),
             };
             ItemStack simpleConditionItem = Items.generateItem("§bConfigure condition", XMaterial.CRAFTING_TABLE,
-                                                               simpleConditionLore);
+                    simpleConditionLore);
             ClickableItem clickableSimpleCondition = ClickableItem.of(simpleConditionItem,
-                                                                      e -> new SimpleConditionMenu(
-                                                                              simpleCondition,
-                                                                              internalCallback).INVENTORY.open(player));
+                    e -> new SimpleConditionMenu(
+                            simpleCondition,
+                            internalCallback).INVENTORY.open(player));
             contents.set(1, 2, clickableSimpleCondition);
 
             ArrayList<ConditionParamField<?>> conditionParamFields = simpleCondition.getConditionParamFields();
@@ -142,28 +137,35 @@ public class ConditionMenu implements InventoryProvider {
                     }
 
                     // From this point, we should treat native types only
-                    String[] lore = new String[]{ "",
+                    String[] lore = new String[]{"",
                             "§7Current value: §e" + conditionParamField.getValue(),
                             "",
-                            "§aLeft-Click to edit" };
+                            "§aLeft-Click to edit"};
                     ItemStack item = Items.generateItem("§7Set value: §e" + neededValue.getLabel(), XMaterial.PAPER, lore);
                     ClickableItem clickableItem = ClickableItem.of(item, e -> {
                         if (neededValue.getType() == Double.class) {
-                            DoubleInputMenu doubleInputMenu = new DoubleInputMenu(
-                                    (ConditionParamField<Double>) conditionParamField,
-                                    condition,
-                                    internalCallback);
-                            doubleInputMenu.INVENTORY.open(player);
+                            ConversationFactory conversationFactory = new ConversationFactory(CommandTimerPlugin.getPlugin())
+                                    .withModality(true)
+                                    .withFirstPrompt(new TextInputConversationPrompt<Double>("Enter your value:", text -> {
+                                        ((ConditionParamField<Double>) conditionParamField).setValue(text);
+                                        condition.getTask().storeInstance();
+                                        new ConditionMenu(condition, onClose).INVENTORY.open(player);
+                                    }));
+                            conversationFactory.buildConversation(player).begin();
+                            player.closeInventory();
                             return;
                         }
 
                         if (neededValue.getType() == String.class) {
-                            StringInputMenu stringInputMenu =
-                                    new StringInputMenu(
-                                            (ConditionParamField<String>) conditionParamField,
-                                            condition,
-                                            internalCallback);
-                            stringInputMenu.INVENTORY.open(player);
+                            ConversationFactory conversationFactory = new ConversationFactory(CommandTimerPlugin.getPlugin())
+                                    .withModality(true)
+                                    .withFirstPrompt(new TextInputConversationPrompt<String>("Enter your value:", text -> {
+                                        ((ConditionParamField<String>) conditionParamField).setValue(text);
+                                        condition.getTask().storeInstance();
+                                        new ConditionMenu(condition, onClose).INVENTORY.open(player);
+                                    }));
+                            conversationFactory.buildConversation(player).begin();
+                            player.closeInventory();
                         }
                     });
 
