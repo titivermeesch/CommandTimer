@@ -78,13 +78,9 @@ public class PAPIPlaceholders extends PlaceholderExpansion {
         }
 
         if (commandField.equalsIgnoreCase("nextExecution")) {
-            boolean isTimeRelated = !task.getTimes().isEmpty();
-            LocalTime nowTime = LocalDateTime.ofInstant(new Date().toInstant(),
-                                                        ZoneId.systemDefault()).toLocalTime();
-
-            if(isTimeRelated) {
-                TaskTime taskTime = TaskTimeUtils.getSoonestTaskTime(task.getTimes());
-                long seconds = ChronoUnit.SECONDS.between(nowTime, taskTime.getTime1());
+            if(!task.getTimes().isEmpty()) {
+                Date date = TaskTimeUtils.getSoonestTaskTime(task.getTimes());
+                long seconds = (date.getTime() - new Date().getTime()) / 1000;
 
                 if(seconds < 0) {
                     // Amount of seconds in a day
@@ -101,13 +97,9 @@ public class PAPIPlaceholders extends PlaceholderExpansion {
         }
 
         if (commandField.equalsIgnoreCase("nextExecutionFormat")) {
-            boolean isTimeRelated = !task.getTimes().isEmpty();
-            LocalTime nowTime = LocalDateTime.ofInstant(new Date().toInstant(),
-                                                        ZoneId.systemDefault()).toLocalTime();
-
-            if(isTimeRelated) {
-                TaskTime taskTime = TaskTimeUtils.getSoonestTaskTime(task.getTimes());
-                long seconds = ChronoUnit.SECONDS.between(nowTime, taskTime.getTime1());
+            if(!task.getTimes().isEmpty()) {
+                Date date = TaskTimeUtils.getSoonestTaskTime(task.getTimes());
+                long seconds = (date.getTime() - new Date().getTime()) / 1000;
 
                 if(seconds < 0) {
                     // Amount of seconds in a day
