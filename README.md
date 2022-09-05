@@ -3,7 +3,6 @@
 ![bStats Players](https://img.shields.io/bstats/players/9657?style=for-the-badge&color=green)
 ![bStats Servers](https://img.shields.io/bstats/servers/9657?style=for-the-badge)
 ![Spiget Version](https://img.shields.io/spiget/version/24141?label=published%20version&style=for-the-badge)
-![Spiget Download Size](https://img.shields.io/spiget/download-size/24141?style=for-the-badge)
 
 CommandTimer is a Spigot plugin that allows you to schedule different commands at specific interval/times depending on
 various conditions.
@@ -34,6 +33,10 @@ various conditions.
 
 Extensions come in form of a jar file. These extensions will hook into the CommandTimer API and will bring more
 conditions to use in your timers.
+
+## Stats
+
+![stats](https://bstats.org/signatures/bukkit/commandtimer.svg)
 
 ## For Developers
 
