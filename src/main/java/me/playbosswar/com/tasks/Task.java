@@ -66,6 +66,9 @@ public class Task {
     }
 
     public int addCommand(TaskCommand command) {
+        if(command.getCommand().startsWith("/")) {
+            command.setCommand(command.getCommand().substring(1));
+        }
         this.commands.add(command);
         storeInstance();
         return commands.indexOf(command);

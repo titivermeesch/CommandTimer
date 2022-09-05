@@ -31,7 +31,6 @@ repositories {
 
 shadowJar {
     dependencies {
-        include(dependency('net.wesjd:anvilgui:1.5.3-20220609.032626-7'))
         include(dependency('fr.minuskube.inv:smart-invs:1.2.7'))
         include(dependency('com.github.cryptomorin:XSeries:8.6.2'))
         include(dependency('joda-time:joda-time:2.10.13'))
@@ -44,12 +43,11 @@ shadowJar {
 dependencies {
     implementation 'com.github.cryptomorin:XSeries:8.6.2'
     implementation 'fr.minuskube.inv:smart-invs:1.2.7'
-    implementation 'net.wesjd:anvilgui:1.5.3-20220609.032626-7'
     implementation 'joda-time:joda-time:2.10.13'
     implementation 'org.jeasy:easy-rules-core:4.1.0'
     implementation 'com.googlecode.json-simple:json-simple:1.1.1'
     implementation 'org.apache.commons:commons-text:1.9'
-    compileOnly 'io.papermc.paper:paper-api:1.19-R0.1-SNAPSHOT'
+    compileOnly 'io.papermc.paper:paper-api:1.19.2-R0.1-SNAPSHOT'
     compileOnly 'me.clip:placeholderapi:2.10.9'
     compileOnly 'org.jetbrains:annotations:23.0.0'
 }

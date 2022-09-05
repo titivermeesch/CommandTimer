@@ -39,12 +39,7 @@ public class ConditionsMenu implements InventoryProvider {
 
     @Override
     public void init(Player player, InventoryContents contents) {
-        final Callback internalCallback = new Callback() {
-            @Override
-            public <T> void execute(T data) {
-                INVENTORY.open(player);
-            }
-        };
+        final Callback internalCallback = (Callback<String>) data -> INVENTORY.open(player);
 
         contents.fillBorders(ClickableItem.empty(XMaterial.BLUE_STAINED_GLASS_PANE.parseItem()));
         Pagination pagination = contents.pagination();
@@ -74,12 +69,7 @@ public class ConditionsMenu implements InventoryProvider {
     }
 
     private ClickableItem[] getAllConditions(Player p) {
-        final Callback internalCallback = new Callback() {
-            @Override
-            public <T> void execute(T data) {
-                INVENTORY.open(p);
-            }
-        };
+        final Callback internalCallback = (Callback<String>) data -> INVENTORY.open(p);
         List<Condition> conditions = this.condition.getConditions();
 
         if (conditions == null) {

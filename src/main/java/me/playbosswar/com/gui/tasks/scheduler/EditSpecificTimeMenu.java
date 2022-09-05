@@ -89,13 +89,10 @@ public class EditSpecificTimeMenu implements InventoryProvider {
                     "§7Current world: §e" + (taskTime.getWorld() == null ? "Not set" : taskTime.getWorld())
             };
             ItemStack worldItem = Items.generateItem("§bUsed world for Minecraft time", XMaterial.MAP, worldLore);
-            Callback worldCallback = new Callback() {
-                @Override
-                public <T> void execute(T data) {
-                    List<String> worlds = (List<String>) data;
-                    taskTime.setWorld(worlds.get(0));
-                    new EditSpecificTimeMenu(taskTime).INVENTORY.open(player);
-                }
+            Callback worldCallback = (Callback<List<String>>) data -> {
+                List<String> worlds = data;
+                taskTime.setWorld(worlds.get(0));
+                new EditSpecificTimeMenu(taskTime).INVENTORY.open(player);
             };
 
             ArrayList<String> worlds = new ArrayList<>();

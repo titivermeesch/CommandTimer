@@ -8,11 +8,13 @@ import fr.minuskube.inv.content.InventoryProvider;
 import me.playbosswar.com.CommandTimerPlugin;
 import me.playbosswar.com.gui.tasks.commands.AllCommandsMenu;
 import me.playbosswar.com.gui.tasks.general.GeneralLimitsMenu;
+import me.playbosswar.com.gui.tasks.general.TextInputConversationPrompt;
 import me.playbosswar.com.gui.tasks.scheduler.MainScheduleMenu;
 import me.playbosswar.com.gui.conditions.ConditionMenu;
 import me.playbosswar.com.tasks.Task;
 import me.playbosswar.com.utils.Callback;
 import me.playbosswar.com.utils.Items;
+import org.bukkit.conversations.ConversationFactory;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -34,11 +36,18 @@ public class EditTaskMenu implements InventoryProvider {
     public void init(Player player, InventoryContents contents) {
         contents.fillBorders(ClickableItem.empty(XMaterial.BLUE_STAINED_GLASS_PANE.parseItem()));
 
+        ConversationFactory conversationFactory = new ConversationFactory(CommandTimerPlugin.getPlugin())
+                .withModality(true)
+                .withFirstPrompt(new TextInputConversationPrompt<String>("Enter your new task name:", text -> {
+                    task.setName(text);
+                    new EditTaskMenu(task).INVENTORY.open(player);
+                }));
+
         String[] nameLore = new String[]{ "", "§7Change the display name of this task" };
         ItemStack nameItem = Items.generateItem("§bTask name", XMaterial.PAPER, nameLore);
         ClickableItem clickableNameItem = ClickableItem.of(nameItem, e -> {
-            TaskNameMenu taskNameMenu = new TaskNameMenu(player, task);
-            taskNameMenu.INVENTORY.open(player);
+            player.closeInventory();
+            conversationFactory.buildConversation(player).begin();
         });
         contents.set(1, 1, clickableNameItem);
 
@@ -66,12 +75,7 @@ public class EditTaskMenu implements InventoryProvider {
                                                                     e -> new GeneralLimitsMenu(task).INVENTORY.open(player));
         contents.set(1, 4, clickableGeneralLimitsItem);
 
-        Callback conditionItemCallback = new Callback() {
-            @Override
-            public <T> void execute(T data) {
-                INVENTORY.open(player);
-            }
-        };
+        Callback conditionItemCallback = (Callback<String>) data -> INVENTORY.open(player);
         String[] conditionLore = new String[]{ "",
                 "§7Conditions allow you to have an overall",
                 "§7control of when your tasks should be executed",
