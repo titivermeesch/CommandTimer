@@ -38,7 +38,7 @@ public class EditTaskMenu implements InventoryProvider {
 
         ConversationFactory conversationFactory = new ConversationFactory(CommandTimerPlugin.getPlugin())
                 .withModality(true)
-                .withFirstPrompt(new TextInputConversationPrompt<String>("Enter your new task name:", text -> {
+                .withFirstPrompt(new TextInputConversationPrompt("Enter your new task name:", text -> {
                     task.setName(text);
                     new EditTaskMenu(task).INVENTORY.open(player);
                 }));

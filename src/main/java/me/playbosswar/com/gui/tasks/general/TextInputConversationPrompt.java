@@ -7,11 +7,11 @@ import org.bukkit.conversations.StringPrompt;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class TextInputConversationPrompt<T> extends StringPrompt {
+public class TextInputConversationPrompt extends StringPrompt {
     private final String title;
     private final Callback callback;
 
-    public TextInputConversationPrompt(String title, Callback<T> callback) {
+    public TextInputConversationPrompt(String title, Callback<String> callback) {
         super();
         this.title = title;
         this.callback = callback;

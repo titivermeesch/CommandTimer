@@ -146,7 +146,8 @@ public class ConditionMenu implements InventoryProvider {
                         if (neededValue.getType() == Double.class) {
                             ConversationFactory conversationFactory = new ConversationFactory(CommandTimerPlugin.getPlugin())
                                     .withModality(true)
-                                    .withFirstPrompt(new TextInputConversationPrompt<Double>("Enter your value:", text -> {
+                                    .withFirstPrompt(new TextInputConversationPrompt("Enter your value:", data -> {
+                                        double text = Double.parseDouble(data);
                                         ((ConditionParamField<Double>) conditionParamField).setValue(text);
                                         condition.getTask().storeInstance();
                                         new ConditionMenu(condition, onClose).INVENTORY.open(player);
@@ -159,7 +160,7 @@ public class ConditionMenu implements InventoryProvider {
                         if (neededValue.getType() == String.class) {
                             ConversationFactory conversationFactory = new ConversationFactory(CommandTimerPlugin.getPlugin())
                                     .withModality(true)
-                                    .withFirstPrompt(new TextInputConversationPrompt<String>("Enter your value:", text -> {
+                                    .withFirstPrompt(new TextInputConversationPrompt("Enter your value:", text -> {
                                         ((ConditionParamField<String>) conditionParamField).setValue(text);
                                         condition.getTask().storeInstance();
                                         new ConditionMenu(condition, onClose).INVENTORY.open(player);

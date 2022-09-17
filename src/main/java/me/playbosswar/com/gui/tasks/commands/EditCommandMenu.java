@@ -40,7 +40,7 @@ public class EditCommandMenu implements InventoryProvider {
 
         ConversationFactory conversationFactory = new ConversationFactory(CommandTimerPlugin.getPlugin())
                 .withModality(true)
-                .withFirstPrompt(new TextInputConversationPrompt<String>("Enter your command:", text -> {
+                .withFirstPrompt(new TextInputConversationPrompt("Enter your command:", text -> {
                     taskCommand.setCommand(text);
                     new EditCommandMenu(taskCommand).INVENTORY.open(player);
                 }));
