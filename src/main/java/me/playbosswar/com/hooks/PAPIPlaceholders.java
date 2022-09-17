@@ -65,7 +65,7 @@ public class PAPIPlaceholders extends PlaceholderExpansion {
         Task task = CommandTimerPlugin.getInstance().getTasksManager().getTaskByName(commandName);
 
         if (task == null) {
-            Messages.sendConsole("Tried to use PAPI placeholder for unknown command: %commandtimer_" + identifier);
+            Messages.sendConsole("Tried to use PAPI placeholder for unknown command:" + identifier);
             return null;
         }
 
@@ -78,11 +78,11 @@ public class PAPIPlaceholders extends PlaceholderExpansion {
         }
 
         if (commandField.equalsIgnoreCase("nextExecution")) {
-            if(!task.getTimes().isEmpty()) {
+            if (!task.getTimes().isEmpty()) {
                 Date date = TaskTimeUtils.getSoonestTaskTime(task.getTimes());
                 long seconds = (date.getTime() - new Date().getTime()) / 1000;
 
-                if(seconds < 0) {
+                if (seconds < 0) {
                     // Amount of seconds in a day
                     seconds = seconds + 86400;
                 }
@@ -97,11 +97,11 @@ public class PAPIPlaceholders extends PlaceholderExpansion {
         }
 
         if (commandField.equalsIgnoreCase("nextExecutionFormat")) {
-            if(!task.getTimes().isEmpty()) {
+            if (!task.getTimes().isEmpty()) {
                 Date date = TaskTimeUtils.getSoonestTaskTime(task.getTimes());
                 long seconds = (date.getTime() - new Date().getTime()) / 1000;
 
-                if(seconds < 0) {
+                if (seconds < 0) {
                     // Amount of seconds in a day
                     seconds = seconds + 86400;
                 }
@@ -117,6 +117,23 @@ public class PAPIPlaceholders extends PlaceholderExpansion {
             return Tools.getTimeString((int) timeLeft);
         }
 
-        return "";
+        if (!task.getTimes().isEmpty()) {
+            Date date = TaskTimeUtils.getSoonestTaskTime(task.getTimes());
+            long seconds = (date.getTime() - new Date().getTime()) / 1000;
+
+            if (seconds < 0) {
+                // Amount of seconds in a day
+                seconds = seconds + 86400;
+            }
+
+            return Tools.getTimeString((int) seconds);
+        }
+
+        Interval interval = new Interval(task.getLastExecuted().getTime(), new Date().getTime());
+        Duration period = interval.toDuration();
+
+        long timeLeft = task.getInterval().toSeconds() - period.getStandardSeconds();
+
+        return Tools.getTimeString((int) timeLeft, commandField);
     }
 }
