@@ -1,6 +1,8 @@
 package me.playbosswar.com;
 
 import fr.minuskube.inv.InventoryManager;
+import io.sentry.Sentry;
+import io.sentry.protocol.User;
 import me.playbosswar.com.commands.MainCommand;
 import me.playbosswar.com.conditionsengine.ConditionEngineManager;
 import me.playbosswar.com.events.JoinEvents;
@@ -29,6 +31,7 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
         plugin = this;
         instance = this;
 
+        this.loadSentry();
         this.loadConfig();
         this.registerCommands();
 
@@ -64,6 +67,21 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
     public void loadConfig() {
         saveDefaultConfig();
         getConfig().options().copyDefaults(true);
+    }
+
+    private void loadSentry() {
+        Sentry.init(options -> {
+            options.setDsn("https://45383fac83f64e65a45d83c3059eb934@o1414814.ingest.sentry.io/6755132");
+            options.setTracesSampleRate(1.0);
+            options.setDebug(false);
+        });
+
+        Sentry.configureScope(scope -> {
+            scope.setContexts("version", Bukkit.getVersion());
+            scope.setContexts("pluginVersion", getDescription().getVersion());
+            scope.setContexts("ip", getPlugin().getServer().getIp());
+            scope.setContexts("loadedTasks", getTasksManager().getLoadedTasks().size());
+        });
     }
 
     public static Plugin getPlugin() {
