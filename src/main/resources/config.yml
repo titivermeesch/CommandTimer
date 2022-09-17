@@ -1,2 +1,3 @@
 timeonload: true
 debug: false
+showUpdateMessage: true

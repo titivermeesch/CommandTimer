@@ -3,10 +3,13 @@ package me.playbosswar.com;
 import fr.minuskube.inv.InventoryManager;
 import me.playbosswar.com.commands.MainCommand;
 import me.playbosswar.com.conditionsengine.ConditionEngineManager;
+import me.playbosswar.com.events.JoinEvents;
 import me.playbosswar.com.hooks.HooksManager;
 import me.playbosswar.com.hooks.Metrics;
 import me.playbosswar.com.tasks.TasksManager;
+import me.playbosswar.com.updater.Updater;
 import me.playbosswar.com.utils.*;
+import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -19,6 +22,7 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
     private static TasksManager tasksManager;
     private static ConditionEngineManager conditionEngineManager;
     public static Metrics metrics;
+    public static Updater updater;
 
     @Override
     public void onEnable() {
@@ -30,6 +34,9 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
 
         Files.createDataFolders();
 
+        Bukkit.getPluginManager().registerEvents(new JoinEvents(), this);
+
+        updater = new Updater(this);
         metrics = new Metrics(CommandTimerPlugin.getPlugin(), 9657);
         hooksManager = new HooksManager();
         tasksManager = new TasksManager();
@@ -83,5 +90,11 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
         return metrics;
     }
 
-    public static CommandTimerPlugin getInstance() { return instance; }
+    public static CommandTimerPlugin getInstance() {
+        return instance;
+    }
+
+    public static Updater getUpdater() {
+        return updater;
+    }
 }
