@@ -9,7 +9,6 @@ import org.bukkit.inventory.ItemStack;
 
 public class ClickableTextInputButton {
     private final ItemStack item;
-    private final String requestText = "Enter your new value:";
     private final Callback<String> callback;
 
     public ClickableTextInputButton(ItemStack item, Callback<String> callback) {
@@ -24,7 +23,7 @@ public class ClickableTextInputButton {
     public void open(Player player) {
         ConversationFactory conversationFactory = new ConversationFactory(CommandTimerPlugin.getPlugin())
                 .withModality(true)
-                .withFirstPrompt(new TextInputConversationPrompt(this.requestText, callback));
+                .withFirstPrompt(new TextInputConversationPrompt(callback));
         conversationFactory.buildConversation(player).begin();
         player.closeInventory();
     }

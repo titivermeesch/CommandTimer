@@ -6,6 +6,8 @@ import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
 import me.playbosswar.com.CommandTimerPlugin;
+import me.playbosswar.com.language.LanguageKey;
+import me.playbosswar.com.language.LanguageManager;
 import me.playbosswar.com.tasks.Task;
 import me.playbosswar.com.utils.Items;
 import org.bukkit.entity.Player;
@@ -17,12 +19,13 @@ public class EditDaysMenu implements InventoryProvider {
 
     public EditDaysMenu(Task task) {
         this.task = task;
+        LanguageManager languageManager = CommandTimerPlugin.getLanguageManager();
         INVENTORY = SmartInventory.builder()
                 .id("task-days")
                 .provider(this)
                 .manager(CommandTimerPlugin.getInstance().getInventoryManager())
                 .size(3, 9)
-                .title("§9§lTask days")
+                .title(languageManager.get(LanguageKey.EDIT_DAYS_GUI_TITLE))
                 .build();
     }
 
@@ -33,7 +36,7 @@ public class EditDaysMenu implements InventoryProvider {
         String[] days = new String[]{"MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"};
 
         int i = 1;
-        for(String day : days){
+        for(String day : days) {
             ItemStack item = Items.getToggleItem("§b" + day, new String[]{}, task.getDays().contains(day));
             ClickableItem clickableItem = ClickableItem.of(item, e -> {
                 task.toggleDay(day);
@@ -44,7 +47,7 @@ public class EditDaysMenu implements InventoryProvider {
         }
 
         contents.set(2, 8, ClickableItem.of(Items.getBackItem(),
-                                            e -> new MainScheduleMenu(task).INVENTORY.open(player)));
+                e -> new MainScheduleMenu(task).INVENTORY.open(player)));
     }
 
     @Override

@@ -7,6 +7,8 @@ import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
 import me.playbosswar.com.CommandTimerPlugin;
 import me.playbosswar.com.gui.tasks.general.ClickableTextInputButton;
+import me.playbosswar.com.language.LanguageKey;
+import me.playbosswar.com.language.LanguageManager;
 import me.playbosswar.com.tasks.TaskTime;
 import me.playbosswar.com.utils.Items;
 import org.bukkit.entity.Player;
@@ -15,9 +17,10 @@ import java.time.LocalTime;
 
 public class EditHourMenu implements InventoryProvider {
     public final SmartInventory INVENTORY;
+    private final LanguageManager languageManager = CommandTimerPlugin.getLanguageManager();
     private final TaskTime taskTime;
     private final boolean isTime2;
-    private final String[] clockLore = {"", "§7Click to change value"};
+    private final String[] clockLore = {"", languageManager.get(LanguageKey.LEFT_CLICK_EDIT)};
 
     public EditHourMenu(TaskTime taskTime, boolean isTime2) {
         this.taskTime = taskTime;
@@ -27,7 +30,7 @@ public class EditHourMenu implements InventoryProvider {
                 .provider(this)
                 .manager(CommandTimerPlugin.getInstance().getInventoryManager())
                 .size(3, 9)
-                .title("§9§lEdit hour")
+                .title(languageManager.get(LanguageKey.EDIT_HOURS_GUI_TITLE))
                 .build();
     }
 
@@ -37,8 +40,8 @@ public class EditHourMenu implements InventoryProvider {
 
         LocalTime usedTime = isTime2 ? taskTime.getTime2() : taskTime.getTime1();
 
-        if (usedTime == null) {
-            if (isTime2) {
+        if(usedTime == null) {
+            if(isTime2) {
                 taskTime.setTime2(LocalTime.of(14, 0, 0));
                 usedTime = taskTime.getTime2();
             } else {
@@ -54,7 +57,10 @@ public class EditHourMenu implements InventoryProvider {
             refresh(player);
         }));
         ClickableTextInputButton hoursClock = new ClickableTextInputButton(
-                Items.generateItem("§b" + usedTime.getHour() + " hours", XMaterial.CLOCK, clockLore),
+                Items.generateItem(
+                        languageManager.get(LanguageKey.HOURS_LABEL, String.valueOf(usedTime.getHour())),
+                        XMaterial.CLOCK,
+                        clockLore),
                 data -> {
                     int hours = Integer.parseInt(data);
                     setTime(finalUsedTime.withHour(hours));
@@ -73,7 +79,10 @@ public class EditHourMenu implements InventoryProvider {
             refresh(player);
         }));
         ClickableTextInputButton minutesClock = new ClickableTextInputButton(
-                Items.generateItem("§b" + usedTime.getMinute() + " minutes", XMaterial.CLOCK, clockLore),
+                Items.generateItem(
+                        languageManager.get(LanguageKey.MINUTES_LABEL, String.valueOf(usedTime.getMinute())),
+                        XMaterial.CLOCK,
+                        clockLore),
                 data -> {
                     int minutes = Integer.parseInt(data);
                     setTime(finalUsedTime.withMinute(minutes));
@@ -92,7 +101,9 @@ public class EditHourMenu implements InventoryProvider {
             refresh(player);
         }));
         ClickableTextInputButton secondsClock = new ClickableTextInputButton(
-                Items.generateItem("§b" + usedTime.getSecond() + " seconds", XMaterial.CLOCK, clockLore),
+                Items.generateItem(languageManager.get(LanguageKey.SECONDS_LABEL, String.valueOf(usedTime.getSecond())),
+                        XMaterial.CLOCK,
+                        clockLore),
                 data -> {
                     int seconds = Integer.parseInt(data);
                     setTime(finalUsedTime.withSecond(seconds));
@@ -105,7 +116,8 @@ public class EditHourMenu implements InventoryProvider {
             refresh(player);
         }));
 
-        contents.set(2, 8, ClickableItem.of(Items.getBackItem(), e -> new EditSpecificTimeMenu(taskTime).INVENTORY.open(player)));
+        contents.set(2, 8, ClickableItem.of(Items.getBackItem(),
+                e -> new EditSpecificTimeMenu(taskTime).INVENTORY.open(player)));
     }
 
     @Override
@@ -118,7 +130,7 @@ public class EditHourMenu implements InventoryProvider {
     }
 
     private void setTime(LocalTime time) {
-        if (isTime2) {
+        if(isTime2) {
             taskTime.setTime2(time);
         } else {
             taskTime.setTime1(time);

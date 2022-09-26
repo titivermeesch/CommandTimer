@@ -7,6 +7,8 @@ import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
 import me.playbosswar.com.CommandTimerPlugin;
 import me.playbosswar.com.gui.tasks.general.ClickableTextInputButton;
+import me.playbosswar.com.language.LanguageKey;
+import me.playbosswar.com.language.LanguageManager;
 import me.playbosswar.com.tasks.TaskInterval;
 import me.playbosswar.com.utils.Items;
 import org.bukkit.entity.Player;
@@ -16,9 +18,10 @@ import java.util.function.Consumer;
 
 public class EditIntervalMenu implements InventoryProvider {
     public final SmartInventory INVENTORY;
+    private final LanguageManager languageManager = CommandTimerPlugin.getLanguageManager();
     private final TaskInterval interval;
     private final Consumer<InventoryClickEvent> consumer;
-    private final String[] clockLore = {"", "§7Click to change value"};
+    private final String[] clockLore = {"", languageManager.get(LanguageKey.LEFT_CLICK_EDIT)};
 
     public EditIntervalMenu(TaskInterval interval, Consumer<InventoryClickEvent> consumer) {
         this.interval = interval;
@@ -28,7 +31,7 @@ public class EditIntervalMenu implements InventoryProvider {
                 .provider(this)
                 .manager(CommandTimerPlugin.getInstance().getInventoryManager())
                 .size(5, 9)
-                .title("§9§lTask interval")
+                .title(languageManager.get(LanguageKey.TASK_INTERVAL_GUI_TITLE))
                 .build();
     }
 
@@ -42,7 +45,9 @@ public class EditIntervalMenu implements InventoryProvider {
             refresh(player);
         }));
         ClickableTextInputButton daysClocks = new ClickableTextInputButton(
-                Items.generateItem("§b" + interval.getDays() + " days", XMaterial.CLOCK, clockLore),
+                Items.generateItem(languageManager.get(LanguageKey.DAYS_LABEL, String.valueOf(interval.getDays())),
+                        XMaterial.CLOCK,
+                        clockLore),
                 data -> {
                     int days = Integer.parseInt(data);
                     interval.setDays(days);
@@ -61,7 +66,9 @@ public class EditIntervalMenu implements InventoryProvider {
             refresh(player);
         }));
         ClickableTextInputButton hoursClock = new ClickableTextInputButton(
-                Items.generateItem("§b" + interval.getHours() + " hours", XMaterial.CLOCK, clockLore),
+                Items.generateItem(languageManager.get(LanguageKey.HOURS_LABEL, String.valueOf(interval.getHours())),
+                        XMaterial.CLOCK,
+                        clockLore),
                 data -> {
                     int hours = Integer.parseInt(data);
                     interval.setHours(hours);
@@ -80,7 +87,10 @@ public class EditIntervalMenu implements InventoryProvider {
             refresh(player);
         }));
         ClickableTextInputButton minutesClock = new ClickableTextInputButton(
-                Items.generateItem("§b" + interval.getMinutes() + " minutes", XMaterial.CLOCK, clockLore),
+                Items.generateItem(languageManager.get(LanguageKey.MINUTES_LABEL,
+                                String.valueOf(interval.getMinutes())),
+                        XMaterial.CLOCK,
+                        clockLore),
                 data -> {
                     int minutes = Integer.parseInt(data);
                     interval.setMinutes(minutes);
@@ -99,7 +109,10 @@ public class EditIntervalMenu implements InventoryProvider {
             refresh(player);
         }));
         ClickableTextInputButton secondsClock = new ClickableTextInputButton(
-                Items.generateItem("§b" + interval.getSeconds() + " seconds", XMaterial.CLOCK, clockLore),
+                Items.generateItem(languageManager.get(LanguageKey.SECONDS_LABEL,
+                                String.valueOf(interval.getSeconds())),
+                        XMaterial.CLOCK,
+                        clockLore),
                 data -> {
                     int seconds = Integer.parseInt(data);
                     interval.setSeconds(seconds);

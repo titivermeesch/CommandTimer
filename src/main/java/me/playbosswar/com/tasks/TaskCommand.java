@@ -57,7 +57,6 @@ public class TaskCommand {
         if(gender.equals(Gender.CONSOLE_PER_USER)) {
             gender = Gender.OPERATOR;
             task.storeInstance();
-            return;
         }
     }
 

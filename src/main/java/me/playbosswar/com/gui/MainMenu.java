@@ -8,6 +8,8 @@ import fr.minuskube.inv.content.InventoryProvider;
 import me.playbosswar.com.CommandTimerPlugin;
 import me.playbosswar.com.gui.integrations.MainIntegrationsMenu;
 import me.playbosswar.com.gui.tasks.AllTasksMenu;
+import me.playbosswar.com.language.LanguageKey;
+import me.playbosswar.com.language.LanguageManager;
 import me.playbosswar.com.utils.Items;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -16,6 +18,7 @@ import java.text.SimpleDateFormat;
 
 public class MainMenu implements InventoryProvider {
     public SmartInventory INVENTORY;
+    private final LanguageManager languageManager = CommandTimerPlugin.getLanguageManager();
 
     public MainMenu() {
         INVENTORY = SmartInventory.builder()
@@ -23,41 +26,35 @@ public class MainMenu implements InventoryProvider {
                 .provider(this)
                 .manager(CommandTimerPlugin.getInstance().getInventoryManager())
                 .size(3, 9)
-                .title("§9§lCommandTimer")
+                .title(languageManager.get(LanguageKey.MAIN_MENU_GUI_TITLE))
                 .build();
     }
 
     public void init(Player player, InventoryContents contents) {
         contents.fillBorders(ClickableItem.empty(XMaterial.BLUE_STAINED_GLASS_PANE.parseItem()));
 
-        ItemStack listTimersItem = Items.generateItem("§bAll tasks",
-                                                      XMaterial.PAPER,
-                                                      new String[]{ "",
-                                                              "§7Get an overview of your currently",
-                                                              "§7loaded tasks. This is also the",
-                                                              "§7place where you can create new tasks"
-                                                      });
+        ItemStack listTimersItem = Items.generateItem(LanguageKey.ALL_TASKS_ITEM,
+                XMaterial.PAPER,
+                languageManager.getList(LanguageKey.ALL_TASKS_LORE).toArray(new String[]{}));
         ClickableItem listItem = ClickableItem.of(listTimersItem, e -> new AllTasksMenu().INVENTORY.open(player));
         contents.set(1, 1, listItem);
 
-        ItemStack integrationsItem = Items.generateItem("§bIntegrations",
-                                                        XMaterial.CRAFTING_TABLE,
-                                                        new String[]{ "",
-                                                                "§7See all possible integrations",
-                                                                "§7and the ones that are currently loaded"
-                                                        });
+        ItemStack integrationsItem = Items.generateItem(LanguageKey.INTEGRATIONS_ITEM,
+                XMaterial.CRAFTING_TABLE,
+                languageManager.getList(LanguageKey.INTEGRATIONS_LORE).toArray(new String[]{}));
         ClickableItem clickableIntegrationsItem = ClickableItem.of(integrationsItem,
-                                                                   e -> new MainIntegrationsMenu().INVENTORY.open(player));
+                e -> new MainIntegrationsMenu().INVENTORY.open(player));
         contents.set(1, 2, clickableIntegrationsItem);
 
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
         String currentTime = sdf.format(new java.util.Date());
-        ItemStack infoItem = Items.generateItem("§bGeneral information",
-                                                XMaterial.REDSTONE_TORCH,
-                                                new String[]{ "",
-                                                        "§7Version: §e" + CommandTimerPlugin.getPlugin().getDescription().getVersion(),
-                                                        "§7Time: §e" + currentTime
-                                                });
+        ItemStack infoItem = Items.generateItem(LanguageKey.GENERAL_INFORMATION_ITEM,
+                XMaterial.REDSTONE_TORCH,
+                new String[]{"",
+                        languageManager.get(LanguageKey.VERSION,
+                                CommandTimerPlugin.getPlugin().getDescription().getVersion()),
+                        languageManager.get(LanguageKey.TIME, currentTime)
+                });
         contents.set(1, 7, ClickableItem.empty(infoItem));
     }
 

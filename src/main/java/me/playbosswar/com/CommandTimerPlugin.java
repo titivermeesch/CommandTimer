@@ -2,12 +2,12 @@ package me.playbosswar.com;
 
 import fr.minuskube.inv.InventoryManager;
 import io.sentry.Sentry;
-import io.sentry.protocol.User;
 import me.playbosswar.com.commands.MainCommand;
 import me.playbosswar.com.conditionsengine.ConditionEngineManager;
 import me.playbosswar.com.events.JoinEvents;
 import me.playbosswar.com.hooks.HooksManager;
 import me.playbosswar.com.hooks.Metrics;
+import me.playbosswar.com.language.LanguageManager;
 import me.playbosswar.com.tasks.TasksManager;
 import me.playbosswar.com.updater.Updater;
 import me.playbosswar.com.utils.*;
@@ -25,17 +25,19 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
     private static ConditionEngineManager conditionEngineManager;
     public static Metrics metrics;
     public static Updater updater;
+    public static LanguageManager languageManager;
 
     @Override
     public void onEnable() {
         plugin = this;
         instance = this;
 
+        // Load error handler as soon as possible
         this.loadSentry();
-        this.loadConfig();
-        this.registerCommands();
 
-        Files.createDataFolders();
+        this.loadConfig();
+        languageManager = new LanguageManager(this);
+        this.registerCommands();
 
         Bukkit.getPluginManager().registerEvents(new JoinEvents(), this);
 
@@ -65,6 +67,7 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
     }
 
     public void loadConfig() {
+        Files.createDataFolders();
         saveDefaultConfig();
         getConfig().options().copyDefaults(true);
     }
@@ -114,5 +117,9 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
 
     public static Updater getUpdater() {
         return updater;
+    }
+
+    public static LanguageManager getLanguageManager() {
+        return languageManager;
     }
 }

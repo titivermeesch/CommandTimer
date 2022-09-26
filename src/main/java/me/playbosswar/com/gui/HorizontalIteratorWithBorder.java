@@ -7,6 +7,7 @@ import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.Pagination;
 import fr.minuskube.inv.content.SlotIterator;
 import fr.minuskube.inv.content.SlotPos;
+import me.playbosswar.com.language.LanguageKey;
 import me.playbosswar.com.utils.Items;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -25,7 +26,8 @@ public class HorizontalIteratorWithBorder implements SlotIterator {
     private int column;
     private final Set<SlotPos> blacklisted = new HashSet<>();
 
-    public HorizontalIteratorWithBorder(Player player, InventoryContents contents, SmartInventory inv, int itemsPerPage, int rowLine, int row, int column) {
+    public HorizontalIteratorWithBorder(Player player, InventoryContents contents, SmartInventory inv,
+                                        int itemsPerPage, int rowLine, int row, int column) {
         this.contents = contents;
         this.inv = inv;
         this.row = row;
@@ -35,8 +37,8 @@ public class HorizontalIteratorWithBorder implements SlotIterator {
         pagination.setItemsPerPage(itemsPerPage);
         pagination.addToIterator(this);
 
-        ItemStack backItem = Items.generateItem("§7Back", XMaterial.ARROW);
-        ItemStack nextItem = Items.generateItem("§7Next", XMaterial.ARROW);
+        ItemStack backItem = Items.generateItem(LanguageKey.BACK_LABEL, XMaterial.ARROW);
+        ItemStack nextItem = Items.generateItem(LanguageKey.NEXT_LABEL, XMaterial.ARROW);
         contents.set(rowLine, 3, ClickableItem.of(backItem, e -> inv.open(player, pagination.previous().getPage())));
         contents.set(rowLine, 5, ClickableItem.of(nextItem, e -> inv.open(player, pagination.next().getPage())));
     }
@@ -51,8 +53,8 @@ public class HorizontalIteratorWithBorder implements SlotIterator {
         pagination.setItemsPerPage(28);
         pagination.addToIterator(this);
 
-        ItemStack backItem = Items.generateItem("§7Back", XMaterial.ARROW);
-        ItemStack nextItem = Items.generateItem("§7Next", XMaterial.ARROW);
+        ItemStack backItem = Items.generateItem(LanguageKey.BACK_LABEL, XMaterial.ARROW);
+        ItemStack nextItem = Items.generateItem(LanguageKey.NEXT_LABEL, XMaterial.ARROW);
         contents.set(5, 3, ClickableItem.of(backItem, e -> inv.open(player, pagination.previous().getPage())));
         contents.set(5, 5, ClickableItem.of(nextItem, e -> inv.open(player, pagination.next().getPage())));
     }
@@ -64,7 +66,7 @@ public class HorizontalIteratorWithBorder implements SlotIterator {
 
     @Override
     public SlotIterator set(ClickableItem item) {
-        if (canPlace()) {
+        if(canPlace()) {
             contents.set(row, column, item);
         }
 
@@ -73,46 +75,46 @@ public class HorizontalIteratorWithBorder implements SlotIterator {
 
     @Override
     public SlotIterator previous() {
-        if (row == 0 && column == 0) {
+        if(row == 0 && column == 0) {
             this.started = true;
             return this;
         }
 
         do {
-            if (!this.started) {
+            if(!this.started) {
                 this.started = true;
             } else {
-                if (--column == 0) {
+                if(--column == 0) {
                     column = inv.getColumns() - 2;
                     row--;
                 }
             }
         }
-        while (!canPlace() && (row != 0 || column != 0));
+        while(!canPlace() && (row != 0 || column != 0));
 
         return this;
     }
 
     @Override
     public SlotIterator next() {
-        if (ended()) {
+        if(ended()) {
             this.started = true;
             return this;
         }
 
         do {
-            if (!this.started) {
+            if(!this.started) {
                 this.started = true;
             } else {
                 column = ++column % (inv.getColumns() - 1);
 
-                if (column == 0) {
+                if(column == 0) {
                     column++;
                     row++;
                 }
             }
         }
-        while (!canPlace() && !ended());
+        while(!canPlace() && !ended());
 
         return this;
     }
@@ -129,7 +131,9 @@ public class HorizontalIteratorWithBorder implements SlotIterator {
     }
 
     @Override
-    public int row() { return row; }
+    public int row() {
+        return row;
+    }
 
     @Override
     public SlotIterator row(int row) {
@@ -138,7 +142,9 @@ public class HorizontalIteratorWithBorder implements SlotIterator {
     }
 
     @Override
-    public int column() { return column; }
+    public int column() {
+        return column;
+    }
 
     @Override
     public SlotIterator column(int column) {
@@ -158,7 +164,9 @@ public class HorizontalIteratorWithBorder implements SlotIterator {
     }
 
     @Override
-    public boolean doesAllowOverride() { return allowOverride; }
+    public boolean doesAllowOverride() {
+        return allowOverride;
+    }
 
     @Override
     public SlotIterator allowOverride(boolean override) {

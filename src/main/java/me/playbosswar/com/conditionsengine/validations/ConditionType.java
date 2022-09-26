@@ -1,15 +1,20 @@
 package me.playbosswar.com.conditionsengine.validations;
 
+import me.playbosswar.com.CommandTimerPlugin;
+import me.playbosswar.com.language.LanguageKey;
+import me.playbosswar.com.language.LanguageManager;
+
 public enum ConditionType {
-    AND("Every condition need to be true"),
-    OR("Any condition needs to be true"),
-    SIMPLE("A condition in it simplest form. Result needs to be true"),
-    NOT("A condition in it simplest form. Result needs to be false");
+    AND(LanguageKey.AND_CONDITION),
+    OR(LanguageKey.OR_CONDITION),
+    SIMPLE(LanguageKey.SIMPLE_CONDITION),
+    NOT(LanguageKey.NOT_CONDITION);
 
-    String description;
+    final String description;
 
-    ConditionType(String description) {
-        this.description = description;
+    ConditionType(LanguageKey languageKey) {
+        final LanguageManager languageManager = CommandTimerPlugin.getLanguageManager();
+        this.description = languageManager.get(languageKey);
     }
 
     public String getDescription() {

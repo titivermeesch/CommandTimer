@@ -11,6 +11,8 @@ import me.playbosswar.com.conditionsengine.validations.Condition;
 import me.playbosswar.com.conditionsengine.validations.ConditionType;
 import me.playbosswar.com.conditionsengine.validations.SimpleCondition;
 import me.playbosswar.com.gui.HorizontalIteratorWithBorder;
+import me.playbosswar.com.language.LanguageKey;
+import me.playbosswar.com.language.LanguageManager;
 import me.playbosswar.com.utils.Callback;
 import me.playbosswar.com.utils.Items;
 import org.bukkit.entity.Player;
@@ -21,11 +23,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ConditionsMenu implements InventoryProvider {
+    private final LanguageManager languageManager = CommandTimerPlugin.getLanguageManager();
     public SmartInventory INVENTORY;
     private final Condition condition;
-    private final Callback onClose;
+    private final Callback<?> onClose;
 
-    public ConditionsMenu(Condition condition, Callback onClose) {
+    public ConditionsMenu(Condition condition, Callback<?> onClose) {
         this.condition = condition;
         this.onClose = onClose;
         INVENTORY = SmartInventory.builder()
@@ -33,13 +36,13 @@ public class ConditionsMenu implements InventoryProvider {
                 .provider(this)
                 .manager(CommandTimerPlugin.getInstance().getInventoryManager())
                 .size(6, 9)
-                .title("§9§lCondition Parts")
+                .title(languageManager.get(LanguageKey.CONDITION_PARTS_GUI_TITLE))
                 .build();
     }
 
     @Override
     public void init(Player player, InventoryContents contents) {
-        final Callback internalCallback = (Callback<String>) data -> INVENTORY.open(player);
+        final Callback<?> internalCallback = data -> INVENTORY.open(player);
 
         contents.fillBorders(ClickableItem.empty(XMaterial.BLUE_STAINED_GLASS_PANE.parseItem()));
         Pagination pagination = contents.pagination();
@@ -47,7 +50,7 @@ public class ConditionsMenu implements InventoryProvider {
         pagination.setItems(getAllConditions(player));
         new HorizontalIteratorWithBorder(player, contents, INVENTORY);
 
-        ItemStack createItem = Items.generateItem("§bAdd condition", XMaterial.ANVIL);
+        ItemStack createItem = Items.generateItem(LanguageKey.ADD_CONDITION, XMaterial.ANVIL);
         ClickableItem clickableCreate = ClickableItem.of(createItem, e -> {
             Condition newCondition = new Condition(
                     ConditionType.SIMPLE,
@@ -69,54 +72,58 @@ public class ConditionsMenu implements InventoryProvider {
     }
 
     private ClickableItem[] getAllConditions(Player p) {
-        final Callback internalCallback = (Callback<String>) data -> INVENTORY.open(p);
+        final Callback<?> internalCallback = data -> INVENTORY.open(p);
         List<Condition> conditions = this.condition.getConditions();
 
-        if (conditions == null) {
+        if(conditions == null) {
             return new ClickableItem[0];
         }
 
         ClickableItem[] items = new ClickableItem[conditions.size()];
 
-        for (int i = 0; i < items.length; i++) {
+        for(int i = 0; i < items.length; i++) {
             Condition condition = conditions.get(i);
             ConditionType conditionType = condition.getConditionType();
 
             String[] lore;
-            if (conditionType.equals(ConditionType.OR) || conditionType.equals(ConditionType.AND)) {
+            if(conditionType.equals(ConditionType.OR) || conditionType.equals(ConditionType.AND)) {
                 lore = new String[]{
                         "",
-                        "§7Type: §e" + conditionType,
+                        languageManager.get(LanguageKey.TYPE, conditionType.toString()),
                         "",
-                        "§aLeft-Click to edit",
-                        "§cRight-Click to delete",
+                        languageManager.get(LanguageKey.LEFT_CLICK_EDIT),
+                        languageManager.get(LanguageKey.RIGHT_CLICK_DELETE)
                 };
             } else {
                 SimpleCondition simpleCondition = condition.getSimpleCondition();
                 String conditionGroup = simpleCondition.getConditionGroup();
                 String rule = simpleCondition.getRule();
 
-                lore = new String[]{ "",
-                        "§7Type: §e" + conditionType,
+                lore = new String[]{"",
+                        languageManager.get(LanguageKey.TYPE, conditionType.toString()),
                         "",
-                        "§bCurrent configuration:",
-                        "§7 - Condition group: " + (conditionGroup == null ? "§eNot Set" : "§e" + conditionGroup),
-                        "§7 - Rule: " + (rule == null ? "§eNot Set" : "§e" + rule),
+                        languageManager.get(LanguageKey.CURRENT_CONFIGURATION),
+                        languageManager.get(LanguageKey.CONDITION_GROUP) + (conditionGroup == null ?
+                                languageManager.get(LanguageKey.NOT_SET) :
+                                "§e" + conditionGroup),
+                        languageManager.get(LanguageKey.CONDITION_RULE) + (rule == null ?
+                                languageManager.get(LanguageKey.NOT_SET) : "§e" + rule),
                         "",
-                        "§aLeft-Click to edit",
-                        "§cRight-Click to delete",
+                        languageManager.get(LanguageKey.LEFT_CLICK_EDIT),
+                        languageManager.get(LanguageKey.RIGHT_CLICK_DELETE),
                 };
             }
 
 
-            ItemStack item = Items.generateItem("§bCondition " + (i + 1), XMaterial.COMMAND_BLOCK, lore);
+            ItemStack item = Items.generateItem(languageManager.get(LanguageKey.CONDITION) + (i + 1),
+                    XMaterial.COMMAND_BLOCK, lore);
             items[i] = ClickableItem.of(item, e -> {
-                if (e.getClick().equals(ClickType.LEFT)) {
+                if(e.getClick().equals(ClickType.LEFT)) {
                     new ConditionMenu(condition, internalCallback).INVENTORY.open(p);
                     return;
                 }
 
-                if (e.getClick().equals(ClickType.RIGHT)) {
+                if(e.getClick().equals(ClickType.RIGHT)) {
                     this.condition.removeCondition(condition);
                     this.INVENTORY.open(p);
                 }

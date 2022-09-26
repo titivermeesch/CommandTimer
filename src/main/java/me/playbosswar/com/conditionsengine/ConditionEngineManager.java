@@ -1,6 +1,5 @@
 package me.playbosswar.com.conditionsengine;
 
-
 import me.playbosswar.com.CommandTimerPlugin;
 import me.playbosswar.com.api.ConditionExtension;
 import me.playbosswar.com.api.ConditionRule;
@@ -34,7 +33,9 @@ public class ConditionEngineManager {
         registerAll();
     }
 
-    public List<ConditionExtension> getConditionExtensions() { return conditionExtensions; }
+    public List<ConditionExtension> getConditionExtensions() {
+        return conditionExtensions;
+    }
 
     public ConditionExtension getConditionExtension(String name) {
         Optional<ConditionExtension> optional =
@@ -50,11 +51,11 @@ public class ConditionEngineManager {
         Optional<ConditionExtension> optionalConditionExtension = conditionExtensions.stream()
                 .filter(conditionExtension -> conditionExtension.getConditionGroupName().equals(conditionGroup)).findFirst();
 
-        if (optionalConditionExtension.isPresent()) {
+        if(optionalConditionExtension.isPresent()) {
             ConditionRules rules = optionalConditionExtension.get().getRules();
 
-            for (ConditionRule rule : rules) {
-                if (rule.getName().equals(ruleName)) {
+            for(ConditionRule rule : rules) {
+                if(rule.getName().equals(ruleName)) {
                     return rule;
                 }
             }
@@ -77,30 +78,30 @@ public class ConditionEngineManager {
             Objects.requireNonNull(condition.getVersion(), "The condition version is null!");
 
             condition.register();
-        } catch (LinkageError | NullPointerException ex) {
+        } catch(LinkageError | NullPointerException ex) {
             final String reason;
 
-            if (ex instanceof LinkageError) {
+            if(ex instanceof LinkageError) {
                 reason = " (Is a dependency missing?)";
             } else {
                 reason = " - One of its properties is null which is not allowed!";
             }
 
             CommandTimerPlugin.getPlugin().getLogger().severe("Failed to load expansion class " + clazz.getSimpleName() +
-                                                                      reason);
+                    reason);
             CommandTimerPlugin.getPlugin().getLogger().log(Level.SEVERE, "", ex);
         }
 
     }
 
     public boolean register(@NotNull final ConditionExtension condition) {
-        if (!condition.canRegister()) {
+        if(!condition.canRegister()) {
             return false;
         }
 
         conditionExtensions.add(condition);
 
-        if (condition instanceof Listener) {
+        if(condition instanceof Listener) {
             Bukkit.getPluginManager().registerEvents(((Listener) condition), CommandTimerPlugin.getPlugin());
         }
 
@@ -111,7 +112,7 @@ public class ConditionEngineManager {
 
     private void registerAll() {
         Futures.onMainThread(CommandTimerPlugin.getPlugin(), findExpansionsOnDisk(), (classes, exception) -> {
-            if (exception != null) {
+            if(exception != null) {
                 CommandTimerPlugin.getPlugin().getLogger().log(
                         Level.SEVERE,
                         "failed to load class files of expansions",
@@ -128,8 +129,8 @@ public class ConditionEngineManager {
             @NotNull final Class<? extends ConditionExtension> clazz) throws LinkageError {
         try {
             return clazz.getDeclaredConstructor().newInstance();
-        } catch (final Exception ex) {
-            if (ex.getCause() instanceof LinkageError) {
+        } catch(final Exception ex) {
+            if(ex.getCause() instanceof LinkageError) {
                 throw ((LinkageError) ex.getCause());
             }
 
@@ -156,34 +157,35 @@ public class ConditionEngineManager {
             @NotNull final File file) {
         return CompletableFuture.supplyAsync(() -> {
             try {
-                final Class<? extends ConditionExtension> expansionClass = Files.findClass(file, ConditionExtension.class);
+                final Class<? extends ConditionExtension> expansionClass = Files.findClass(file,
+                        ConditionExtension.class);
 
-                if (expansionClass == null) {
+                if(expansionClass == null) {
                     CommandTimerPlugin.getPlugin().getLogger().severe("Failed to load Condition: " + file.getName() + ", as it " +
-                                                                              "does not have" +
-                                                                              " a class which extends ConditionExtension.");
+                            "does not have" +
+                            " a class which extends ConditionExtension.");
                     return null;
                 }
 
                 Set<MethodSignature> expansionMethods = Arrays.stream(expansionClass.getDeclaredMethods())
                         .map(method -> new MethodSignature(method.getName(), method.getParameterTypes()))
                         .collect(Collectors.toSet());
-                if (!expansionMethods.containsAll(ABSTRACT_EXPANSION_METHODS)) {
+                if(!expansionMethods.containsAll(ABSTRACT_EXPANSION_METHODS)) {
                     CommandTimerPlugin.getPlugin().getLogger().severe("Failed to load Condition: " + file.getName() + ", as it " +
-                                                                              "does not have " +
-                                                                              "the" +
-                                                                              " required methods declared for a " +
-                                                                              "ConditionExtension.");
+                            "does not have " +
+                            "the" +
+                            " required methods declared for a " +
+                            "ConditionExtension.");
                     return null;
                 }
 
                 return expansionClass;
-            } catch (final VerifyError ex) {
+            } catch(final VerifyError ex) {
                 CommandTimerPlugin.getPlugin().getLogger().severe("Failed to load Condition class " + file.getName() +
-                                                                          " (Is a dependency missing?)");
+                        " (Is a dependency missing?)");
                 CommandTimerPlugin.getPlugin().getLogger().severe("Cause: " + ex.getClass().getSimpleName() + " " + ex.getMessage());
                 return null;
-            } catch (final Exception ex) {
+            } catch(final Exception ex) {
                 throw new CompletionException(ex);
             }
         });

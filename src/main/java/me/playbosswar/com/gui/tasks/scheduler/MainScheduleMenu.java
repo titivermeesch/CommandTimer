@@ -7,13 +7,18 @@ import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
 import me.playbosswar.com.CommandTimerPlugin;
 import me.playbosswar.com.gui.tasks.EditTaskMenu;
+import me.playbosswar.com.language.LanguageKey;
+import me.playbosswar.com.language.LanguageManager;
 import me.playbosswar.com.tasks.Task;
 import me.playbosswar.com.utils.Items;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.List;
+
 public class MainScheduleMenu implements InventoryProvider {
     public SmartInventory INVENTORY;
+    private final LanguageManager languageManager = CommandTimerPlugin.getLanguageManager();
     private final Task task;
 
     public MainScheduleMenu(Task task) {
@@ -23,7 +28,7 @@ public class MainScheduleMenu implements InventoryProvider {
                 .provider(this)
                 .manager(CommandTimerPlugin.getInstance().getInventoryManager())
                 .size(3, 9)
-                .title("§9§lTask scheduler")
+                .title(languageManager.get(LanguageKey.TASK_SCHEDULER_GUI_TITLE))
                 .build();
     }
 
@@ -31,15 +36,11 @@ public class MainScheduleMenu implements InventoryProvider {
     public void init(Player player, InventoryContents contents) {
         contents.fillBorders(ClickableItem.empty(XMaterial.BLUE_STAINED_GLASS_PANE.parseItem()));
 
-        String[] intervalItemLore = new String[]{ "",
-                "§7Set an interval for this task.",
-                "",
-                "§7This means that your set of commands will be",
-                "§7executed every x seconds/minutes on a regular base",
-                "",
-                "§7Current: §e" + task.getInterval().toString()
-        };
-        ItemStack intervalItem = Items.generateItem("§bInterval", XMaterial.CLOCK, intervalItemLore);
+        List<String> intervalItemLore = languageManager.getList(LanguageKey.TASK_INTERVAL_ITEM_LORE);
+        intervalItemLore.add(languageManager.get(LanguageKey.GUI_CURRENT, task.getInterval().toString()));
+
+        ItemStack intervalItem = Items.generateItem(LanguageKey.TASK_INTERVAL_ITEM_TITLE, XMaterial.CLOCK,
+                intervalItemLore.toArray(new String[]{}));
         ClickableItem clickableSecondsItem = ClickableItem.of(
                 intervalItem,
                 e -> new EditIntervalMenu(
@@ -47,27 +48,16 @@ public class MainScheduleMenu implements InventoryProvider {
                         e2 -> new MainScheduleMenu(task).INVENTORY.open(player)).INVENTORY.open(player));
         contents.set(1, 1, clickableSecondsItem);
 
-        String[] hoursLore = new String[]{ "",
-                "§7Configure specific points in time at which",
-                "§7your task should be executed.",
-                "",
-                "§7This could for example be 13:15:00, that would",
-                "§7execute your task every day at that time" };
-        ItemStack timesItem = Items.generateItem("§bSpecific time", XMaterial.CLOCK, hoursLore);
-        ClickableItem clickableTimesItem = ClickableItem.of(timesItem, e -> new EditTimesMenu(task).INVENTORY.open(player));
+        String[] hoursLore = languageManager.getList(LanguageKey.TASK_INTERVAL_HOURS_LORE).toArray(new String[]{});
+        ItemStack timesItem = Items.generateItem(LanguageKey.TASK_INTERVAL_HOURS_TITLE, XMaterial.CLOCK, hoursLore);
+        ClickableItem clickableTimesItem = ClickableItem.of(timesItem,
+                e -> new EditTimesMenu(task).INVENTORY.open(player));
         contents.set(1, 2, clickableTimesItem);
 
-        String[] daysLore = new String[]{ "",
-                "§7Set a limit on which days the task",
-                "§7can be executed.",
-                "",
-                "§7This works with both seconds and specific points in time.",
-                "",
-                "§7You can for example choose to only execute a task",
-                "§7during the weekend, or only on monday,..."
-        };
-        ItemStack daysItem = Items.generateItem("§bDays", XMaterial.CLOCK, daysLore);
-        ClickableItem clickableDaysItem = ClickableItem.of(daysItem, e -> new EditDaysMenu(task).INVENTORY.open(player));
+        String[] daysLore = languageManager.getList(LanguageKey.TASK_INTERVAL_DAYS_LORE).toArray(new String[]{});
+        ItemStack daysItem = Items.generateItem(LanguageKey.TASK_INTERVAL_DAYS_TITLE, XMaterial.CLOCK, daysLore);
+        ClickableItem clickableDaysItem = ClickableItem.of(daysItem,
+                e -> new EditDaysMenu(task).INVENTORY.open(player));
         contents.set(1, 3, clickableDaysItem);
 
         contents.set(1, 7, ClickableItem.of(Items.getBackItem(), e -> new EditTaskMenu(task).INVENTORY.open(player)));

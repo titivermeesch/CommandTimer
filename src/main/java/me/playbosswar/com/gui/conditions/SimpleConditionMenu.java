@@ -14,6 +14,8 @@ import me.playbosswar.com.api.NeededValue;
 import me.playbosswar.com.conditionsengine.ConditionParamField;
 import me.playbosswar.com.conditionsengine.validations.SimpleCondition;
 import me.playbosswar.com.gui.HorizontalIteratorWithBorder;
+import me.playbosswar.com.language.LanguageKey;
+import me.playbosswar.com.language.LanguageManager;
 import me.playbosswar.com.utils.Callback;
 import me.playbosswar.com.utils.Items;
 import org.bukkit.enchantments.Enchantment;
@@ -29,12 +31,13 @@ import java.util.List;
 
 public class SimpleConditionMenu implements InventoryProvider {
     public SmartInventory INVENTORY;
+    private final LanguageManager languageManager = CommandTimerPlugin.getLanguageManager();
     private final SimpleCondition simpleCondition;
-    private final Callback onClose;
+    private final Callback<?> onClose;
     private String selectedConditionGroup;
     private String ruleName;
 
-    public SimpleConditionMenu(SimpleCondition simpleCondition, Callback onClose) {
+    public SimpleConditionMenu(SimpleCondition simpleCondition, Callback<?> onClose) {
         this.simpleCondition = simpleCondition;
         this.onClose = onClose;
         this.selectedConditionGroup = simpleCondition.getConditionGroup();
@@ -44,7 +47,7 @@ public class SimpleConditionMenu implements InventoryProvider {
                 .provider(this)
                 .manager(CommandTimerPlugin.getInstance().getInventoryManager())
                 .size(6, 9)
-                .title("§9§lSimple Condition")
+                .title(languageManager.get(LanguageKey.SIMPLE_CONDITION_GUI_TITLE))
                 .build();
     }
 
@@ -66,10 +69,12 @@ public class SimpleConditionMenu implements InventoryProvider {
         simpleCondition.setRule(rule);
         this.ruleName = rule;
 
-        ConditionRule conditionRule =
-                CommandTimerPlugin.getInstance().getConditionEngineManager().getRule(this.selectedConditionGroup, rule);
+        ConditionRule conditionRule = CommandTimerPlugin
+                .getInstance()
+                .getConditionEngineManager()
+                .getRule(this.selectedConditionGroup, rule);
 
-        if (conditionRule.getNeededValues() == null) {
+        if(conditionRule.getNeededValues() == null) {
             simpleCondition.setConditionParamFields(null);
             simpleCondition.getTask().storeInstance();
             return;
@@ -78,7 +83,7 @@ public class SimpleConditionMenu implements InventoryProvider {
         ArrayList<ConditionParamField<?>> conditionParamFields = new ArrayList<>();
         ArrayList<NeededValue<?>> neededValues = conditionRule.getNeededValues();
 
-        for (NeededValue<?> neededValue : neededValues) {
+        for(NeededValue<?> neededValue : neededValues) {
             conditionParamFields.add(new ConditionParamField<>(
                     neededValue.getName(),
                     neededValue.getDefaultValue()));
@@ -98,7 +103,7 @@ public class SimpleConditionMenu implements InventoryProvider {
         new HorizontalIteratorWithBorder(player, contents, INVENTORY, 14, 5, 3, 1);
 
         int i = 1;
-        for (ClickableItem clickableItem : getAllConditionGroups(player)) {
+        for(ClickableItem clickableItem : getAllConditionGroups(player)) {
             contents.set(1, i, clickableItem);
             i++;
         }
@@ -117,7 +122,7 @@ public class SimpleConditionMenu implements InventoryProvider {
                 .getConditionEngineManager()
                 .getConditionExtension(selectedConditionGroup);
 
-        if (conditionExtension == null) {
+        if(conditionExtension == null) {
             return new ClickableItem[0];
         }
 
@@ -125,20 +130,20 @@ public class SimpleConditionMenu implements InventoryProvider {
         ClickableItem[] items = new ClickableItem[rules.size()];
 
         List<ConditionRule> rulesList = new ArrayList<>();
-        for (ConditionRule value : rules) {
+        for(ConditionRule value : rules) {
             rulesList.add(value);
         }
 
-        for (int i = 0; i < rulesList.size(); i++) {
+        for(int i = 0; i < rulesList.size(); i++) {
             ConditionRule rule = rulesList.get(i);
 
             ItemStack item = Items.generateItem(
                     "§b" + rule.getName(),
                     XMaterial.COMPARATOR,
-                    new String[]{ "", "§7" + rule.getDescription() });
+                    new String[]{"", "§7" + rule.getDescription()});
 
             // Make item glowing when selected
-            if (this.ruleName != null && this.ruleName.equals(rule.getName())) {
+            if(this.ruleName != null && this.ruleName.equals(rule.getName())) {
                 item.addUnsafeEnchantment(Enchantment.SILK_TOUCH, 1);
                 ItemMeta meta = item.getItemMeta();
                 meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
@@ -146,7 +151,7 @@ public class SimpleConditionMenu implements InventoryProvider {
             }
 
             items[i] = ClickableItem.of(item, e -> {
-                if (e.getClick().equals(ClickType.LEFT)) {
+                if(e.getClick().equals(ClickType.LEFT)) {
                     changeSelectedRule(rule.getName());
                     this.INVENTORY.open(p);
                 }
@@ -161,24 +166,25 @@ public class SimpleConditionMenu implements InventoryProvider {
                 CommandTimerPlugin.getInstance().getConditionEngineManager().getConditionExtensions();
         ClickableItem[] items = new ClickableItem[conditionExtensions.size()];
 
-        for (int i = 0; i < items.length; i++) {
+        for(int i = 0; i < items.length; i++) {
             ConditionExtension conditionExtension = conditionExtensions.get(i);
             String conditionGroupName = conditionExtension.getConditionGroupName();
             List<String> lore = new ArrayList<>();
             lore.add("");
             lore.addAll(Arrays.asList(conditionExtension.getDescription()));
             lore.add("");
-            lore.add("§7Author: §e" + conditionExtension.getAuthor());
-            lore.add("§7Version: §e" + conditionExtension.getVersion());
-            lore.add("§7Amount of rules: §e" + conditionExtension.getRules().size());
+            lore.add(languageManager.get(LanguageKey.AUTHOR, conditionExtension.getAuthor()));
+            lore.add(languageManager.get(LanguageKey.VERSION, conditionExtension.getVersion()));
+            lore.add(languageManager.get(LanguageKey.RULES_COUNT,
+                    String.valueOf(conditionExtension.getRules().size())));
             lore.add("");
-            lore.add("§aLeft-Click to select");
+            lore.add(languageManager.get(LanguageKey.LEFT_CLICK_SELECT));
 
             ItemStack item = Items.generateItem("§b" + conditionGroupName, conditionExtension.getGroupIcon(),
-                                                lore.toArray(new String[0]));
+                    lore.toArray(new String[0]));
 
             // Make item glowing when selected
-            if (this.selectedConditionGroup != null && this.selectedConditionGroup.equals(conditionGroupName)) {
+            if(this.selectedConditionGroup != null && this.selectedConditionGroup.equals(conditionGroupName)) {
                 item.addUnsafeEnchantment(Enchantment.SILK_TOUCH, 1);
                 ItemMeta meta = item.getItemMeta();
                 meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
@@ -186,7 +192,7 @@ public class SimpleConditionMenu implements InventoryProvider {
             }
 
             items[i] = ClickableItem.of(item, e -> {
-                if (e.getClick().equals(ClickType.LEFT)) {
+                if(e.getClick().equals(ClickType.LEFT)) {
                     changeSelectedConditionGroup(conditionGroupName);
                     this.INVENTORY.open(p);
                 }
