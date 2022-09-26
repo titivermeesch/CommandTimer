@@ -13,47 +13,51 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
-import java.util.Timer;
 import java.util.TimerTask;
 
 /**
  * Runnable responsible for scheduling tasks
  */
 public class TaskRunner implements Runnable {
+    private final TasksManager tasksManager;
+
+    public TaskRunner(TasksManager tasksManager) {
+        this.tasksManager = tasksManager;
+    }
+
     private void processTask(Task task) {
-        TasksManager tasksManager = CommandTimerPlugin.getInstance().getTasksManager();
-        if (tasksManager.stopRunner) {
+        if(tasksManager.stopRunner) {
             return;
         }
 
         Messages.sendDebugConsole("Checking if " + task.getName() + " can be executed");
 
-        if (!task.isActive()) {
+        if(!task.isActive()) {
             Messages.sendDebugConsole("Task is not active");
             return;
         }
 
-        if (!TaskUtils.checkTaskDaysContainToday(task)) {
+        if(!TaskUtils.checkTaskDaysContainToday(task)) {
             Messages.sendDebugConsole("Command can not be executed today");
             return;
         }
 
-        if (task.getTimesExecuted() >= task.getExecutionLimit() && task.getExecutionLimit() != -1) {
+        if(task.getTimesExecuted() >= task.getExecutionLimit() && task.getExecutionLimit() != -1) {
             Messages.sendDebugConsole("Task reached the maximum execution limit");
             return;
         }
 
-        if (!Tools.randomCheck(task.getRandom())) {
+        if(!Tools.randomCheck(task.getRandom())) {
             Messages.sendDebugConsole("Task has a random execution chance");
             return;
         }
 
         boolean blockTime = true;
-        if (task.getTimes().size() > 0) {
+        if(task.getTimes().size() > 0) {
             Messages.sendDebugConsole("Task is time related, checking if can be executed now");
 
-            for (TaskTime taskTime : task.getTimes()) {
-                if (taskTime.isMinecraftTime()) {
+            for(TaskTime taskTime : task.getTimes()) {
+                if(taskTime.isMinecraftTime()) {
                     Messages.sendDebugConsole("Task is using minecraft time");
 
                     World world = Bukkit.getWorld(taskTime.getWorld() == null ? "world" : taskTime.getWorld());
@@ -63,19 +67,19 @@ public class TaskRunner implements Runnable {
 
                     LocalTime current = LocalTime.parse(minecraftTime);
 
-                    if (taskTime.isRange()) {
+                    if(taskTime.isRange()) {
                         LocalTime startRange = taskTime.getTime1();
                         LocalTime endRange = taskTime.getTime2();
 
-                        if (current.isBefore(endRange) && current.isAfter(startRange)) {
+                        if(current.isBefore(endRange) && current.isAfter(startRange)) {
                             boolean hasPassedInterval = TaskTimeUtils.hasPassedInterval(task);
-                            if (hasPassedInterval) {
+                            if(hasPassedInterval) {
                                 blockTime = false;
                             }
                         }
                     } else {
                         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-                        if (minecraftTime.equals(taskTime.getTime1().format(formatter))) {
+                        if(minecraftTime.equals(taskTime.getTime1().format(formatter))) {
                             blockTime = false;
                         }
                     }
@@ -84,15 +88,15 @@ public class TaskRunner implements Runnable {
 
                     LocalTime current = LocalTime.now().withNano(0);
 
-                    if (taskTime.isRange()) {
+                    if(taskTime.isRange()) {
                         Messages.sendDebugConsole("Found time range");
 
                         LocalTime startRange = taskTime.getTime1();
                         LocalTime endRange = taskTime.getTime2();
 
-                        if (current.isBefore(endRange) && current.isAfter(startRange)) {
+                        if(current.isBefore(endRange) && current.isAfter(startRange)) {
                             boolean hasPassedInterval = TaskTimeUtils.hasPassedInterval(task);
-                            if (hasPassedInterval) {
+                            if(hasPassedInterval) {
                                 blockTime = false;
                             }
                         }
@@ -102,7 +106,7 @@ public class TaskRunner implements Runnable {
                         String currentFormat = current.format(formatter);
                         String time1Format = taskTime.getTime1().format(formatter);
 
-                        if (!currentFormat.equals(time1Format)) {
+                        if(!currentFormat.equals(time1Format)) {
                             Messages.sendDebugConsole("Time " + currentFormat + " does not correspond to " + time1Format);
                         } else {
                             blockTime = false;
@@ -113,18 +117,18 @@ public class TaskRunner implements Runnable {
         } else {
             blockTime = false;
             boolean hasPassedInterval = TaskTimeUtils.hasPassedInterval(task);
-            if (!hasPassedInterval) {
+            if(!hasPassedInterval) {
                 Messages.sendDebugConsole("Timer has been executed before");
                 return;
             }
         }
 
-        if (blockTime) {
+        if(blockTime) {
             Messages.sendDebugConsole("Execution has been blocked because times do not correspond");
             return;
         }
 
-        if (task.getCommandExecutionMode().equals(CommandExecutionMode.INTERVAL)) {
+        if(task.getCommandExecutionMode().equals(CommandExecutionMode.INTERVAL)) {
             Bukkit.getScheduler().runTaskTimer(
                     CommandTimerPlugin.getPlugin(),
                     new CommandIntervalExecutorRunnable(task),
@@ -138,7 +142,7 @@ public class TaskRunner implements Runnable {
         task.setLastExecuted(new Date());
         task.setTimesExecuted(task.getTimesExecuted() + 1);
 
-        if (selectedCommandIndex == -1) {
+        if(selectedCommandIndex == -1) {
             task.setLastExecutedCommandIndex(0);
             task.getCommands().forEach(tasksManager::addTaskCommandExecution);
         } else {
@@ -150,10 +154,13 @@ public class TaskRunner implements Runnable {
 
     @Override
     public void run() {
-        Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
+        Bukkit.getScheduler().runTaskTimer(CommandTimerPlugin.getPlugin(), new TimerTask() {
             @Override
             public void run() {
+                if(tasksManager.stopRunner) {
+                    return;
+                }
+
                 List<Task> tasks = CommandTimerPlugin.getInstance().getTasksManager().getLoadedTasks();
 
                 tasks.forEach(task -> processTask(task));

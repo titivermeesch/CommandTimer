@@ -16,7 +16,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +43,8 @@ public class TasksManager {
 
     @Nullable
     public Task getTaskByName(String name) {
-        Optional<Task> optionalTask = loadedTasks.stream().filter(task -> task.getName().equalsIgnoreCase(name)).findFirst();
+        Optional<Task> optionalTask =
+                loadedTasks.stream().filter(task -> task.getName().equalsIgnoreCase(name)).findFirst();
         return optionalTask.orElse(null);
     }
 
@@ -52,7 +52,7 @@ public class TasksManager {
         try {
             java.nio.file.Files.delete(Paths.get(Files.getTaskFile(task.getName())));
             loadedTasks.remove(task);
-        } catch (IOException e) {
+        } catch(IOException e) {
             e.printStackTrace();
         }
     }
@@ -62,7 +62,7 @@ public class TasksManager {
     }
 
     private void startRunner() {
-        Runnable runner = new TaskRunner();
+        Runnable runner = new TaskRunner(this);
         Thread thread = new Thread(runner);
         thread.start();
         this.runnerThread = thread;
@@ -71,10 +71,10 @@ public class TasksManager {
     private void runConsolePerUserCommand(TaskCommand taskCommand) throws CommandException {
         String command = taskCommand.getCommand();
 
-        for (Player p : Bukkit.getOnlinePlayers()) {
-            if (taskCommand.getTask().getCondition() != null) {
+        for(Player p : Bukkit.getOnlinePlayers()) {
+            if(taskCommand.getTask().getCondition() != null) {
                 boolean valid = TaskValidationHelpers.processCondition(taskCommand.getTask().getCondition(), p);
-                if (!valid) {
+                if(!valid) {
                     Messages.sendDebugConsole("Conditions did not match");
                     continue;
                 }
@@ -85,9 +85,9 @@ public class TasksManager {
     }
 
     private void runConsoleCommand(TaskCommand taskCommand) throws CommandException {
-        if (taskCommand.getTask().getCondition() != null) {
+        if(taskCommand.getTask().getCondition() != null) {
             boolean valid = TaskValidationHelpers.processCondition(taskCommand.getTask().getCondition(), null);
-            if (!valid) {
+            if(!valid) {
                 Messages.sendDebugConsole("Conditions did not match");
                 return;
             }
@@ -100,10 +100,10 @@ public class TasksManager {
     private void runPlayerCommand(TaskCommand taskCommand) {
         String command = taskCommand.getCommand();
 
-        for (Player p : Bukkit.getOnlinePlayers()) {
-            if (taskCommand.getTask().getCondition() != null) {
+        for(Player p : Bukkit.getOnlinePlayers()) {
+            if(taskCommand.getTask().getCondition() != null) {
                 boolean valid = TaskValidationHelpers.processCondition(taskCommand.getTask().getCondition(), p);
-                if (!valid) {
+                if(!valid) {
                     Messages.sendDebugConsole("Conditions did not match");
                     continue;
                 }
@@ -112,8 +112,9 @@ public class TasksManager {
             String parsedCommand = PAPIHook.parsePAPI(command, p);
             boolean executed = p.performCommand(parsedCommand);
 
-            if (!executed) {
-                String errorMessage = new StringEnhancer("Failed to execute command {command}").add("taskName", command).parse();
+            if(!executed) {
+                String errorMessage = new StringEnhancer("Failed to execute command {command}").add("taskName",
+                        command).parse();
                 throw new CommandException(errorMessage);
             }
         }
@@ -122,16 +123,16 @@ public class TasksManager {
     private void runOperatorCommand(TaskCommand taskCommand) {
         String command = taskCommand.getCommand();
 
-        for (Player p : Bukkit.getOnlinePlayers()) {
+        for(Player p : Bukkit.getOnlinePlayers()) {
             boolean wasAlreadyOp = p.isOp();
 
             try {
-                if (taskCommand.getTask().getCondition() != null) {
+                if(taskCommand.getTask().getCondition() != null) {
                     boolean valid = TaskValidationHelpers.processCondition(taskCommand.getTask().getCondition(), p);
-                    if (!valid) {
+                    if(!valid) {
                         Messages.sendDebugConsole("Conditions did not match");
 
-                        if (!wasAlreadyOp) {
+                        if(!wasAlreadyOp) {
                             p.setOp(false);
                         }
                         continue;
@@ -140,7 +141,7 @@ public class TasksManager {
 
                 p.performCommand(PAPIHook.parsePAPI(command, p));
             } finally {
-                if (!wasAlreadyOp) {
+                if(!wasAlreadyOp) {
                     p.setOp(false);
                 }
             }
@@ -163,13 +164,13 @@ public class TasksManager {
                     Gender gender = taskCommand.getGender();
 
                     // Choose correct gender executor
-                    if (gender.equals(Gender.CONSOLE)) {
+                    if(gender.equals(Gender.CONSOLE)) {
                         runConsoleCommand(taskCommand);
-                    } else if (gender.equals(Gender.PLAYER)) {
+                    } else if(gender.equals(Gender.PLAYER)) {
                         runPlayerCommand(taskCommand);
-                    } else if (gender.equals(Gender.OPERATOR)) {
+                    } else if(gender.equals(Gender.OPERATOR)) {
                         runOperatorCommand(taskCommand);
-                    } else if (gender.equals(Gender.CONSOLE_PER_USER)) {
+                    } else if(gender.equals(Gender.CONSOLE_PER_USER)) {
                         runConsolePerUserCommand(taskCommand);
                     }
 
@@ -185,12 +186,12 @@ public class TasksManager {
     public int getNextTaskCommandIndex(Task task) {
         // If it remains -1, that means that all commands should be executed
         int selectedCommandIndex = -1;
-        if (task.getCommandExecutionMode().equals(CommandExecutionMode.RANDOM)) {
+        if(task.getCommandExecutionMode().equals(CommandExecutionMode.RANDOM)) {
             selectedCommandIndex = Tools.getRandomInt(0, task.getCommands().size() - 1);
-        } else if (task.getCommandExecutionMode().equals(CommandExecutionMode.ORDERED)) {
+        } else if(task.getCommandExecutionMode().equals(CommandExecutionMode.ORDERED)) {
             int currentLatestCommandIndex = task.getLastExecutedCommandIndex();
 
-            if (currentLatestCommandIndex == task.getCommands().size() - 1) {
+            if(currentLatestCommandIndex == task.getCommands().size() - 1) {
                 selectedCommandIndex = 0;
             } else {
                 selectedCommandIndex = currentLatestCommandIndex + 1;
