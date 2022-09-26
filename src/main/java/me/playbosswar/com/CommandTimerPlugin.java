@@ -48,7 +48,6 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
         inventoryManager = new InventoryManager(this);
         conditionEngineManager = new ConditionEngineManager();
         inventoryManager.init();
-        Files.deserializeJsonFilesIntoCommandTimers();
 
         Tools.printDate();
         Messages.sendConsole("&e" + getDescription().getVersion() + "&a loaded!");
