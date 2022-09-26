@@ -3,3 +3,4 @@ debug: false
 showUpdateMessage: true
 timezoneOverwrite: false
 timezoneOverwriteValue: 'GMT'
+language: 'en'

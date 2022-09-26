@@ -34,6 +34,7 @@ public class Files {
         timersFile.mkdir();
         extensionsFolder.mkdir();
         CommandTimerPlugin.getPlugin().saveResource("languages/en.json", false);
+        CommandTimerPlugin.getPlugin().saveResource("languages/default.json", true);
     }
 
     /**

@@ -12,9 +12,14 @@ import me.playbosswar.com.tasks.TasksManager;
 import me.playbosswar.com.updater.Updater;
 import me.playbosswar.com.utils.*;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.io.File;
+import java.io.IOException;
 
 public class CommandTimerPlugin extends JavaPlugin implements Listener {
     private static Plugin plugin;
@@ -36,7 +41,7 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
         this.loadSentry();
 
         this.loadConfig();
-        languageManager = new LanguageManager(this);
+        languageManager = new LanguageManager(this, getConfig().getString("language"));
         this.registerCommands();
 
         Bukkit.getPluginManager().registerEvents(new JoinEvents(), this);
@@ -69,6 +74,7 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
         Files.createDataFolders();
         saveDefaultConfig();
         getConfig().options().copyDefaults(true);
+        loadDefaults();
     }
 
     private void loadSentry() {
@@ -84,6 +90,23 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
             scope.setContexts("ip", getPlugin().getServer().getIp());
             scope.setContexts("loadedTasks", getTasksManager().getLoadedTasks().size());
         });
+    }
+
+    private void loadDefaults() {
+        File existingConfigFile = new File(this.getDataFolder(), "config.yml");
+        FileConfiguration existingFileConfiguration = YamlConfiguration.loadConfiguration(existingConfigFile);
+
+        for(String section : getConfig().getConfigurationSection("").getKeys(true)) {
+            if(existingFileConfiguration.get(section) != null) continue;
+
+            existingFileConfiguration.set(section, getConfig().get(section));
+        }
+
+        try {
+            existingFileConfiguration.save(existingConfigFile);
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static Plugin getPlugin() {
