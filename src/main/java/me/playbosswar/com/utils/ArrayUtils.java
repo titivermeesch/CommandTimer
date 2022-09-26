@@ -2,13 +2,12 @@ package me.playbosswar.com.utils;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ArrayUtils {
     public static <T> T getNextValueInArray(List<T> list, T currentValue) {
         int currentIndex = list.indexOf(currentValue);
 
-        if(currentIndex == list.size() -1) {
+        if(currentIndex == list.size() - 1) {
             return list.get(0);
         }
 
@@ -16,10 +15,10 @@ public class ArrayUtils {
     }
 
     public static <T> T getNextValueInArray(T[] arr, T currentValue) {
-        List<T> list = Arrays.stream(arr).collect(Collectors.toList());
+        List<T> list = Arrays.stream(arr).toList();
         int currentIndex = list.indexOf(currentValue);
 
-        if(currentIndex == list.size() -1) {
+        if(currentIndex == list.size() - 1) {
             return list.get(0);
         }
 

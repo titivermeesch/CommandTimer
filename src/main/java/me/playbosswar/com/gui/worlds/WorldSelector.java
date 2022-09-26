@@ -8,6 +8,8 @@ import fr.minuskube.inv.content.InventoryProvider;
 import fr.minuskube.inv.content.Pagination;
 import me.playbosswar.com.CommandTimerPlugin;
 import me.playbosswar.com.gui.HorizontalIteratorWithBorder;
+import me.playbosswar.com.language.LanguageKey;
+import me.playbosswar.com.language.LanguageManager;
 import me.playbosswar.com.utils.Callback;
 import me.playbosswar.com.utils.Items;
 import org.bukkit.Bukkit;
@@ -20,19 +22,20 @@ import java.util.List;
 public class WorldSelector implements InventoryProvider {
     public final SmartInventory INVENTORY;
     private final List<String> selectedWorlds;
-    private final Callback callback;
+    private final Callback<List<String>> callback;
     private final boolean allowMulti;
 
-    public WorldSelector(Callback callback, List<String> selectedWorlds, boolean allowMulti) {
+    public WorldSelector(Callback<List<String>> callback, List<String> selectedWorlds, boolean allowMulti) {
         this.callback = callback;
         this.selectedWorlds = selectedWorlds;
         this.allowMulti = allowMulti;
+        LanguageManager languageManager = CommandTimerPlugin.getLanguageManager();
         INVENTORY = SmartInventory.builder()
-                .id("task-times-specific")
+                .id("select-task-world")
                 .provider(this)
                 .manager(CommandTimerPlugin.getInstance().getInventoryManager())
                 .size(6, 9)
-                .title("§9§lEdit specific time")
+                .title(languageManager.get(LanguageKey.SELECT_WORLD_GUI_TITLE))
                 .build();
     }
 
@@ -57,10 +60,11 @@ public class WorldSelector implements InventoryProvider {
 
         ClickableItem[] items = new ClickableItem[worlds.size()];
 
-        for (int i = 0; i < items.length; i++) {
+        for(int i = 0; i < items.length; i++) {
             World world = worlds.get(i);
 
-            ItemStack item = Items.getToggleItem("§b" + world.getName(), new String[]{}, selectedWorlds.contains(world.getName()));
+            ItemStack item = Items.getToggleItem("§b" + world.getName(), new String[]{},
+                    selectedWorlds.contains(world.getName()));
             items[i] = ClickableItem.of(item, e -> {
                 if(!allowMulti) {
                     selectedWorlds.clear();

@@ -8,17 +8,20 @@ import fr.minuskube.inv.content.InventoryProvider;
 import me.playbosswar.com.CommandTimerPlugin;
 import me.playbosswar.com.gui.MainMenu;
 import me.playbosswar.com.hooks.HookType;
+import me.playbosswar.com.language.LanguageKey;
+import me.playbosswar.com.language.LanguageManager;
 import me.playbosswar.com.utils.Items;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
+// TODO: Test in 1.8, there was a bug report
 public class MainIntegrationsMenu implements InventoryProvider {
     public SmartInventory INVENTORY;
+    private final LanguageManager languageManager = CommandTimerPlugin.getLanguageManager();
 
     public MainIntegrationsMenu() {
         INVENTORY = SmartInventory.builder()
@@ -26,7 +29,7 @@ public class MainIntegrationsMenu implements InventoryProvider {
                 .provider(this)
                 .manager(CommandTimerPlugin.getInstance().getInventoryManager())
                 .size(3, 9)
-                .title("§9§lIntegrations")
+                .title(languageManager.get(LanguageKey.INTEGRATIONS_GUI_TITLE))
                 .build();
     }
 
@@ -34,15 +37,18 @@ public class MainIntegrationsMenu implements InventoryProvider {
         contents.fillBorders(ClickableItem.empty(XMaterial.BLUE_STAINED_GLASS_PANE.parseItem()));
 
         int i = 1;
-        for (HookType hookType : HookType.values()) {
+        for(HookType hookType : HookType.values()) {
             boolean enabled = CommandTimerPlugin.getInstance().getHooksManager().isHookEnabled(hookType);
             ItemStack item = enabled ? XMaterial.GREEN_WOOL.parseItem() : XMaterial.RED_WOOL.parseItem();
             ItemMeta meta = item.getItemMeta();
             meta.setDisplayName("§b" + hookType.getDisplayName());
-            List<String> lore = Arrays.asList(hookType.getLoreDescription());
+            List<String> lore = hookType.getLoreDescription();
             lore = new ArrayList<>(lore);
             lore.add("");
-            lore.add(enabled ? "§7Status: §a§lActive" : "§7Status: §6§lIntegration not loaded");
+            lore.add(languageManager.get(LanguageKey.STATUS,
+                    enabled ?
+                            languageManager.get(LanguageKey.STATUS_ACTIVE) :
+                            languageManager.get(LanguageKey.STATUS_NOT_ACTIVE)));
             meta.setLore(lore);
             item.setItemMeta(meta);
 

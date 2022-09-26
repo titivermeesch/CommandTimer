@@ -11,6 +11,8 @@ import me.playbosswar.com.gui.tasks.general.GeneralLimitsMenu;
 import me.playbosswar.com.gui.tasks.general.TextInputConversationPrompt;
 import me.playbosswar.com.gui.tasks.scheduler.MainScheduleMenu;
 import me.playbosswar.com.gui.conditions.ConditionMenu;
+import me.playbosswar.com.language.LanguageKey;
+import me.playbosswar.com.language.LanguageManager;
 import me.playbosswar.com.tasks.Task;
 import me.playbosswar.com.utils.Callback;
 import me.playbosswar.com.utils.Items;
@@ -20,6 +22,7 @@ import org.bukkit.inventory.ItemStack;
 
 public class EditTaskMenu implements InventoryProvider {
     public SmartInventory INVENTORY;
+    private final LanguageManager languageManager = CommandTimerPlugin.getLanguageManager();
     private final Task task;
 
     public EditTaskMenu(Task task) {
@@ -29,7 +32,7 @@ public class EditTaskMenu implements InventoryProvider {
                 .provider(this)
                 .manager(CommandTimerPlugin.getInstance().getInventoryManager())
                 .size(3, 9)
-                .title("§9§lEdit " + task.getName())
+                .title(languageManager.get(LanguageKey.EDIT_TASK_GUI_TITLE, task.getName()))
                 .build();
     }
 
@@ -38,64 +41,64 @@ public class EditTaskMenu implements InventoryProvider {
 
         ConversationFactory conversationFactory = new ConversationFactory(CommandTimerPlugin.getPlugin())
                 .withModality(true)
-                .withFirstPrompt(new TextInputConversationPrompt<String>("Enter your new task name:", text -> {
+                .withFirstPrompt(new TextInputConversationPrompt(LanguageKey.NEW_TASK_INPUT, text -> {
                     task.setName(text);
                     new EditTaskMenu(task).INVENTORY.open(player);
                 }));
 
-        String[] nameLore = new String[]{ "", "§7Change the display name of this task" };
-        ItemStack nameItem = Items.generateItem("§bTask name", XMaterial.PAPER, nameLore);
+        String[] nameLore = languageManager.getList(LanguageKey.CHANGE_TASK_DISPLAY_NAME_LORE).toArray(new String[]{});
+        ItemStack nameItem = Items.generateItem(LanguageKey.CHANGE_TASK_DISPLAY_NAME_TITLE, XMaterial.PAPER, nameLore);
         ClickableItem clickableNameItem = ClickableItem.of(nameItem, e -> {
             player.closeInventory();
             conversationFactory.buildConversation(player).begin();
         });
         contents.set(1, 1, clickableNameItem);
 
-        String[] scheduleLore = new String[]{ "", "§7Choose when this task will be executed" };
-        ItemStack scheduleItem = Items.generateItem("§bSchedule settings", XMaterial.CLOCK, scheduleLore);
+        String[] scheduleLore =
+                languageManager.getList(LanguageKey.CHANGE_TASK_SCHEDULE_SETTINGS_LORE).toArray(new String[]{});
+        ItemStack scheduleItem = Items.generateItem(LanguageKey.CHANGE_TASK_SCHEDULE_SETTINGS_TITLE, XMaterial.CLOCK,
+                scheduleLore);
         ClickableItem clickableScheduleItem = ClickableItem.of(scheduleItem,
-                                                               e -> new MainScheduleMenu(task).INVENTORY.open(player));
+                e -> new MainScheduleMenu(task).INVENTORY.open(player));
         contents.set(1, 2, clickableScheduleItem);
 
-        String[] commandsLore = new String[]{ "", "§7Choose which commands to execute" };
-        ItemStack commandsItem = Items.generateItem("§bCommands", XMaterial.COMMAND_BLOCK, commandsLore);
+        String[] commandsLore = languageManager.getList(LanguageKey.CHANGE_TASK_COMMANDS_LORE).toArray(new String[]{});
+        ItemStack commandsItem = Items.generateItem(LanguageKey.CHANGE_TASK_COMMANDS_TITLE, XMaterial.COMMAND_BLOCK,
+                commandsLore);
         ClickableItem clickableCommandsItem = ClickableItem.of(commandsItem,
-                                                               e -> new AllCommandsMenu(task).INVENTORY.open(player));
+                e -> new AllCommandsMenu(task).INVENTORY.open(player));
         contents.set(1, 3, clickableCommandsItem);
 
-        String[] generalLimitsLore = new String[]{ "",
-                "§7Add more limits to this task to",
-                "§7limit when the task can be executed.",
-                "",
-                "§bAvailable limits:",
-                "§7  - Maximum executions",
-        };
-        ItemStack generalLimitsItem = Items.generateItem("§bGeneral limits", XMaterial.GOLD_INGOT, generalLimitsLore);
+        String[] generalLimitsLore =
+                languageManager.getList(LanguageKey.CHANGE_TASK_LIMITS_LORE).toArray(new String[]{});
+        ItemStack generalLimitsItem = Items.generateItem(LanguageKey.CHANGE_TASK_LIMITS_TITLE, XMaterial.GOLD_INGOT,
+                generalLimitsLore);
         ClickableItem clickableGeneralLimitsItem = ClickableItem.of(generalLimitsItem,
-                                                                    e -> new GeneralLimitsMenu(task).INVENTORY.open(player));
+                e -> new GeneralLimitsMenu(task).INVENTORY.open(player));
         contents.set(1, 4, clickableGeneralLimitsItem);
 
-        Callback conditionItemCallback = (Callback<String>) data -> INVENTORY.open(player);
-        String[] conditionLore = new String[]{ "",
-                "§7Conditions allow you to have an overall",
-                "§7control of when your tasks should be executed",
-                "§7or when not"
-        };
-        ItemStack conditionItem = Items.generateItem("§bCondition", XMaterial.COMPARATOR, conditionLore);
+        Callback<String> conditionItemCallback = data -> INVENTORY.open(player);
+        String[] conditionLore =
+                languageManager.getList(LanguageKey.CHANGE_TASK_CONDITIONS_LORE).toArray(new String[]{});
+        ItemStack conditionItem = Items.generateItem(LanguageKey.CHANGE_TASK_CONDITIONS_TITLE, XMaterial.COMPARATOR,
+                conditionLore);
         ClickableItem clickableCondition = ClickableItem.of(conditionItem,
-                                                            e -> new ConditionMenu(
-                                                                    task.getCondition(),
-                                                                    conditionItemCallback
-                                                            ).INVENTORY.open(player));
+                e -> new ConditionMenu(
+                        task.getCondition(),
+                        conditionItemCallback
+                ).INVENTORY.open(player));
         contents.set(1, 5, clickableCondition);
 
         boolean isActive = task.isActive();
-        String[] activationLore = new String[]{ "",
-                "§7Choose if this task should run or not",
+        String[] activationLore = new String[]{"",
+                languageManager.get(LanguageKey.TASK_ACTIVATION_LORE),
                 "",
-                "§7Current: " + (isActive ? "§aActive" : "§cNot active")
+                languageManager.get(LanguageKey.GUI_CURRENT, (isActive ?
+                        languageManager.get(LanguageKey.STATUS_ACTIVE) :
+                        languageManager.get(LanguageKey.STATUS_NOT_ACTIVE)))
         };
-        contents.set(1, 6, ClickableItem.of(Items.getToggleItem("§bActivation status", activationLore, isActive), e -> {
+        contents.set(1, 6, ClickableItem.of(Items.getToggleItem(LanguageKey.TASK_ACTIVATION_TITLE, activationLore,
+                isActive), e -> {
             task.toggleActive();
             this.INVENTORY.open(player);
         }));

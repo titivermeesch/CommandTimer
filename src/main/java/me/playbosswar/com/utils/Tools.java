@@ -1,13 +1,19 @@
 package me.playbosswar.com.utils;
 
+import me.playbosswar.com.CommandTimerPlugin;
 import me.playbosswar.com.utils.*;
 import org.bukkit.World;
 
+import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Random;
+import java.util.TimeZone;
 
 public class Tools {
     /**
@@ -25,7 +31,6 @@ public class Tools {
      * Returns a boolean value based on the value
      *
      * @param random - value between 0 and 1
-     *
      * @return boolean
      */
     public static boolean randomCheck(double random) {
@@ -68,14 +73,20 @@ public class Tools {
         return realHours + ":" + mm;
     }
 
+    public static String getTimeString(int seconds, String format) {
+        Date d = new Date(seconds * 1000L);
+        SimpleDateFormat df = new SimpleDateFormat(format);
+        Calendar now = Calendar.getInstance();
+        now.getTimeZone().setRawOffset(0);
+        TimeZone timezone = now.getTimeZone();
+        if (CommandTimerPlugin.getPlugin().getConfig().getBoolean("timezoneOverwrite")) {
+            timezone = TimeZone.getTimeZone(CommandTimerPlugin.getPlugin().getConfig().getString("timezoneOverwriteValue"));
+        }
+        df.setTimeZone(timezone);
+        return df.format(d);
+    }
+
     public static String getTimeString(int seconds) {
-        int h = seconds / 3600;
-        int m = (seconds % 3600) / 60;
-        int s = seconds % 60;
-        String sh = (h > 0 ? h + " " + "h" : "");
-        String sm = (m < 10 && m > 0 && h > 0 ? "0" : "") + (m > 0 ? (h > 0 && s == 0 ? String.valueOf(m) : m + " " + "min") :
-                "");
-        String ss = (s == 0 && (h > 0 || m > 0) ? "" : (s < 10 && (h > 0 || m > 0) ? "0" : "") + s + " " + "sec");
-        return sh + (h > 0 ? " " : "") + sm + (m > 0 ? " " : "") + ss;
+        return getTimeString(seconds, "HH:mm:ss");
     }
 }

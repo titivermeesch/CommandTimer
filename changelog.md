@@ -1,3 +1,21 @@
+## 6.4 26/09/2022
+
+- Fix tasks being loaded twice on server startup
+- Add automatic Sentry error reporting
+- Decrease fail rate when using timed tasks
+- Add translation possibility
+- Add fallback label in placeholders
+- Allow choosing time format in placeholders
+- Allow manually entering a number in the number selectors
+- Add message notification when a new update is available
+
+## 6.3 - 05/09/2022
+
+- 1.19.2 support
+- remove AnvilGUI in favour of vanilla conversation api
+- small GUI improvements
+- take into account days for PAPI placeholder calculation
+
 ## 6.2.4 - 22/06/2022
 
 - Support Spigot 1.19

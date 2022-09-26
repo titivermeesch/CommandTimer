@@ -9,6 +9,8 @@ import fr.minuskube.inv.content.Pagination;
 import me.playbosswar.com.CommandTimerPlugin;
 import me.playbosswar.com.gui.HorizontalIteratorWithBorder;
 import me.playbosswar.com.gui.MainMenu;
+import me.playbosswar.com.language.LanguageKey;
+import me.playbosswar.com.language.LanguageManager;
 import me.playbosswar.com.tasks.Task;
 import me.playbosswar.com.utils.Items;
 import me.playbosswar.com.utils.Messages;
@@ -21,6 +23,7 @@ import java.util.List;
 
 public class AllTasksMenu implements InventoryProvider {
     public SmartInventory INVENTORY;
+    private final LanguageManager languageManager = CommandTimerPlugin.getLanguageManager();
 
     public AllTasksMenu() {
         INVENTORY = SmartInventory.builder()
@@ -28,7 +31,7 @@ public class AllTasksMenu implements InventoryProvider {
                 .provider(this)
                 .manager(CommandTimerPlugin.getInstance().getInventoryManager())
                 .size(6, 9)
-                .title("§9§lAll tasks")
+                .title(languageManager.get(LanguageKey.ALL_TASKS_GUI_TITLE))
                 .build();
     }
 
@@ -40,17 +43,9 @@ public class AllTasksMenu implements InventoryProvider {
         pagination.setItems(getAllTaskItems(player));
         new HorizontalIteratorWithBorder(player, contents, INVENTORY);
 
-        ItemStack createTaskItem = Items.generateItem("§bCreate task",
-                                                      XMaterial.ANVIL,
-                                                      new String[]{ "",
-                                                              "§7A task consists of:",
-                                                              "§7  - A set of conditions",
-                                                              "§7  - One or more commands",
-                                                              "",
-                                                              "§7Based on how you configure it, the commands " +
-                                                                      "will be",
-                                                              "§7executed when the conditions meet."
-                                                      });
+        ItemStack createTaskItem = Items.generateItem(LanguageKey.CREATE_TASK_TITLE,
+                XMaterial.ANVIL,
+                languageManager.getList(LanguageKey.CREATE_TASK_LORE).toArray(new String[]{}));
         ClickableItem createItem = ClickableItem.of(createTaskItem, e ->
                 new EditTaskMenu(CommandTimerPlugin.getInstance().getTasksManager().createTask()).INVENTORY.open(player)
         );
@@ -69,27 +64,29 @@ public class AllTasksMenu implements InventoryProvider {
 
         ClickableItem[] items = new ClickableItem[tasks.size()];
 
-        for (int i = 0; i < items.length; i++) {
+        for(int i = 0; i < items.length; i++) {
             Task task = tasks.get(i);
-            String[] lore = new String[]{ "",
-                    "§7Status: " + (task.isActive() ? "§aActive" : "§cNot active"),
+            String[] lore = new String[]{"",
+                    languageManager.get(LanguageKey.STATUS, (task.isActive() ?
+                            languageManager.get(LanguageKey.STATUS_ACTIVE) :
+                            languageManager.get(LanguageKey.STATUS_NOT_ACTIVE))),
                     "",
-                    "§aLeft-Click to edit",
-                    "§cRight-Click to delete",
+                    languageManager.get(LanguageKey.LEFT_CLICK_EDIT),
+                    languageManager.get(LanguageKey.RIGHT_CLICK_DELETE),
             };
 
             ItemStack item = Items.generateItem("§b" + task.getName(), XMaterial.MAP, lore);
             items[i] = ClickableItem.of(item, e -> {
-                if (e.getClick().equals(ClickType.LEFT)) {
+                if(e.getClick().equals(ClickType.LEFT)) {
                     new EditTaskMenu(task).INVENTORY.open(p);
                     return;
                 }
 
-                if (e.getClick().equals(ClickType.RIGHT)) {
+                if(e.getClick().equals(ClickType.RIGHT)) {
                     try {
                         CommandTimerPlugin.getInstance().getTasksManager().removeTask(task);
                         this.INVENTORY.open(p);
-                    } catch (IOException ioException) {
+                    } catch(IOException ioException) {
                         Messages.sendFailedIO(p);
                         ioException.printStackTrace();
                     }

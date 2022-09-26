@@ -5,14 +5,12 @@ import me.playbosswar.com.tasks.TaskTime;
 import org.joda.time.Duration;
 import org.joda.time.Interval;
 
+import javax.annotation.Nullable;
 import java.time.DayOfWeek;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 public class TaskTimeUtils {
+    @Nullable
     public static Date getSoonestTaskTime(List<TaskTime> taskTimes) {
         List<Date> dates = new ArrayList<>();
 
@@ -26,6 +24,10 @@ public class TaskTimeUtils {
                 dates.add(cal.getTime());
             });
         });
+
+        if (dates.size() == 0) {
+            return null;
+        }
 
         final long now = System.currentTimeMillis();
         return Collections.min(dates, (d1, d2) -> {

@@ -31,14 +31,10 @@ public class Files {
     public static void createDataFolders() {
         File timersFile = new File(pluginFolderPath + "/timers");
         File extensionsFolder = new File(pluginFolderPath + "/extensions");
-        boolean created = timersFile.mkdir();
-        boolean created2 = extensionsFolder.mkdir();
-
-        if (created && created2) {
-            Messages.sendConsole("Data folder has been created");
-        } else {
-            Messages.sendConsole("We could not create the data folder. If it already exists ignore this.");
-        }
+        timersFile.mkdir();
+        extensionsFolder.mkdir();
+        CommandTimerPlugin.getPlugin().saveResource("languages/en.json", false);
+        CommandTimerPlugin.getPlugin().saveResource("languages/default.json", true);
     }
 
     /**
@@ -51,7 +47,7 @@ public class Files {
     private static void setTaskOnConditions(Task task, List<Condition> conditions) {
         conditions.forEach(condition -> {
             condition.setTask(task);
-            if (condition.getConditionType().equals(ConditionType.SIMPLE) || condition.getConditionType().equals(ConditionType.NOT)) {
+            if(condition.getConditionType().equals(ConditionType.SIMPLE) || condition.getConditionType().equals(ConditionType.NOT)) {
                 condition.getSimpleCondition().setTask(task);
             } else {
                 setTaskOnConditions(task, condition.getConditions());
@@ -61,19 +57,19 @@ public class Files {
 
     private static void healTask(Task task) {
         TaskInterval defaultInterval = new TaskInterval(task, 0, 0, 0, 5);
-        if (task.getCommands() == null) {
+        if(task.getCommands() == null) {
             task.setCommands(new ArrayList<>());
         }
 
-        if (task.getInterval() == null) {
+        if(task.getInterval() == null) {
             task.setInterval(defaultInterval);
         }
 
-        if (task.getTimes() == null) {
+        if(task.getTimes() == null) {
             task.setTimes(new ArrayList<>());
         }
 
-        if (task.getCommandExecutionInterval() == null) {
+        if(task.getCommandExecutionInterval() == null) {
             task.setCommandExecutionInterval(defaultInterval);
         }
     }
@@ -85,14 +81,14 @@ public class Files {
         List<Task> tasks = new ArrayList<>();
 
         try {
-            if (directoryListing != null && directoryListing.length > 0) {
-                for (File file : directoryListing) {
-                    if (!file.exists() || !file.getName().contains("json")) {
+            if(directoryListing != null && directoryListing.length > 0) {
+                for(File file : directoryListing) {
+                    if(!file.exists() || !file.getName().contains("json")) {
                         continue;
                     }
 
                     try {
-                        System.out.println("Processing task " + file.getName());
+                        Messages.sendConsole("Processing task " + file.getName());
                         FileReader fr = new FileReader(file.getPath());
 
                         GsonConverter gson = new GsonConverter();
@@ -107,26 +103,26 @@ public class Files {
                         condition.setTask(task);
 
                         SimpleCondition simpleCondition = condition.getSimpleCondition();
-                        if (simpleCondition != null) {
+                        if(simpleCondition != null) {
                             simpleCondition.setTask(task);
                         }
 
-                        if (condition.getConditionType().equals(ConditionType.OR) || condition.getConditionType().equals(ConditionType.AND)) {
+                        if(condition.getConditionType().equals(ConditionType.OR) || condition.getConditionType().equals(ConditionType.AND)) {
                             setTaskOnConditions(task, condition.getConditions());
                         }
 
-                        if (task.isResetExecutionsAfterRestart()) {
+                        if(task.isResetExecutionsAfterRestart()) {
                             task.setTimesExecuted(0);
                         }
 
                         tasks.add(task);
-                    } catch (ParseException e) {
+                    } catch(ParseException e) {
                         Bukkit.getLogger().log(Level.SEVERE, "Failed to process " + file.getName());
                     }
 
                 }
             }
-        } catch (IOException e) {
+        } catch(IOException e) {
             e.printStackTrace();
         }
 
@@ -135,38 +131,39 @@ public class Files {
 
     @Nullable
     public static <T> Class<? extends T> findClass(@NotNull final File file,
-                                                   @NotNull final Class<T> clazz) throws IOException, ClassNotFoundException {
-        if (!file.exists()) {
+                                                   @NotNull final Class<T> clazz) throws IOException,
+            ClassNotFoundException {
+        if(!file.exists()) {
             return null;
         }
 
         final URL jar = file.toURI().toURL();
-        final URLClassLoader loader = new URLClassLoader(new URL[]{ jar }, clazz.getClassLoader());
+        final URLClassLoader loader = new URLClassLoader(new URL[]{jar}, clazz.getClassLoader());
         final List<String> matches = new ArrayList<>();
         final List<Class<? extends T>> classes = new ArrayList<>();
 
-        try (final JarInputStream stream = new JarInputStream(jar.openStream())) {
+        try(final JarInputStream stream = new JarInputStream(jar.openStream())) {
             JarEntry entry;
-            while ((entry = stream.getNextJarEntry()) != null) {
+            while((entry = stream.getNextJarEntry()) != null) {
                 final String name = entry.getName();
-                if (!name.endsWith(".class")) {
+                if(!name.endsWith(".class")) {
                     continue;
                 }
 
                 matches.add(name.substring(0, name.lastIndexOf('.')).replace('/', '.'));
             }
 
-            for (final String match : matches) {
+            for(final String match : matches) {
                 try {
                     final Class<?> loaded = loader.loadClass(match);
-                    if (clazz.isAssignableFrom(loaded)) {
+                    if(clazz.isAssignableFrom(loaded)) {
                         classes.add(loaded.asSubclass(clazz));
                     }
-                } catch (final NoClassDefFoundError ignored) {
+                } catch(final NoClassDefFoundError ignored) {
                 }
             }
         }
-        if (classes.isEmpty()) {
+        if(classes.isEmpty()) {
             loader.close();
             return null;
         }

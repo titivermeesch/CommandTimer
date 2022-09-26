@@ -6,6 +6,9 @@ import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
 import me.playbosswar.com.CommandTimerPlugin;
+import me.playbosswar.com.gui.tasks.general.ClickableTextInputButton;
+import me.playbosswar.com.language.LanguageKey;
+import me.playbosswar.com.language.LanguageManager;
 import me.playbosswar.com.tasks.TaskInterval;
 import me.playbosswar.com.utils.Items;
 import org.bukkit.entity.Player;
@@ -15,8 +18,10 @@ import java.util.function.Consumer;
 
 public class EditIntervalMenu implements InventoryProvider {
     public final SmartInventory INVENTORY;
+    private final LanguageManager languageManager = CommandTimerPlugin.getLanguageManager();
     private final TaskInterval interval;
     private final Consumer<InventoryClickEvent> consumer;
+    private final String[] clockLore = {"", languageManager.get(LanguageKey.LEFT_CLICK_EDIT)};
 
     public EditIntervalMenu(TaskInterval interval, Consumer<InventoryClickEvent> consumer) {
         this.interval = interval;
@@ -26,7 +31,7 @@ public class EditIntervalMenu implements InventoryProvider {
                 .provider(this)
                 .manager(CommandTimerPlugin.getInstance().getInventoryManager())
                 .size(5, 9)
-                .title("§9§lTask interval")
+                .title(languageManager.get(LanguageKey.TASK_INTERVAL_GUI_TITLE))
                 .build();
     }
 
@@ -39,7 +44,17 @@ public class EditIntervalMenu implements InventoryProvider {
             interval.incrementDays();
             refresh(player);
         }));
-        contents.set(2, 1, ClickableItem.empty(Items.generateItem("§b" + interval.getDays() + " days", XMaterial.CLOCK)));
+        ClickableTextInputButton daysClocks = new ClickableTextInputButton(
+                Items.generateItem(languageManager.get(LanguageKey.DAYS_LABEL, String.valueOf(interval.getDays())),
+                        XMaterial.CLOCK,
+                        clockLore),
+                data -> {
+                    int days = Integer.parseInt(data);
+                    interval.setDays(days);
+                    refresh(player);
+                }
+        );
+        contents.set(2, 1, daysClocks.getItem());
         contents.set(3, 1, ClickableItem.of(Items.getSubstractItem(), e -> {
             interval.decrementDays();
             refresh(player);
@@ -50,7 +65,17 @@ public class EditIntervalMenu implements InventoryProvider {
             interval.incrementHours();
             refresh(player);
         }));
-        contents.set(2, 3, ClickableItem.empty(Items.generateItem("§b" + interval.getHours() + " hours", XMaterial.CLOCK)));
+        ClickableTextInputButton hoursClock = new ClickableTextInputButton(
+                Items.generateItem(languageManager.get(LanguageKey.HOURS_LABEL, String.valueOf(interval.getHours())),
+                        XMaterial.CLOCK,
+                        clockLore),
+                data -> {
+                    int hours = Integer.parseInt(data);
+                    interval.setHours(hours);
+                    refresh(player);
+                }
+        );
+        contents.set(2, 3, hoursClock.getItem());
         contents.set(3, 3, ClickableItem.of(Items.getSubstractItem(), e -> {
             interval.decrementHours();
             refresh(player);
@@ -61,7 +86,18 @@ public class EditIntervalMenu implements InventoryProvider {
             interval.incrementMinutes();
             refresh(player);
         }));
-        contents.set(2, 5, ClickableItem.empty(Items.generateItem("§b" + interval.getMinutes() + " minutes", XMaterial.CLOCK)));
+        ClickableTextInputButton minutesClock = new ClickableTextInputButton(
+                Items.generateItem(languageManager.get(LanguageKey.MINUTES_LABEL,
+                                String.valueOf(interval.getMinutes())),
+                        XMaterial.CLOCK,
+                        clockLore),
+                data -> {
+                    int minutes = Integer.parseInt(data);
+                    interval.setMinutes(minutes);
+                    refresh(player);
+                }
+        );
+        contents.set(2, 5, minutesClock.getItem());
         contents.set(3, 5, ClickableItem.of(Items.getSubstractItem(), e -> {
             interval.decrementMinutes();
             refresh(player);
@@ -72,7 +108,18 @@ public class EditIntervalMenu implements InventoryProvider {
             interval.incrementSeconds();
             refresh(player);
         }));
-        contents.set(2, 7, ClickableItem.empty(Items.generateItem("§b" + interval.getSeconds() + " seconds", XMaterial.CLOCK)));
+        ClickableTextInputButton secondsClock = new ClickableTextInputButton(
+                Items.generateItem(languageManager.get(LanguageKey.SECONDS_LABEL,
+                                String.valueOf(interval.getSeconds())),
+                        XMaterial.CLOCK,
+                        clockLore),
+                data -> {
+                    int seconds = Integer.parseInt(data);
+                    interval.setSeconds(seconds);
+                    refresh(player);
+                }
+        );
+        contents.set(2, 7, secondsClock.getItem());
         contents.set(3, 7, ClickableItem.of(Items.getSubstractItem(), e -> {
             interval.decrementSeconds();
             refresh(player);
@@ -87,5 +134,7 @@ public class EditIntervalMenu implements InventoryProvider {
 
     }
 
-    private void refresh(Player player) {this.INVENTORY.open(player);}
+    private void refresh(Player player) {
+        this.INVENTORY.open(player);
+    }
 }
