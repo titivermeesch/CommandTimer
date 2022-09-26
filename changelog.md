@@ -1,3 +1,10 @@
+## 6.3 - 05/09/2022
+
+- 1.19.2 support
+- remove AnvilGUI in favour of vanilla conversation api
+- small GUI improvements
+- take into account days for PAPI placeholder calculation
+
 ## 6.2.4 - 22/06/2022
 
 - Support Spigot 1.19
