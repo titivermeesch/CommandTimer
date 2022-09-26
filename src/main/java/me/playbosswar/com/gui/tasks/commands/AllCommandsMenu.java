@@ -19,7 +19,9 @@ import me.playbosswar.com.enums.Gender;
 import me.playbosswar.com.utils.Items;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.List;
 import java.util.UUID;
@@ -61,6 +63,7 @@ public class AllCommandsMenu implements InventoryProvider {
         contents.set(0, 0, clickableAddItem);
 
         List<String> selectModeLore = languageManager.getList(LanguageKey.GENDER_LORE);
+        selectModeLore.add("");
         selectModeLore.add(languageManager.get(LanguageKey.GUI_CURRENT, task.getCommandExecutionMode().toString()));
         selectModeLore.add(
                 languageManager.get(LanguageKey.CURRENT_INTERVAL,
@@ -74,6 +77,8 @@ public class AllCommandsMenu implements InventoryProvider {
 
         ItemStack selectModeItem = Items.generateItem(LanguageKey.EXECUTION_MODE, XMaterial.DIAMOND_SHOVEL,
                 selectModeLore.toArray(new String[]{}));
+        ItemMeta selectedModeItemMeta = selectModeItem.getItemMeta();
+        selectedModeItemMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         ClickableItem clickableSelectModeItem = ClickableItem.of(selectModeItem, e -> {
             if(e.getClick().equals(ClickType.LEFT)) {
                 task.switchCommandExecutionMode();

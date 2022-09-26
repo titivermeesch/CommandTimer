@@ -11,9 +11,7 @@ import org.json.simple.parser.ParseException;
 
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class LanguageManager {
     private final Plugin plugin;
@@ -85,11 +83,11 @@ public class LanguageManager {
         return translation;
     }
 
-    public List<String> getList(LanguageKey key, String... replacers) {
-        return List.of(get(key, replacers).split("\n"));
+    public ArrayList<String> getList(LanguageKey key, String... replacers) {
+        return new ArrayList<>(Arrays.asList(get(key, replacers).split("\n")));
     }
 
-    public List<String> getList(LanguageKey key) {
-        return List.of(get(key).split("\n"));
+    public ArrayList<String> getList(LanguageKey key) {
+        return new ArrayList<>(Arrays.asList(get(key).split("\n")));
     }
 }

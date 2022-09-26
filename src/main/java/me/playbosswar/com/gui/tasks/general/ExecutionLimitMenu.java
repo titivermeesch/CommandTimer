@@ -40,6 +40,7 @@ public class ExecutionLimitMenu implements InventoryProvider {
         contents.fillBorders(ClickableItem.empty(XMaterial.BLUE_STAINED_GLASS_PANE.parseItem()));
 
         List<String> limitLore = languageManager.getList(LanguageKey.TASK_EXECUTION_LIMIT_LORE);
+        limitLore.add("");
         limitLore.add(languageManager.get(LanguageKey.GUI_CURRENT, String.valueOf(task.getExecutionLimit())));
 
         ItemStack limitItem = Items.generateItem("§bLimit", XMaterial.STICK, limitLore.toArray(new String[]{}));

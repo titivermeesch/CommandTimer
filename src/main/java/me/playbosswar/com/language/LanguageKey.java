@@ -129,6 +129,7 @@ public enum LanguageKey {
     PAPI_INTEGRATION_DESCRIPTION,
     METRICS_INTEGRATION_LABEL,
     METRICS_INTEGRATION_DESCRIPTION,
+    USED_MINECRAFT_WORLD,
     MINECRAFT_TIME;
 
     public static LanguageKey getByTag(String tag) {

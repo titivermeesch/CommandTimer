@@ -41,6 +41,7 @@ public class GeneralLimitsMenu implements InventoryProvider {
                 String.valueOf(task.getExecutionLimit()),
                 String.valueOf(task.getTimesExecuted()),
                 String.valueOf(task.isResetExecutionsAfterRestart()));
+        executionLimitLore.add("");
         executionLimitLore.add(languageManager.get(LanguageKey.LEFT_CLICK_EDIT));
         executionLimitLore.add(languageManager.get(LanguageKey.RIGHT_CLICK_RESET_EXECUTIONS));
 

@@ -52,6 +52,7 @@ public class EditSpecificTimeMenu implements InventoryProvider {
 
         List<String> time2Lore = languageManager.getList(LanguageKey.TIME_TWO_LORE, (taskTime.getTime2() == null ?
                 "Not set" : taskTime.getTime2().toString()));
+        time2Lore.add("");
         time2Lore.add(languageManager.get(LanguageKey.LEFT_CLICK_EDIT));
         time2Lore.add(languageManager.get(LanguageKey.RIGHT_CLICK_DELETE));
 
@@ -81,7 +82,7 @@ public class EditSpecificTimeMenu implements InventoryProvider {
             String[] worldLore = languageManager.getList(
                     LanguageKey.MINECRAFT_TIME_LORE,
                     (taskTime.getWorld() == null ? languageManager.get(LanguageKey.NOT_SET) : taskTime.getWorld())).toArray(new String[]{});
-            ItemStack worldItem = Items.generateItem("§bUsed world for Minecraft time", XMaterial.MAP, worldLore);
+            ItemStack worldItem = Items.generateItem(LanguageKey.USED_MINECRAFT_WORLD, XMaterial.MAP, worldLore);
             Callback<List<String>> worldCallback = worlds -> {
                 taskTime.setWorld(worlds.get(0));
                 new EditSpecificTimeMenu(taskTime).INVENTORY.open(player);

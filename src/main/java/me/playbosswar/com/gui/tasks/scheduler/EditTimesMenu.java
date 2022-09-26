@@ -71,7 +71,7 @@ public class EditTimesMenu implements InventoryProvider {
             TaskTime taskTime = taskTimes.get(i);
 
             String[] lore = new String[]{"",
-                    languageManager.get(LanguageKey.MINECRAFT_TIME_TITLE) + (taskTime.isMinecraftTime() ?
+                    languageManager.get(LanguageKey.MINECRAFT_TIME_TITLE) + ": " + (taskTime.isMinecraftTime() ?
                             languageManager.get(LanguageKey.YES_LABEL) :
                             languageManager.get(LanguageKey.NO_LABEL)),
                     "",

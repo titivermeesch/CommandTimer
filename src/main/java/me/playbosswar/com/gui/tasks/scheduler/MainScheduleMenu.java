@@ -14,6 +14,7 @@ import me.playbosswar.com.utils.Items;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainScheduleMenu implements InventoryProvider {
@@ -36,7 +37,8 @@ public class MainScheduleMenu implements InventoryProvider {
     public void init(Player player, InventoryContents contents) {
         contents.fillBorders(ClickableItem.empty(XMaterial.BLUE_STAINED_GLASS_PANE.parseItem()));
 
-        List<String> intervalItemLore = languageManager.getList(LanguageKey.TASK_INTERVAL_ITEM_LORE);
+        ArrayList<String> intervalItemLore = languageManager.getList(LanguageKey.TASK_INTERVAL_ITEM_LORE);
+        intervalItemLore.add("");
         intervalItemLore.add(languageManager.get(LanguageKey.GUI_CURRENT, task.getInterval().toString()));
 
         ItemStack intervalItem = Items.generateItem(LanguageKey.TASK_INTERVAL_ITEM_TITLE, XMaterial.CLOCK,

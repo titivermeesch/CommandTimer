@@ -57,7 +57,7 @@ public class EditCommandMenu implements InventoryProvider {
 
 
         ItemStack genderItem = Items.generateItem(LanguageKey.GENDER_ITEM, XMaterial.CHAINMAIL_HELMET,
-                languageManager.getList(LanguageKey.GENDER_SELECTOR_LORE).toArray(new String[]{}));
+                languageManager.getList(LanguageKey.GENDER_SELECTOR_LORE, taskCommand.getGender().toString()).toArray(new String[]{}));
         ClickableItem clickableGenderItem = ClickableItem.of(genderItem, e -> {
             taskCommand.toggleGender();
             this.INVENTORY.open(player);
