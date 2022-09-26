@@ -131,21 +131,7 @@ public enum LanguageKey {
     METRICS_INTEGRATION_DESCRIPTION,
     MINECRAFT_TIME;
 
-    public final String tag;
-
-    LanguageKey(String tag) {
-        this.tag = tag;
-    }
-
-    LanguageKey() {
-        this.tag = this.name().toLowerCase();
-    }
-
     public static LanguageKey getByTag(String tag) {
-        return Arrays.stream(values()).filter(value -> value.tag().equals(tag)).findFirst().orElse(null);
-    }
-
-    private Object tag() {
-        return this.tag;
+        return Arrays.stream(values()).filter(value -> value.toString().equals(tag.toUpperCase())).findFirst().orElse(null);
     }
 }
