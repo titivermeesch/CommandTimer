@@ -47,11 +47,12 @@ public class MainCommand implements CommandExecutor {
             }
 
             if(args[0].equalsIgnoreCase("time")) {
-                if(!(sender instanceof Player p)) {
+                if(!(sender instanceof Player)) {
                     Messages.sendNeedToBePlayer(sender);
                     return true;
                 }
 
+                Player p = (Player) sender;
                 String worldTime = Tools.calculateWorldTime(p.getWorld());
                 Messages.sendMessage(sender, languageManager.get(LanguageKey.MINECRAFT_TIME, worldTime));
                 return true;
