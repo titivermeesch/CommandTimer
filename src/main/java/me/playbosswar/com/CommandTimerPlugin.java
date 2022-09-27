@@ -81,7 +81,6 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
         Sentry.init(options -> {
             options.setDsn("https://45383fac83f64e65a45d83c3059eb934@o1414814.ingest.sentry.io/6755132");
             options.setTracesSampleRate(1.0);
-            options.setDebug(false);
         });
 
         Sentry.configureScope(scope -> {
