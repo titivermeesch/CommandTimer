@@ -1,4 +1,8 @@
-## 7.0.0 26/09/2022
+## 7.0.1 - 27/09/2022
+
+- Fix issue with invalid Sentry usage
+
+## 7.0.0 - 26/09/2022
 
 - Fix tasks being loaded twice on server startup
 - Add automatic Sentry error reporting
