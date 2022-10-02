@@ -95,8 +95,10 @@ public class TaskRunner implements Runnable {
                         LocalTime endRange = taskTime.getTime2();
 
                         if(current.isBefore(endRange) && current.isAfter(startRange)) {
+                            Messages.sendDebugConsole("Time is inside time range");
                             boolean hasPassedInterval = TaskTimeUtils.hasPassedInterval(task);
                             if(hasPassedInterval) {
+                                Messages.sendDebugConsole("Interval has passed, time range can be executed");
                                 blockTime = false;
                             }
                         }
@@ -158,6 +160,7 @@ public class TaskRunner implements Runnable {
             @Override
             public void run() {
                 if(tasksManager.stopRunner) {
+                    Messages.sendDebugConsole("Ignoring execution because manager has been stopped");
                     return;
                 }
 
@@ -166,6 +169,6 @@ public class TaskRunner implements Runnable {
                 tasks.forEach(task -> processTask(task));
             }
             // Sync runner with the clock
-        }, System.currentTimeMillis() % 1000, 1000);
+        }, System.currentTimeMillis() % 20, 20);
     }
 }
