@@ -2,6 +2,8 @@ package me.playbosswar.com.tasks;
 
 import me.playbosswar.com.CommandTimerPlugin;
 
+import java.util.Date;
+
 public class CommandIntervalExecutorRunnable implements Runnable {
     private final Task task;
     private int commandIndex = 0;
@@ -14,14 +16,16 @@ public class CommandIntervalExecutorRunnable implements Runnable {
 
     @Override
     public void run() {
-        if (cancelled) {
+        if(cancelled) {
             return;
         }
 
         tasksManager.addTaskCommandExecution(task.getCommands().get(commandIndex));
+        task.setLastExecuted(new Date());
+        task.setTimesExecuted(task.getTimesExecuted() + 1);
         commandIndex++;
 
-        if (commandIndex == task.getCommands().size()) {
+        if(commandIndex == task.getCommands().size()) {
             cancelled = true;
         }
     }
