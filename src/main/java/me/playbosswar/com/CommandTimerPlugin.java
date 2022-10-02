@@ -20,6 +20,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 public class CommandTimerPlugin extends JavaPlugin implements Listener {
     private static Plugin plugin;
@@ -80,14 +82,19 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
     private void loadSentry() {
         Sentry.init(options -> {
             options.setDsn("https://45383fac83f64e65a45d83c3059eb934@o1414814.ingest.sentry.io/6755132");
-            options.setTracesSampleRate(1.0);
+            options.setTracesSampleRate(0.1);
+            options.setRelease(getDescription().getVersion());
+            options.addInAppInclude("me.playbosswar");
         });
+
 
         Sentry.configureScope(scope -> {
             scope.setContexts("version", Bukkit.getVersion());
             scope.setContexts("pluginVersion", getDescription().getVersion());
-            scope.setContexts("ip", getPlugin().getServer().getIp());
-            scope.setContexts("loadedTasks", getTasksManager().getLoadedTasks().size());
+            try {
+                scope.setContexts("ip", InetAddress.getLocalHost());
+            } catch(UnknownHostException ignored) {
+            }
         });
     }
 
