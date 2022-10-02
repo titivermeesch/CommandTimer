@@ -1,3 +1,8 @@
+## 7.0.2 - 02/10/2022
+
+- Fix wrong task runner timing
+- Fix issue with command interval combined with range
+
 ## 7.0.1 - 27/09/2022
 
 - Fix issue with invalid Sentry usage
