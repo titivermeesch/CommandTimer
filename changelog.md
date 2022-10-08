@@ -1,3 +1,12 @@
+## 7.0.4 - 08/10/2022
+
+- Fix soonest time calculations
+- Re-add support for Java 8
+
+## 7.0.3 - 03/10/2022
+
+- Re-add missing helper function after v7 upgrade causing old extensions to fail
+
 ## 7.0.2 - 02/10/2022
 
 - Fix wrong task runner timing
