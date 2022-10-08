@@ -26,9 +26,11 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class ConditionMenu implements InventoryProvider {
     public SmartInventory INVENTORY;
@@ -84,17 +86,18 @@ public class ConditionMenu implements InventoryProvider {
             String conditionGroup = simpleCondition.getConditionGroup();
             String rule = simpleCondition.getRule();
             List<String> simpleConditionLore = languageManager.getList(LanguageKey.SIMPLE_CONDITION_LORE);
-            simpleConditionLore.addAll(List.of(new String[]{
-                    "",
-                    languageManager.get(LanguageKey.GUI_CURRENT, ""),
-                    languageManager.get(LanguageKey.CONDITION_GROUP) + (conditionGroup == null ?
-                            languageManager.get(LanguageKey.NOT_SET) :
-                            "§e" + conditionGroup),
-                    languageManager.get(LanguageKey.CONDITION_RULE) + (rule == null ?
-                            languageManager.get(LanguageKey.NOT_SET) : "§e" + rule)}));
+            simpleConditionLore.addAll(Arrays.stream(new String[]{
+                            "",
+                            languageManager.get(LanguageKey.GUI_CURRENT, ""),
+                            languageManager.get(LanguageKey.CONDITION_GROUP) + (conditionGroup == null ?
+                                    languageManager.get(LanguageKey.NOT_SET) :
+                                    "§e" + conditionGroup),
+                            languageManager.get(LanguageKey.CONDITION_RULE) + (rule == null ?
+                                    languageManager.get(LanguageKey.NOT_SET) : "§e" + rule)})
+                    .collect(Collectors.toList()));
             ItemStack simpleConditionItem = Items.generateItem(languageManager.get(LanguageKey.CONFIGURE_CONDITION),
                     XMaterial.CRAFTING_TABLE,
-                    simpleConditionLore.toArray(String[]::new));
+                    simpleConditionLore.toArray(new String[0]));
             ClickableItem clickableSimpleCondition = ClickableItem.of(simpleConditionItem,
                     e -> new SimpleConditionMenu(simpleCondition, internalCallback).INVENTORY.open(player));
             contents.set(1, 2, clickableSimpleCondition);
@@ -114,7 +117,7 @@ public class ConditionMenu implements InventoryProvider {
                     Optional<NeededValue<?>> optionalNeededValue =
                             neededValues.stream().filter(v -> v.getName().equals(conditionParamField.getName())).findFirst();
 
-                    if(optionalNeededValue.isEmpty()) {
+                    if(!optionalNeededValue.isPresent()) {
                         continue;
                     }
 

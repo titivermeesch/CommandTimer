@@ -51,8 +51,9 @@ public class PAPIPlaceholders extends PlaceholderExpansion {
     public String onPlaceholderRequest(Player player, String identifier) {
         String[] identifierParts = identifier.split("_");
 
-        if (identifierParts.length < 2) {
-            Messages.sendConsole("Used a CommandTimer placeholder wrong. Example: %commandtimer_testtask_nextExecutionFormat%");
+        if(identifierParts.length < 2) {
+            Messages.sendConsole("Used a CommandTimer placeholder wrong. Example: " +
+                    "%commandtimer_testtask_nextExecutionFormat%");
             return null;
         }
 
@@ -60,51 +61,46 @@ public class PAPIPlaceholders extends PlaceholderExpansion {
         String commandField = identifierParts[1];
         String fallbackMessage = null;
 
-        if (identifierParts.length == 3) {
+        if(identifierParts.length == 3) {
             fallbackMessage = identifierParts[2];
         }
 
         Task task = CommandTimerPlugin.getInstance().getTasksManager().getTaskByName(commandName);
 
-        if (task == null) {
+        if(task == null) {
             Messages.sendConsole("Tried to use PAPI placeholder for unknown command:" + identifier);
             return null;
         }
 
-        if (commandField.equalsIgnoreCase("seconds")) {
+        if(commandField.equalsIgnoreCase("seconds")) {
             int seconds = task.getInterval().toSeconds();
 
-            if (seconds < 0 && fallbackMessage != null) {
+            if(seconds < 0 && fallbackMessage != null) {
                 return fallbackMessage;
             }
 
             return seconds + "";
         }
 
-        if (commandField.equalsIgnoreCase("secondsFormat")) {
+        if(commandField.equalsIgnoreCase("secondsFormat")) {
             int seconds = task.getInterval().toSeconds();
 
-            if (seconds < 0 && fallbackMessage != null) {
+            if(seconds < 0 && fallbackMessage != null) {
                 return fallbackMessage;
             }
 
             return Tools.getTimeString(seconds);
         }
 
-        if (commandField.equalsIgnoreCase("nextExecution")) {
-            if (!task.getTimes().isEmpty()) {
+        if(commandField.equalsIgnoreCase("nextExecution")) {
+            if(!task.getTimes().isEmpty()) {
                 Date date = TaskTimeUtils.getSoonestTaskTime(task.getTimes());
 
-                if (date == null) {
-                    return Objects.requireNonNullElse(fallbackMessage, "");
+                if(date == null) {
+                    return fallbackMessage != null ? fallbackMessage : "";
                 }
 
                 long seconds = (date.getTime() - new Date().getTime()) / 1000;
-
-                if (seconds < 0) {
-                    // Amount of seconds in a day
-                    seconds = seconds + 86400;
-                }
 
                 return seconds + "";
             }
@@ -115,20 +111,15 @@ public class PAPIPlaceholders extends PlaceholderExpansion {
             return task.getInterval().toSeconds() - period.getStandardSeconds() + "";
         }
 
-        if (commandField.equalsIgnoreCase("nextExecutionFormat")) {
-            if (!task.getTimes().isEmpty()) {
+        if(commandField.equalsIgnoreCase("nextExecutionFormat")) {
+            if(!task.getTimes().isEmpty()) {
                 Date date = TaskTimeUtils.getSoonestTaskTime(task.getTimes());
 
-                if (date == null) {
-                    return Objects.requireNonNullElse(fallbackMessage, "");
+                if(date == null) {
+                    return fallbackMessage != null ? fallbackMessage : "";
                 }
 
                 long seconds = (date.getTime() - new Date().getTime()) / 1000;
-
-                if (seconds < 0) {
-                    // Amount of seconds in a day
-                    seconds = seconds + 86400;
-                }
 
                 return Tools.getTimeString((int) seconds);
             }
@@ -141,19 +132,14 @@ public class PAPIPlaceholders extends PlaceholderExpansion {
             return Tools.getTimeString((int) timeLeft);
         }
 
-        if (!task.getTimes().isEmpty()) {
+        if(!task.getTimes().isEmpty()) {
             Date date = TaskTimeUtils.getSoonestTaskTime(task.getTimes());
 
-            if (date == null) {
-                return Objects.requireNonNullElse(fallbackMessage, "");
+            if(date == null) {
+                return fallbackMessage != null ? fallbackMessage : "";
             }
 
             long seconds = (date.getTime() - new Date().getTime()) / 1000;
-
-            if (seconds < 0) {
-                // Amount of seconds in a day
-                seconds = seconds + 86400;
-            }
 
             return Tools.getTimeString((int) seconds);
         }
