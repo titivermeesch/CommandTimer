@@ -2,6 +2,7 @@ package me.playbosswar.com.utils;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ArrayUtils {
     public static <T> T getNextValueInArray(List<T> list, T currentValue) {
@@ -15,7 +16,7 @@ public class ArrayUtils {
     }
 
     public static <T> T getNextValueInArray(T[] arr, T currentValue) {
-        List<T> list = Arrays.stream(arr).toList();
+        List<T> list = Arrays.stream(arr).collect(Collectors.toList());
         int currentIndex = list.indexOf(currentValue);
 
         if(currentIndex == list.size() - 1) {
