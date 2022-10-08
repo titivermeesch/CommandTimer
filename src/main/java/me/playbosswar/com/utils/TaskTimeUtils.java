@@ -2,12 +2,13 @@ package me.playbosswar.com.utils;
 
 import me.playbosswar.com.tasks.Task;
 import me.playbosswar.com.tasks.TaskTime;
+import org.jetbrains.annotations.Nullable;
 import org.joda.time.Duration;
 import org.joda.time.Interval;
 
-import javax.annotation.Nullable;
 import java.time.DayOfWeek;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class TaskTimeUtils {
     @Nullable
@@ -25,12 +26,13 @@ public class TaskTimeUtils {
             });
         });
 
-        if (dates.size() == 0) {
+        if(dates.size() == 0) {
             return null;
         }
 
         final long now = System.currentTimeMillis();
-        return Collections.min(dates, (d1, d2) -> {
+        List<Date> futureDates = dates.stream().filter(date -> date.getTime() >= now).collect(Collectors.toList());
+        return Collections.min(futureDates, (d1, d2) -> {
             long diff1 = Math.abs(d1.getTime() - now);
             long diff2 = Math.abs(d2.getTime() - now);
             return Long.compare(diff1, diff2);
