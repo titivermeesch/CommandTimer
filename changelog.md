@@ -1,3 +1,7 @@
+## 7.0.5 - 09/10/2022
+
+- Fix placeholder time calculations
+
 ## 7.0.4 - 08/10/2022
 
 - Fix soonest time calculations
