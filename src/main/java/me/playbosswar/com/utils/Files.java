@@ -31,8 +31,8 @@ public class Files {
     public static void createDataFolders() {
         File timersFile = new File(pluginFolderPath + "/timers");
         File extensionsFolder = new File(pluginFolderPath + "/extensions");
-        timersFile.mkdir();
-        extensionsFolder.mkdir();
+        timersFile.mkdirs();
+        extensionsFolder.mkdirs();
         CommandTimerPlugin.getPlugin().saveResource("languages/en.json", false);
         CommandTimerPlugin.getPlugin().saveResource("languages/default.json", true);
     }
