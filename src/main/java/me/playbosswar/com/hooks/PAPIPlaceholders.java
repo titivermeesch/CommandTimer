@@ -141,7 +141,7 @@ public class PAPIPlaceholders extends PlaceholderExpansion {
 
             long seconds = (date.getTime() - new Date().getTime()) / 1000;
 
-            return Tools.getTimeString((int) seconds);
+            return Tools.getTimeString((int) seconds, commandField);
         }
 
         Interval interval = new Interval(task.getLastExecuted().getTime(), new Date().getTime());

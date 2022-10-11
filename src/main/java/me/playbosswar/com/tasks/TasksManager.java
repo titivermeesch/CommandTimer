@@ -26,6 +26,7 @@ public class TasksManager {
     private final List<TaskCommand> scheduledExecutions = new ArrayList<>();
     private Thread runnerThread;
     public boolean stopRunner = false;
+    public int executionsSinceLastSync = 0;
 
     public TasksManager() {
         loadedTasks.addAll(Files.deserializeJsonFilesIntoCommandTimers());
@@ -81,6 +82,7 @@ public class TasksManager {
             }
 
             Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command, p));
+            executionsSinceLastSync++;
         }
     }
 
@@ -95,6 +97,7 @@ public class TasksManager {
 
         String command = taskCommand.getCommand();
         Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command, null));
+        executionsSinceLastSync++;
     }
 
     private void runPlayerCommand(TaskCommand taskCommand) {
@@ -117,6 +120,7 @@ public class TasksManager {
                         command).parse();
                 throw new CommandException(errorMessage);
             }
+            executionsSinceLastSync++;
         }
     }
 
@@ -140,6 +144,7 @@ public class TasksManager {
                 }
 
                 p.performCommand(PAPIHook.parsePAPI(command, p));
+                executionsSinceLastSync++;
             } finally {
                 if(!wasAlreadyOp) {
                     p.setOp(false);

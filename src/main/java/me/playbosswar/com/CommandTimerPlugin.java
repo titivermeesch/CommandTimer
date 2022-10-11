@@ -56,6 +56,13 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
         conditionEngineManager = new ConditionEngineManager();
         inventoryManager.init();
 
+        metrics.addCustomChart(new Metrics.SingleLineChart("loaded_tasks", () -> tasksManager.getLoadedTasks().size()));
+        metrics.addCustomChart(new Metrics.SingleLineChart("executed_tasks", () -> {
+            int v = Integer.valueOf(tasksManager.executionsSinceLastSync);
+            tasksManager.executionsSinceLastSync = 0;
+            return v;
+        }));
+
         Tools.printDate();
         Messages.sendConsole("&e" + getDescription().getVersion() + "&a loaded!");
     }
