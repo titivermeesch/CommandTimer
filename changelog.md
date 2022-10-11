@@ -1,3 +1,10 @@
+## 7.0.6 - 11/10/2022
+
+- Fix issue with days selector
+- Fix custom time format not working properly
+- Add metrics for amount of loaded tasks
+- Add metrics for amount of executed tasks
+
 ## 7.0.5 - 09/10/2022
 
 - Fix placeholder time calculations
