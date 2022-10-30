@@ -47,7 +47,7 @@ public class Tools {
      * Get world time
      */
     public static String calculateWorldTime(World w) {
-        if (w == null) {
+        if(w == null) {
             return "00:00";
         }
 
@@ -55,10 +55,10 @@ public class Tools {
         long hours = gameTime / 1000 + 6;
         long minutes = (gameTime % 1000) * 60 / 1000;
 
-        if (hours == 0) {
+        if(hours == 0) {
             hours = 12;
         }
-        if (hours >= 24) {
+        if(hours >= 24) {
             hours -= 24;
         }
 
@@ -66,7 +66,7 @@ public class Tools {
         mm = mm.substring(mm.length() - 2);
 
         String realHours = String.valueOf(hours);
-        if (hours < 10) {
+        if(hours < 10) {
             realHours = "0" + realHours;
         }
 
@@ -79,14 +79,19 @@ public class Tools {
         Calendar now = Calendar.getInstance();
         now.getTimeZone().setRawOffset(0);
         TimeZone timezone = now.getTimeZone();
-        if (CommandTimerPlugin.getPlugin().getConfig().getBoolean("timezoneOverwrite")) {
-            timezone = TimeZone.getTimeZone(CommandTimerPlugin.getPlugin().getConfig().getString("timezoneOverwriteValue"));
+        if(CommandTimerPlugin.getPlugin().getConfig().getBoolean("timezoneOverwrite")) {
+            timezone = TimeZone.getTimeZone(CommandTimerPlugin.getPlugin().getConfig().getString(
+                    "timezoneOverwriteValue"));
         }
         df.setTimeZone(timezone);
         return df.format(d);
     }
 
     public static String getTimeString(int seconds) {
+        if(seconds >= 86400) {
+            return getTimeString(seconds, "dd:HH:mm:ss");
+        }
+
         return getTimeString(seconds, "HH:mm:ss");
     }
 }

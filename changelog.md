@@ -1,3 +1,12 @@
+## 7.0.6 - 11/10/2022
+
+- Fix issue with days selector
+- Fix custom time format not working properly
+- Fix placeholder not showings days when next execution is more than 24h
+- Add metrics for amount of loaded tasks
+- Add metrics for amount of executed tasks
+- Fix bug when plugin is freshly installed
+
 ## 7.0.5 - 09/10/2022
 
 - Fix placeholder time calculations
