@@ -67,7 +67,6 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
 
         Tools.printDate();
         Messages.sendConsole("&e" + getDescription().getVersion() + "&a loaded!");
-        Sentry.captureException(new Error("hehe"));
     }
 
     @Override
