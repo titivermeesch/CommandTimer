@@ -1,19 +1,14 @@
 package me.playbosswar.com.utils;
 
-import me.playbosswar.com.CommandTimerPlugin;
-import me.playbosswar.com.utils.*;
 import org.bukkit.World;
 
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Random;
-import java.util.TimeZone;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class Tools {
     /**
@@ -76,22 +71,27 @@ public class Tools {
     public static String getTimeString(int seconds, String format) {
         Date d = new Date(seconds * 1000L);
         SimpleDateFormat df = new SimpleDateFormat(format);
-        Calendar now = Calendar.getInstance();
-        now.getTimeZone().setRawOffset(0);
-        TimeZone timezone = now.getTimeZone();
-        if(CommandTimerPlugin.getPlugin().getConfig().getBoolean("timezoneOverwrite")) {
-            timezone = TimeZone.getTimeZone(CommandTimerPlugin.getPlugin().getConfig().getString(
-                    "timezoneOverwriteValue"));
-        }
-        df.setTimeZone(timezone);
         return df.format(d);
     }
 
-    public static String getTimeString(int seconds) {
-        if(seconds >= 86400) {
-            return getTimeString(seconds, "dd:HH:mm:ss");
+    private static String getTenthNumeric(long val) {
+        if(val < 9) {
+            return "0" + val;
         }
 
-        return getTimeString(seconds, "HH:mm:ss");
+        return val + "";
+    }
+
+    public static String getTimeString(int seconds) {
+        int day = (int) TimeUnit.SECONDS.toDays(seconds);
+        long hours = TimeUnit.SECONDS.toHours(seconds) - (day * 24L);
+        long minute = TimeUnit.SECONDS.toMinutes(seconds) - (TimeUnit.SECONDS.toHours(seconds) * 60);
+        long second = TimeUnit.SECONDS.toSeconds(seconds) - (TimeUnit.SECONDS.toMinutes(seconds) * 60);
+
+        if(day > 0) {
+            return getTenthNumeric(day) + ":" + getTenthNumeric(hours) + ":" + getTenthNumeric(minute) + ":" + getTenthNumeric(second);
+        }
+
+        return getTenthNumeric(hours) + ":" + getTenthNumeric(minute) + ":" + getTenthNumeric(second);
     }
 }
