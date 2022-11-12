@@ -65,10 +65,13 @@ public class AllCommandsMenu implements InventoryProvider {
         List<String> selectModeLore = languageManager.getList(LanguageKey.GENDER_LORE);
         selectModeLore.add("");
         selectModeLore.add(languageManager.get(LanguageKey.GUI_CURRENT, task.getCommandExecutionMode().toString()));
-        selectModeLore.add(
-                languageManager.get(LanguageKey.CURRENT_INTERVAL,
-                        task.getCommandExecutionMode().equals(CommandExecutionMode.INTERVAL) ?
-                                task.getCommandExecutionInterval().toString() : ""));
+        if(task.getCommandExecutionMode().equals(CommandExecutionMode.INTERVAL)) {
+            selectModeLore.add(
+                    languageManager.get(LanguageKey.CURRENT_INTERVAL,
+                            task.getCommandExecutionMode().equals(CommandExecutionMode.INTERVAL) ?
+                                    task.getCommandExecutionInterval().toString() : ""));
+        }
+
         selectModeLore.add("");
         selectModeLore.add(languageManager.get(LanguageKey.LEFT_CLICK_SWITCH));
         selectModeLore.add(task.getCommandExecutionMode().equals(CommandExecutionMode.INTERVAL) ?
@@ -90,6 +93,15 @@ public class AllCommandsMenu implements InventoryProvider {
                     e2 -> new AllCommandsMenu(task).INVENTORY.open(player)).INVENTORY.open(player);
         });
         contents.set(0, 8, clickableSelectModeItem);
+
+        List<String> commandSettingsLore = languageManager.getList(LanguageKey.OPEN_COMMANDS_SETTINGS_LORE);
+        commandSettingsLore.add("");
+        commandSettingsLore.add(languageManager.get(LanguageKey.LEFT_CLICK_EDIT));
+        ItemStack commandSettingsItem = Items.generateItem(LanguageKey.OPEN_COMMANDS_SETTINGS, XMaterial.REPEATER,
+                commandSettingsLore.toArray(new String[]{}));
+        ClickableItem clickableCommandSettingsItem = ClickableItem.of(commandSettingsItem,
+                e -> new CommandSettingsMenu(task).INVENTORY.open(player));
+        contents.set(5, 0, clickableCommandSettingsItem);
     }
 
     @Override
