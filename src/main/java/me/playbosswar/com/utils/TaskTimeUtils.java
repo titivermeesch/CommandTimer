@@ -37,16 +37,12 @@ public class TaskTimeUtils {
             return null;
         }
 
-        System.out.println(dates);
-
         final long now = System.currentTimeMillis();
         List<Date> futureDates = dates.stream().filter(date -> date.getTime() >= now).collect(Collectors.toList());
 
         if(futureDates.size() == 0) {
             return null;
         }
-
-        System.out.println(futureDates);
 
         return Collections.min(futureDates, (d1, d2) -> {
             long diff1 = Math.abs(d1.getTime() - now);
