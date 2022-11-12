@@ -1,3 +1,10 @@
+## 7.1.0 - 12/11/2022
+
+- Add option to reset command execution index
+- Fix wrong day value in default placeholder
+- Only show command interval value when mode is INTERVAL
+- Properly filter out error reports that are not related to CMT
+
 ## 7.0.6 - 11/10/2022
 
 - Fix issue with days selector
