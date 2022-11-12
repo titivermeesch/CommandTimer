@@ -22,6 +22,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.Objects;
 
 public class CommandTimerPlugin extends JavaPlugin implements Listener {
     private static Plugin plugin;
@@ -65,6 +67,7 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
 
         Tools.printDate();
         Messages.sendConsole("&e" + getDescription().getVersion() + "&a loaded!");
+        Sentry.captureException(new Error("hehe"));
     }
 
     @Override
@@ -92,6 +95,13 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
             options.setTracesSampleRate(0.1);
             options.setRelease(getDescription().getVersion());
             options.addInAppInclude("me.playbosswar");
+            options.setBeforeSend((event, hint) -> {
+                if(Arrays.stream(Objects.requireNonNull(event.getThrowable()).getStackTrace()).noneMatch(s -> s.getClassName().contains(
+                        "playbosswar"))) {
+                    return null;
+                }
+                return event;
+            });
         });
 
 
