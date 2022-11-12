@@ -1,5 +1,9 @@
 name: Test that everything can build properly and is tested
-on: [ pull_request ]
+on:
+  pull_requests:
+    - master
+  paths:
+    - 'src/**'
 
 jobs:
   Build-Java-8:
