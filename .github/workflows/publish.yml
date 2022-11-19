@@ -3,8 +3,8 @@ on:
   push:
     branches:
       - master
-  paths:
-    - 'src/**'
+    paths:
+      - 'src/**'
 jobs:
   #  prepare-paths:
   #    runs-on: ubuntu-latest
