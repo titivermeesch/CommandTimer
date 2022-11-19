@@ -5,7 +5,7 @@ on:
       - master
     paths:
       - 'src/**'
-      - '.github'
+      - '.github/**'
 jobs:
   #  prepare-paths:
   #    runs-on: ubuntu-latest
