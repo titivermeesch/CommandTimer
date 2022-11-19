@@ -6,38 +6,38 @@ on:
   paths:
     - 'src/**'
 jobs:
-  prepare-paths:
-    runs-on: ubuntu-latest
-    outputs:
-      plugins: ${{ steps.filter.outputs.plugins }}
-      docs: ${{ steps.filter.outputs.docs }}
-    steps:
-      - uses: dorny/paths-filter@v2
-        id: filter
-        with:
-          filters: |
-            plugins:
-              - 'src/**'
-            docs:
-              - 'docs/**'
-  Build-Documentation:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Setup node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16
-      - name: Build
-        run: npm run build
-      - name: Setup Pages
-        uses: actions/configure-pages@v1
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
-        with:
-          path: build
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v1
+  #  prepare-paths:
+  #    runs-on: ubuntu-latest
+  #    outputs:
+  #      plugins: ${{ steps.filter.outputs.plugins }}
+  #      docs: ${{ steps.filter.outputs.docs }}
+  #    steps:
+  #      - uses: dorny/paths-filter@v2
+  #        id: filter
+  #        with:
+  #          filters: |
+  #            plugins:
+  #              - 'src/**'
+  #            docs:
+  #              - 'docs/**'
+  #  Build-Documentation:
+  #    runs-on: ubuntu-latest
+  #    steps:
+  #      - name: Setup node
+  #        uses: actions/setup-node@v3
+  #        with:
+  #          node-version: 16
+  #      - name: Build
+  #        run: npm run build
+  #      - name: Setup Pages
+  #        uses: actions/configure-pages@v1
+  #      - name: Upload artifact
+  #        uses: actions/upload-pages-artifact@v1
+  #        with:
+  #          path: build
+  #      - name: Deploy to GitHub Pages
+  #        id: deployment
+  #        uses: actions/deploy-pages@v1
   Build-Java-8:
     runs-on: ubuntu-latest
     steps:
