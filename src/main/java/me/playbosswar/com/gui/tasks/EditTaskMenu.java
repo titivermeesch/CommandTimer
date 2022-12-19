@@ -6,6 +6,7 @@ import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
 import me.playbosswar.com.CommandTimerPlugin;
+import me.playbosswar.com.gui.events.MainEventsMenu;
 import me.playbosswar.com.gui.tasks.commands.AllCommandsMenu;
 import me.playbosswar.com.gui.tasks.general.GeneralLimitsMenu;
 import me.playbosswar.com.gui.tasks.general.TextInputConversationPrompt;
@@ -89,6 +90,11 @@ public class EditTaskMenu implements InventoryProvider {
                 ).INVENTORY.open(player));
         contents.set(1, 5, clickableCondition);
 
+        String[] eventsLore =
+                languageManager.getList(LanguageKey.EVENTS_ITEM_LORE).toArray(new String[]{});
+        ItemStack eventsItem = Items.generateItem(LanguageKey.EVENTS_ITEM_TITLE, XMaterial.BEACON, eventsLore);
+        contents.set(1, 6, ClickableItem.of(eventsItem, e -> new MainEventsMenu(task).INVENTORY.open(player)));
+
         boolean isActive = task.isActive();
         String[] activationLore = new String[]{"",
                 languageManager.get(LanguageKey.TASK_ACTIVATION_LORE),
@@ -97,13 +103,13 @@ public class EditTaskMenu implements InventoryProvider {
                         languageManager.get(LanguageKey.STATUS_ACTIVE) :
                         languageManager.get(LanguageKey.STATUS_NOT_ACTIVE)))
         };
-        contents.set(1, 6, ClickableItem.of(Items.getToggleItem(LanguageKey.TASK_ACTIVATION_TITLE, activationLore,
+        contents.set(1, 7, ClickableItem.of(Items.getToggleItem(LanguageKey.TASK_ACTIVATION_TITLE, activationLore,
                 isActive), e -> {
             task.toggleActive();
             this.INVENTORY.open(player);
         }));
 
-        contents.set(1, 7, ClickableItem.of(Items.getBackItem(), e -> new AllTasksMenu().INVENTORY.open(player)));
+        contents.set(2, 8, ClickableItem.of(Items.getBackItem(), e -> new AllTasksMenu().INVENTORY.open(player)));
     }
 
     public void update(Player player, InventoryContents contents) {

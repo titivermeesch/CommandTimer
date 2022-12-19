@@ -4,6 +4,7 @@ import fr.minuskube.inv.InventoryManager;
 import io.sentry.Sentry;
 import me.playbosswar.com.commands.MainCommand;
 import me.playbosswar.com.conditionsengine.ConditionEngineManager;
+import me.playbosswar.com.conditionsengine.EventsManager;
 import me.playbosswar.com.events.JoinEvents;
 import me.playbosswar.com.hooks.HooksManager;
 import me.playbosswar.com.hooks.Metrics;
@@ -32,6 +33,7 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
     private static InventoryManager inventoryManager;
     private static TasksManager tasksManager;
     private static ConditionEngineManager conditionEngineManager;
+    private static EventsManager eventsManager;
     public static Metrics metrics;
     public static Updater updater;
     public static LanguageManager languageManager;
@@ -149,6 +151,10 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
 
     public ConditionEngineManager getConditionEngineManager() {
         return conditionEngineManager;
+    }
+
+    public EventsManager getEventsManager() {
+        return eventsManager;
     }
 
     public Metrics getMetrics() {

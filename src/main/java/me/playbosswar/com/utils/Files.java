@@ -1,6 +1,8 @@
 package me.playbosswar.com.utils;
 
 import me.playbosswar.com.CommandTimerPlugin;
+import me.playbosswar.com.api.events.EventConfiguration;
+import me.playbosswar.com.api.events.EventExtension;
 import me.playbosswar.com.conditionsengine.validations.Condition;
 import me.playbosswar.com.conditionsengine.validations.ConditionType;
 import me.playbosswar.com.conditionsengine.validations.SimpleCondition;
@@ -101,6 +103,10 @@ public class Files {
                         task.getCommandExecutionInterval().setTask(task);
                         Condition condition = task.getCondition();
                         condition.setTask(task);
+                        if(task.getEvents() == null) {
+                            task.setEvents(new ArrayList<>());
+                        }
+                        task.getEvents().forEach(e -> e.setTask(task));
 
                         SimpleCondition simpleCondition = condition.getSimpleCondition();
                         if(simpleCondition != null) {

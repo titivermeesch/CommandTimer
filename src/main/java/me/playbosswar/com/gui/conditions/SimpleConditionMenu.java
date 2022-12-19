@@ -14,6 +14,7 @@ import me.playbosswar.com.api.NeededValue;
 import me.playbosswar.com.conditionsengine.ConditionParamField;
 import me.playbosswar.com.conditionsengine.validations.SimpleCondition;
 import me.playbosswar.com.gui.HorizontalIteratorWithBorder;
+import me.playbosswar.com.gui.MenuUtils;
 import me.playbosswar.com.language.LanguageKey;
 import me.playbosswar.com.language.LanguageManager;
 import me.playbosswar.com.utils.Callback;
@@ -26,7 +27,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class SimpleConditionMenu implements InventoryProvider {
@@ -169,19 +169,7 @@ public class SimpleConditionMenu implements InventoryProvider {
         for(int i = 0; i < items.length; i++) {
             ConditionExtension conditionExtension = conditionExtensions.get(i);
             String conditionGroupName = conditionExtension.getConditionGroupName();
-            List<String> lore = new ArrayList<>();
-            lore.add("");
-            lore.addAll(Arrays.asList(conditionExtension.getDescription()));
-            lore.add("");
-            lore.add(languageManager.get(LanguageKey.AUTHOR, conditionExtension.getAuthor()));
-            lore.add(languageManager.get(LanguageKey.VERSION, conditionExtension.getVersion()));
-            lore.add(languageManager.get(LanguageKey.RULES_COUNT,
-                    String.valueOf(conditionExtension.getRules().size())));
-            lore.add("");
-            lore.add(languageManager.get(LanguageKey.LEFT_CLICK_SELECT));
-
-            ItemStack item = Items.generateItem("§b" + conditionGroupName, conditionExtension.getGroupIcon(),
-                    lore.toArray(new String[0]));
+            ItemStack item = MenuUtils.getExtensionItem(conditionExtension, true, false);
 
             // Make item glowing when selected
             if(this.selectedConditionGroup != null && this.selectedConditionGroup.equals(conditionGroupName)) {

@@ -17,9 +17,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class TasksManager {
     private final List<Task> loadedTasks = new ArrayList<>();
@@ -69,10 +68,19 @@ public class TasksManager {
         this.runnerThread = thread;
     }
 
-    private void runConsolePerUserCommand(TaskCommand taskCommand) throws CommandException {
+    private void runConsolePerUserCommand(TaskCommand taskCommand, List<UUID> scopedPlayers) throws CommandException {
         String command = taskCommand.getCommand();
 
-        for(Player p : Bukkit.getOnlinePlayers()) {
+        Collection<Player> affectedPlayers = (Collection<Player>) Bukkit.getOnlinePlayers();
+        if(scopedPlayers.size() > 0) {
+            affectedPlayers = scopedPlayers
+                    .stream()
+                    .map(Bukkit::getPlayer)
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+        }
+
+        for(Player p : affectedPlayers) {
             if(taskCommand.getTask().getCondition() != null) {
                 boolean valid = TaskValidationHelpers.processCondition(taskCommand.getTask().getCondition(), p);
                 if(!valid) {
@@ -84,6 +92,10 @@ public class TasksManager {
             Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command, p));
             executionsSinceLastSync++;
         }
+    }
+
+    private void runConsolePerUserCommand(TaskCommand taskCommand) throws CommandException {
+        runConsolePerUserCommand(taskCommand, new ArrayList<>());
     }
 
     private void runConsoleCommand(TaskCommand taskCommand) throws CommandException {
@@ -100,10 +112,19 @@ public class TasksManager {
         executionsSinceLastSync++;
     }
 
-    private void runPlayerCommand(TaskCommand taskCommand) {
+    private void runPlayerCommand(TaskCommand taskCommand, List<UUID> scopedPlayers) {
         String command = taskCommand.getCommand();
 
-        for(Player p : Bukkit.getOnlinePlayers()) {
+        Collection<Player> affectedPlayers = (Collection<Player>) Bukkit.getOnlinePlayers();
+        if(scopedPlayers.size() > 0) {
+            affectedPlayers = scopedPlayers
+                    .stream()
+                    .map(Bukkit::getPlayer)
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+        }
+
+        for(Player p : affectedPlayers) {
             if(taskCommand.getTask().getCondition() != null) {
                 boolean valid = TaskValidationHelpers.processCondition(taskCommand.getTask().getCondition(), p);
                 if(!valid) {
@@ -124,10 +145,23 @@ public class TasksManager {
         }
     }
 
-    private void runOperatorCommand(TaskCommand taskCommand) {
+    private void runPlayerCommand(TaskCommand taskCommand) {
+        runPlayerCommand(taskCommand, new ArrayList<>());
+    }
+
+    private void runOperatorCommand(TaskCommand taskCommand, List<UUID> scopedPlayers) {
         String command = taskCommand.getCommand();
 
-        for(Player p : Bukkit.getOnlinePlayers()) {
+        Collection<Player> affectedPlayers = (Collection<Player>) Bukkit.getOnlinePlayers();
+        if(scopedPlayers.size() > 0) {
+            affectedPlayers = scopedPlayers
+                    .stream()
+                    .map(Bukkit::getPlayer)
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+        }
+
+        for(Player p : affectedPlayers) {
             boolean wasAlreadyOp = p.isOp();
 
             try {
@@ -153,8 +187,27 @@ public class TasksManager {
         }
     }
 
+    private void runOperatorCommand(TaskCommand taskCommand) {
+        runOperatorCommand(taskCommand, new ArrayList<>());
+    }
+
     public void addTaskCommandExecution(TaskCommand taskCommand) {
         scheduledExecutions.add(taskCommand);
+    }
+
+    public void processCommandExecution(TaskCommand taskCommand) {
+        Gender gender = taskCommand.getGender();
+
+        // Choose correct gender executor
+        if(gender.equals(Gender.CONSOLE)) {
+            runConsoleCommand(taskCommand);
+        } else if(gender.equals(Gender.PLAYER)) {
+            runPlayerCommand(taskCommand);
+        } else if(gender.equals(Gender.OPERATOR)) {
+            runOperatorCommand(taskCommand);
+        } else if(gender.equals(Gender.CONSOLE_PER_USER)) {
+            runConsolePerUserCommand(taskCommand);
+        }
     }
 
     // Executes scheduled commands
@@ -166,19 +219,7 @@ public class TasksManager {
                 final List<TaskCommand> tasksToRemove = new ArrayList<>(scheduledExecutions);
 
                 tasksToRemove.forEach(taskCommand -> {
-                    Gender gender = taskCommand.getGender();
-
-                    // Choose correct gender executor
-                    if(gender.equals(Gender.CONSOLE)) {
-                        runConsoleCommand(taskCommand);
-                    } else if(gender.equals(Gender.PLAYER)) {
-                        runPlayerCommand(taskCommand);
-                    } else if(gender.equals(Gender.OPERATOR)) {
-                        runOperatorCommand(taskCommand);
-                    } else if(gender.equals(Gender.CONSOLE_PER_USER)) {
-                        runConsolePerUserCommand(taskCommand);
-                    }
-
+                    processCommandExecution(taskCommand);
                     scheduledExecutions.remove(taskCommand);
                 });
 

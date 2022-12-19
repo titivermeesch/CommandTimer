@@ -164,6 +164,21 @@ public class ConditionMenu implements InventoryProvider {
                             return;
                         }
 
+                        if(neededValue.getType() == Integer.class) {
+                            ConversationFactory conversationFactory =
+                                    new ConversationFactory(CommandTimerPlugin.getPlugin())
+                                            .withModality(true)
+                                            .withFirstPrompt(new TextInputConversationPrompt(data -> {
+                                                int text = Integer.parseInt(data);
+                                                ((ConditionParamField<Integer>) conditionParamField).setValue(text);
+                                                condition.getTask().storeInstance();
+                                                new ConditionMenu(condition, onClose).INVENTORY.open(player);
+                                            }));
+                            conversationFactory.buildConversation(player).begin();
+                            player.closeInventory();
+                            return;
+                        }
+
                         if(neededValue.getType() == String.class) {
                             ConversationFactory conversationFactory =
                                     new ConversationFactory(CommandTimerPlugin.getPlugin())

@@ -1,5 +1,6 @@
 package me.playbosswar.com.tasks;
 
+import me.playbosswar.com.api.events.EventConfiguration;
 import me.playbosswar.com.conditionsengine.validations.Condition;
 import me.playbosswar.com.conditionsengine.validations.ConditionType;
 import me.playbosswar.com.conditionsengine.validations.SimpleCondition;
@@ -30,6 +31,7 @@ public class Task {
     private boolean active = false;
     private boolean resetExecutionsAfterRestart = false;
     private Condition condition;
+    private List<EventConfiguration> events = new ArrayList<>();
 
     public Task(String name) {
         this.name = name;
@@ -126,7 +128,7 @@ public class Task {
     }
 
     public void toggleDay(String day) {
-        if (days.contains(day)) {
+        if(days.contains(day)) {
             days.remove(day);
         } else {
             days.add(day);
@@ -186,25 +188,25 @@ public class Task {
     }
 
     public void switchCommandExecutionMode() {
-        if (commandExecutionMode.equals(CommandExecutionMode.ALL)) {
+        if(commandExecutionMode.equals(CommandExecutionMode.ALL)) {
             commandExecutionMode = CommandExecutionMode.ORDERED;
             storeInstance();
             return;
         }
 
-        if (commandExecutionMode.equals(CommandExecutionMode.ORDERED)) {
+        if(commandExecutionMode.equals(CommandExecutionMode.ORDERED)) {
             commandExecutionMode = CommandExecutionMode.RANDOM;
             storeInstance();
             return;
         }
 
-        if (commandExecutionMode.equals(CommandExecutionMode.RANDOM)) {
+        if(commandExecutionMode.equals(CommandExecutionMode.RANDOM)) {
             commandExecutionMode = CommandExecutionMode.INTERVAL;
             storeInstance();
             return;
         }
 
-        if (commandExecutionMode.equals(CommandExecutionMode.INTERVAL)) {
+        if(commandExecutionMode.equals(CommandExecutionMode.INTERVAL)) {
             commandExecutionMode = CommandExecutionMode.ALL;
             storeInstance();
         }
@@ -248,6 +250,14 @@ public class Task {
         this.commandExecutionInterval = commandExecutionInterval;
     }
 
+    public List<EventConfiguration> getEvents() {
+        return events;
+    }
+
+    public void setEvents(List<EventConfiguration> events) {
+        this.events = events;
+    }
+
     public void storeInstance() {
         GsonConverter gson = new GsonConverter();
         String json = gson.toJson(this);
@@ -256,7 +266,7 @@ public class Task {
             FileWriter jsonFile = new FileWriter(Files.getTaskFile(name));
             jsonFile.write(json);
             jsonFile.flush();
-        } catch (IOException e) {
+        } catch(IOException e) {
             e.printStackTrace();
         }
     }
