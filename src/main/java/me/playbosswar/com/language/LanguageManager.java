@@ -98,7 +98,12 @@ public class LanguageManager {
     }
 
     public String get(LanguageKey key) {
-        return Messages.colorize(translations.get(key));
+        String text = translations.get(key);
+        if(text == null) {
+            Bukkit.getLogger().log(Level.WARNING, "could not load key " + key.name());
+            return "";
+        }
+        return Messages.colorize(text);
     }
 
     public String get(LanguageKey key, String... replacers) {

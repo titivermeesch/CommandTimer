@@ -14,6 +14,7 @@ import me.playbosswar.com.conditionsengine.validations.SimpleCondition;
 import me.playbosswar.com.tasks.Task;
 import me.playbosswar.com.tasks.TaskValidationHelpers;
 import me.playbosswar.com.tasks.TasksManager;
+import me.playbosswar.com.utils.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jeasy.rules.api.Facts;
@@ -26,10 +27,10 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class EventsManager {
-    private final TasksManager tasksManager = CommandTimerPlugin.getInstance().getTasksManager();
+    private final TasksManager tasksManager;
 
-    public EventsManager() {
-
+    public EventsManager(TasksManager tasksManager) {
+        this.tasksManager = tasksManager;
     }
 
     // Mainly used by extensions with events
@@ -50,14 +51,18 @@ public class EventsManager {
         for(Task t : tasks) {
             for(EventConfiguration e : t.getEvents()) {
                 if(!e.isActive()) {
+                    Messages.sendDebugConsole("EVENT ENGINE: received event but ignoring because configuration is not" +
+                            " active");
                     continue;
                 }
 
                 if(!e.getConditionGroup().equals(extension.getConditionGroupName())) {
+                    Messages.sendDebugConsole("EVENT ENGINE: received event but condition group does not match");
                     continue;
                 }
 
                 if(!e.getEvent().equals(ev.getEventName())) {
+                    Messages.sendDebugConsole("EVENT ENGINE: received event but condition name does not match");
                     continue;
                 }
 
@@ -102,13 +107,13 @@ public class EventsManager {
         }
 
         if(receivedValue.getType() == Integer.class) {
-            int value = Integer.parseInt((String) receivedValue.getDefaultValue());
+            int value = (Integer) receivedValue.getDefaultValue();
             int expected = (int) simpleCondition.getValue();
             return ConditionHelpers.calculateConditionCompare(compare, value, expected);
         }
 
         if(receivedValue.getType() == Double.class) {
-            double value = Double.parseDouble((String) receivedValue.getDefaultValue());
+            double value = (Double) receivedValue.getDefaultValue();
             double expected = (double) simpleCondition.getValue();
             return ConditionHelpers.calculateConditionCompare(compare, value, expected);
         }
@@ -128,11 +133,11 @@ public class EventsManager {
         ConditionType conditionType = condition.getConditionType();
 
         if(conditionType.equals(ConditionType.SIMPLE)) {
-            return condition.getSimpleCondition().stream().allMatch(simpleCondition -> checkSimpleCondition(simpleCondition, values));
+            return checkSimpleCondition(condition.getSimpleCondition(), values);
         }
 
         if(conditionType.equals(ConditionType.NOT)) {
-            return condition.getSimpleCondition().stream().noneMatch(simpleCondition -> checkSimpleCondition(simpleCondition, values));
+            return !checkSimpleCondition(condition.getSimpleCondition(), values);
         }
 
         if(conditionType.equals(ConditionType.AND)) {

@@ -16,14 +16,17 @@ public class SimpleCondition {
         conditionParamFields = new ArrayList<>();
     }
 
-    public SimpleCondition(String conditionGroup, String rule, ArrayList<ConditionParamField<?>> conditionParamFields, Task task) {
+    public SimpleCondition(String conditionGroup, String rule, ArrayList<ConditionParamField<?>> conditionParamFields
+            , Task task) {
         this.conditionGroup = conditionGroup;
         this.rule = rule;
         this.task = task;
         this.conditionParamFields = conditionParamFields;
     }
 
-    private void storeInstance() { task.storeInstance(); }
+    private void storeInstance() {
+        task.storeInstance();
+    }
 
     public String getConditionGroup() {
         return conditionGroup;

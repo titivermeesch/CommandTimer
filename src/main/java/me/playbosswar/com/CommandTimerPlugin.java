@@ -58,6 +58,7 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
         tasksManager = new TasksManager();
         inventoryManager = new InventoryManager(this);
         conditionEngineManager = new ConditionEngineManager();
+        eventsManager = new EventsManager(tasksManager);
         inventoryManager.init();
 
         metrics.addCustomChart(new Metrics.SingleLineChart("loaded_tasks", () -> tasksManager.getLoadedTasks().size()));

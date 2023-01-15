@@ -7,9 +7,11 @@ public class EventConfiguration {
     private String conditionGroup;
     private String event;
     private EventCondition condition;
-    private Task task;
+    transient Task task;
 
-    public EventConfiguration(boolean active, String conditionGroup, String event, EventCondition condition) {
+    public EventConfiguration(Task task, boolean active, String conditionGroup, String event,
+                              EventCondition condition) {
+        this.task = task;
         this.active = active;
         this.conditionGroup = conditionGroup;
         this.event = event;

@@ -8,7 +8,10 @@ import fr.minuskube.inv.content.InventoryProvider;
 import fr.minuskube.inv.content.Pagination;
 import me.playbosswar.com.CommandTimerPlugin;
 import me.playbosswar.com.api.ConditionExtension;
+import me.playbosswar.com.api.events.EventCondition;
 import me.playbosswar.com.api.events.EventConfiguration;
+import me.playbosswar.com.api.events.EventSimpleCondition;
+import me.playbosswar.com.conditionsengine.validations.ConditionType;
 import me.playbosswar.com.gui.HorizontalIteratorWithBorder;
 import me.playbosswar.com.language.LanguageKey;
 import me.playbosswar.com.language.LanguageManager;
@@ -17,10 +20,12 @@ import me.playbosswar.com.utils.Items;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-// Menu to select which specific events to listen to
+// Menu to select which specific events to listen to (we already selected the extension at this point)
 public class SelectEventsMenu implements InventoryProvider {
     public SmartInventory INVENTORY;
     private final LanguageManager languageManager = CommandTimerPlugin.getLanguageManager();
@@ -45,15 +50,28 @@ public class SelectEventsMenu implements InventoryProvider {
         Pagination pagination = contents.pagination();
 
         List<ClickableItem> items = extension.getEvents().stream().map(event -> {
+            // TODO: Show active state of event, show configured values when possible
             ItemStack item = Items.generateItem(event.getEventName(), XMaterial.BEACON, event.getEventDescription());
             return ClickableItem.of(item, e -> {
+                Optional<EventConfiguration> existingConfiguration = task
+                        .getEvents()
+                        .stream()
+                        .filter(ev ->
+                                ev.getConditionGroup().equals(extension.getConditionGroupName()) &&
+                                        ev.getEvent().equals(event.getEventName())).findAny();
+
                 if(e.isLeftClick()) {
-                    EventConfiguration configuration = task
-                            .getEvents()
-                            .stream()
-                            .filter(ev -> ev.getEvent().equals(event.getEventName()))
-                            .findFirst()
-                            .get();
+                    EventConfiguration configuration;
+                    if(existingConfiguration.isPresent()) {
+                        configuration = existingConfiguration.get();
+                    } else {
+                        EventCondition condition = new EventCondition(task, ConditionType.SIMPLE,
+                                new EventSimpleCondition<>(task, "", ""), new ArrayList<>());
+                        configuration = new EventConfiguration(task, true,
+                                extension.getConditionGroupName()
+                                , event.getEventName(), condition);
+                    }
+
                     configuration.setActive(!configuration.isActive());
                     task.storeInstance();
                     // Refresh
@@ -62,7 +80,20 @@ public class SelectEventsMenu implements InventoryProvider {
                 }
 
                 if(e.isRightClick()) {
-                    new ConfigureEventMenu(task, extension, event).INVENTORY.open(player);
+                    if(existingConfiguration.isPresent()) {
+                        new ConfigureEventMenu(task, extension, event, existingConfiguration.get().getCondition()).INVENTORY.open(player);
+                        return;
+                    }
+
+                    EventCondition condition = new EventCondition(task, ConditionType.SIMPLE,
+                            new EventSimpleCondition<>(task, "", ""), new ArrayList<>());
+                    EventConfiguration configuration = new EventConfiguration(task, true,
+                            extension.getConditionGroupName()
+                            , event.getEventName(), condition);
+                    task.getEvents().add(configuration);
+                    task.storeInstance();
+
+                    new ConfigureEventMenu(task, extension, event, condition).INVENTORY.open(player);
                 }
             });
         }).collect(Collectors.toList());

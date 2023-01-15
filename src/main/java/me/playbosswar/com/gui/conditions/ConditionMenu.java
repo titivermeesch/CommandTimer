@@ -13,42 +13,32 @@ import me.playbosswar.com.conditionsengine.ConditionParamField;
 import me.playbosswar.com.conditionsengine.validations.Condition;
 import me.playbosswar.com.conditionsengine.validations.ConditionType;
 import me.playbosswar.com.conditionsengine.validations.SimpleCondition;
+import me.playbosswar.com.gui.MenuUtils;
 import me.playbosswar.com.gui.conditions.inputs.ConditionCompareItem;
 import me.playbosswar.com.gui.tasks.general.TextInputConversationPrompt;
 import me.playbosswar.com.language.LanguageKey;
 import me.playbosswar.com.language.LanguageManager;
-import me.playbosswar.com.utils.ArrayUtils;
 import me.playbosswar.com.utils.Callback;
 import me.playbosswar.com.utils.Items;
 import org.bukkit.conversations.ConversationFactory;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class ConditionMenu implements InventoryProvider {
     public SmartInventory INVENTORY;
     private final Condition condition;
     private final Callback<?> onClose;
-    List<ConditionType> availableConditionTypes = new ArrayList<>();
     private final LanguageManager languageManager = CommandTimerPlugin.getLanguageManager();
 
     public ConditionMenu(Condition condition, Callback<?> onClose) {
         this.condition = condition;
         this.onClose = onClose;
-
-        // Populate condition types array
-        availableConditionTypes.add(ConditionType.AND);
-        availableConditionTypes.add(ConditionType.OR);
-        availableConditionTypes.add(ConditionType.SIMPLE);
-        availableConditionTypes.add(ConditionType.NOT);
-
         INVENTORY = SmartInventory.builder()
                 .id("condition")
                 .provider(this)
@@ -64,7 +54,7 @@ public class ConditionMenu implements InventoryProvider {
 
         contents.fillBorders(ClickableItem.empty(XMaterial.BLUE_STAINED_GLASS_PANE.parseItem()));
 
-        ClickableItem conditionTypeItem = getConditionTypeItem(type -> {
+        ClickableItem conditionTypeItem = MenuUtils.getConditionTypeItem(condition, type -> {
             condition.setConditionType(type);
             this.INVENTORY.open(player);
         });
@@ -111,6 +101,7 @@ public class ConditionMenu implements InventoryProvider {
                     return;
                 }
 
+                // TODO: This needs to be moved to a different view
                 ArrayList<NeededValue<?>> neededValues = conditionRule.getNeededValues();
                 int i = 3;
                 for(ConditionParamField<?> conditionParamField : conditionParamFields) {
@@ -205,27 +196,5 @@ public class ConditionMenu implements InventoryProvider {
     @Override
     public void update(Player player, InventoryContents inventoryContents) {
 
-    }
-
-    private ClickableItem getConditionTypeItem(
-            @NotNull Consumer<ConditionType> conditionTypeChange) {
-        List<String> lore = new ArrayList<>();
-
-        lore.add("");
-        lore.addAll(languageManager.getList(LanguageKey.CONDITION_TYPE_LORE));
-        lore.add("");
-        lore.add(languageManager.get(LanguageKey.AVAILABLE_OPTIONS));
-        this.availableConditionTypes.forEach(conditionType -> lore.add("§7 - " + conditionType + ": " + conditionType.getDescription()));
-        lore.add("");
-        lore.add(languageManager.get(LanguageKey.GUI_CURRENT, this.condition.getConditionType().toString()));
-
-        ItemStack item = Items.generateItem("§bChange condition type", XMaterial.COMPARATOR,
-                lore.toArray(new String[0]));
-        return ClickableItem.of(item, e -> {
-            ConditionType nextConditionType = ArrayUtils.getNextValueInArray(
-                    this.availableConditionTypes,
-                    this.condition.getConditionType());
-            conditionTypeChange.accept(nextConditionType);
-        });
     }
 }
