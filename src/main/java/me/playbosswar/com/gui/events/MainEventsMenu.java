@@ -53,7 +53,7 @@ public class MainEventsMenu implements InventoryProvider {
 
         Pagination pagination = contents.pagination();
         pagination.setItems(extensionsWithEvents.stream().map(extension -> {
-            ItemStack item = MenuUtils.getExtensionItem(extension, false, true);
+            ItemStack item = MenuUtils.getExtensionItem(extension);
             return ClickableItem.of(item,
                     e -> new SelectEventsMenu(task, extension).INVENTORY.open(player));
         }).toArray(ClickableItem[]::new));

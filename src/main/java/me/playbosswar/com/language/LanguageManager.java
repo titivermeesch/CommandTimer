@@ -72,18 +72,15 @@ public class LanguageManager {
     private void loadLanguage() throws Exception {
         JSONObject obj = getLanguageObject(selectedLanguage);
 
-        obj.keySet().forEach(rawKey -> {
-            String tag = (String) rawKey;
-            LanguageKey languageKey = LanguageKey.getByTag(tag);
-            if(languageKey == null) {
-                try {
-                    Bukkit.getPluginManager().disablePlugin(CommandTimerPlugin.getPlugin());
-                    throw new Exception("Could not find translation for " + tag + " for language " + selectedLanguage);
-                } catch(Exception e) {
-                    throw new RuntimeException(e);
-                }
+        Arrays.stream(LanguageKey.values()).forEach(languageKey -> {
+            boolean fileHasKey = obj.containsKey(languageKey.toString().toLowerCase());
+            if(!fileHasKey) {
+                Bukkit.getPluginManager().disablePlugin(CommandTimerPlugin.getPlugin());
+                throw new RuntimeException(
+                        "Could not find translation for " + languageKey.toString().toLowerCase() + " for language " + selectedLanguage);
             }
-            translations.put(languageKey, (String) obj.get(tag));
+
+            translations.put(languageKey, (String) obj.get(languageKey.toString().toLowerCase()));
         });
     }
 

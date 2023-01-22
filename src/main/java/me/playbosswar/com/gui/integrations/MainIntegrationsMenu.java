@@ -5,6 +5,7 @@ import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
+import io.sentry.Sentry;
 import me.playbosswar.com.CommandTimerPlugin;
 import me.playbosswar.com.gui.MainMenu;
 import me.playbosswar.com.hooks.HookType;
@@ -18,7 +19,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.ArrayList;
 import java.util.List;
 
-// TODO: Test in 1.8, there was a bug report
 public class MainIntegrationsMenu implements InventoryProvider {
     public SmartInventory INVENTORY;
     private final LanguageManager languageManager = CommandTimerPlugin.getLanguageManager();
@@ -40,6 +40,10 @@ public class MainIntegrationsMenu implements InventoryProvider {
         for(HookType hookType : HookType.values()) {
             boolean enabled = CommandTimerPlugin.getInstance().getHooksManager().isHookEnabled(hookType);
             ItemStack item = enabled ? XMaterial.GREEN_WOOL.parseItem() : XMaterial.RED_WOOL.parseItem();
+            if(item == null) {
+                Sentry.captureException(new Exception("Tried creating intergrations menu but item not found"));
+                return;
+            }
             ItemMeta meta = item.getItemMeta();
             meta.setDisplayName("§b" + hookType.getDisplayName());
             List<String> lore = hookType.getLoreDescription();
@@ -58,7 +62,7 @@ public class MainIntegrationsMenu implements InventoryProvider {
 
         ItemStack back = Items.getBackItem();
         ClickableItem clickableBack = ClickableItem.of(back, e -> new MainMenu().INVENTORY.open(player));
-        contents.set(1, 7, clickableBack);
+        contents.set(2, 8, clickableBack);
     }
 
     public void update(Player player, InventoryContents contents) {

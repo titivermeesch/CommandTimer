@@ -28,8 +28,7 @@ public class MenuUtils {
             ConditionType.NOT
     );
 
-    public static ItemStack getExtensionItem(ConditionExtension extension, boolean showRulesCount,
-                                             boolean showEventsCount) {
+    public static ItemStack getExtensionItem(ConditionExtension extension) {
         String conditionGroupName = extension.getConditionGroupName();
         List<String> lore = new ArrayList<>();
         lore.add("");
@@ -37,14 +36,6 @@ public class MenuUtils {
         lore.add("");
         lore.add(languageManager.get(LanguageKey.AUTHOR, extension.getAuthor()));
         lore.add(languageManager.get(LanguageKey.VERSION, extension.getVersion()));
-        if(showRulesCount) {
-            lore.add(languageManager.get(LanguageKey.RULES_COUNT,
-                    String.valueOf(extension.getRules().size())));
-        }
-        if(showEventsCount) {
-            lore.add(languageManager.get(LanguageKey.EVENTS_COUNT,
-                    String.valueOf(extension.getEvents().size())));
-        }
         lore.add("");
         lore.add(languageManager.get(LanguageKey.LEFT_CLICK_SELECT));
 

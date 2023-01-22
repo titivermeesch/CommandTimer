@@ -61,7 +61,7 @@ public class ExecutionLimitMenu implements InventoryProvider {
         });
         contents.set(1, 2, clickableToggleResetItem);
 
-        contents.set(1, 7, ClickableItem.of(Items.getBackItem(),
+        contents.set(2, 8, ClickableItem.of(Items.getBackItem(),
                 e -> new GeneralLimitsMenu(task).INVENTORY.open(player)));
     }
 

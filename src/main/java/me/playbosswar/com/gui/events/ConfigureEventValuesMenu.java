@@ -59,14 +59,13 @@ public class ConfigureEventValuesMenu implements InventoryProvider {
             boolean isActiveValue = condition.getSimpleCondition().getFieldName().equals(v.getName());
             String[] lore;
             if(isActiveValue) {
-                lore = new String[]{"", "&7Value: " + condition.getSimpleCondition().getValue().toString(),
-                        "&7Condition: " + condition.getSimpleCondition().getCompare().name()};
+                lore = new String[]{"", "&7Value: &e" + condition.getSimpleCondition().getValue().toString(),
+                        "&7Condition: &e" + condition.getSimpleCondition().getCompare().name()};
             } else {
                 lore = new String[]{"", "&7CLICK TO ACTIVATE"};
             }
-            ItemStack item = Items.generateItem(isActiveValue ? "&b" + v.getLabel() : "&7" + v.getLabel(),
-                    isActiveValue ? XMaterial.LIME_DYE :
-                            XMaterial.GRAY_DYE, lore);
+            ItemStack item = Items.generateItem("&b" + v.getLabel(), isActiveValue ? XMaterial.LIME_DYE :
+                    XMaterial.GRAY_DYE, lore);
             return ClickableItem.of(item, e -> {
                 if(e.isLeftClick()) {
                     if(v.getType() == Double.class) {
@@ -131,6 +130,9 @@ public class ConfigureEventValuesMenu implements InventoryProvider {
         }).collect(Collectors.toList());
         pagination.setItems(items.toArray(new ClickableItem[0]));
         new HorizontalIteratorWithBorder(player, contents, INVENTORY);
+
+        contents.set(5, 8, ClickableItem.of(Items.getBackItem(),
+                e -> new ConfigureEventMenu(task, extension, eventExtension, condition).INVENTORY.open(player)));
     }
 
     @Override

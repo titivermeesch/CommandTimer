@@ -41,7 +41,8 @@ public class ConfigureEventMenu implements InventoryProvider {
                 .provider(this)
                 .manager(CommandTimerPlugin.getInstance().getInventoryManager())
                 .size(3, 9)
-                .title(languageManager.get(LanguageKey.CONFIGURE_EVENT_GUI_TITLE))
+                .title(languageManager.get(LanguageKey.CONFIGURE_EVENT_GUI_TITLE).replace("$1",
+                        eventExtension.getEventName()))
                 .build();
     }
 
@@ -56,6 +57,9 @@ public class ConfigureEventMenu implements InventoryProvider {
             new ConfigureEventMenu(task, extension, eventExtension, condition).INVENTORY.open(player);
         });
         contents.set(1, 1, conditionTypeItem);
+
+        contents.set(2, 8, ClickableItem.of(Items.getBackItem(),
+                e -> new SelectEventsMenu(task, extension).INVENTORY.open(player)));
 
         // 2. With simple/or, we show a second item to configure all the values
         if(condition.getConditionType().equals(ConditionType.SIMPLE) || condition.getConditionType().equals(ConditionType.NOT)) {

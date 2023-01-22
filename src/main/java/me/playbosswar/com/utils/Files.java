@@ -95,7 +95,7 @@ public class Files {
         List<Task> tasks = new ArrayList<>();
 
         try {
-            if(directoryListing != null && directoryListing.length > 0) {
+            if(directoryListing != null) {
                 for(File file : directoryListing) {
                     if(!file.exists() || !file.getName().contains("json")) {
                         continue;

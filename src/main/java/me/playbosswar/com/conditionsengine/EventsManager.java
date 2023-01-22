@@ -108,7 +108,13 @@ public class EventsManager {
 
         if(receivedValue.getType() == Integer.class) {
             int value = (Integer) receivedValue.getDefaultValue();
-            int expected = (int) simpleCondition.getValue();
+            // Needed because GSON does not make a difference between int and doubles
+            int expected;
+            if(simpleCondition.getValue() instanceof Double conditionValue) {
+                expected = conditionValue.intValue();
+            } else {
+                expected = (int) simpleCondition.getValue();
+            }
             return ConditionHelpers.calculateConditionCompare(compare, value, expected);
         }
 

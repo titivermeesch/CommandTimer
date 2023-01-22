@@ -169,7 +169,7 @@ public class SimpleConditionMenu implements InventoryProvider {
         for(int i = 0; i < items.length; i++) {
             ConditionExtension conditionExtension = conditionExtensions.get(i);
             String conditionGroupName = conditionExtension.getConditionGroupName();
-            ItemStack item = MenuUtils.getExtensionItem(conditionExtension, true, false);
+            ItemStack item = MenuUtils.getExtensionItem(conditionExtension);
 
             // Make item glowing when selected
             if(this.selectedConditionGroup != null && this.selectedConditionGroup.equals(conditionGroupName)) {

@@ -21,6 +21,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -40,7 +41,8 @@ public class SelectEventsMenu implements InventoryProvider {
                 .provider(this)
                 .manager(CommandTimerPlugin.getInstance().getInventoryManager())
                 .size(6, 9)
-                .title(languageManager.get(LanguageKey.SELECT_EVENTS_GUI_TITLE))
+                .title(languageManager.get(LanguageKey.SELECT_EVENTS_GUI_TITLE).replace("$1",
+                        extension.getConditionGroupName()))
                 .build();
     }
 
@@ -50,17 +52,49 @@ public class SelectEventsMenu implements InventoryProvider {
         Pagination pagination = contents.pagination();
 
         List<ClickableItem> items = extension.getEvents().stream().map(event -> {
-            // TODO: Show active state of event, show configured values when possible
-            ItemStack item = Items.generateItem(event.getEventName(), XMaterial.BEACON, event.getEventDescription());
-            return ClickableItem.of(item, e -> {
-                Optional<EventConfiguration> existingConfiguration = task
-                        .getEvents()
-                        .stream()
-                        .filter(ev ->
-                                ev.getConditionGroup().equals(extension.getConditionGroupName()) &&
-                                        ev.getEvent().equals(event.getEventName())).findAny();
+            Optional<EventConfiguration> existingConfiguration = task
+                    .getEvents()
+                    .stream()
+                    .filter(ev ->
+                            ev.getConditionGroup().equals(extension.getConditionGroupName()) &&
+                                    ev.getEvent().equals(event.getEventName())).findAny();
 
+            List<String> description = Arrays
+                    .stream(event.getEventDescription()).map(d -> "&7" + d)
+                    .collect(Collectors.toList());
+            List<String> lore = new ArrayList<>();
+            lore.add("");
+            lore.addAll(description);
+            lore.add("");
+            if(existingConfiguration.isPresent() && existingConfiguration.get().isActive()) {
+                lore.add(languageManager.get(LanguageKey.STATUS_ACTIVE));
+            } else {
+                lore.add(languageManager.get(LanguageKey.STATUS_NOT_ACTIVE));
+            }
+            lore.add("");
+            lore.add(languageManager.get(LanguageKey.LEFT_CLICK_EDIT));
+            lore.add(languageManager.get(LanguageKey.RIGHT_CLICK_TOGGLE));
+            ItemStack item = Items.generateItem("&b" + event.getEventName(), XMaterial.BEACON,
+                    lore.toArray(new String[0]));
+            return ClickableItem.of(item, e -> {
                 if(e.isLeftClick()) {
+                    if(existingConfiguration.isPresent()) {
+                        new ConfigureEventMenu(task, extension, event, existingConfiguration.get().getCondition()).INVENTORY.open(player);
+                        return;
+                    }
+
+                    EventCondition condition = new EventCondition(task, ConditionType.SIMPLE,
+                            new EventSimpleCondition<>(task, "", ""), new ArrayList<>());
+                    EventConfiguration configuration = new EventConfiguration(task, true,
+                            extension.getConditionGroupName()
+                            , event.getEventName(), condition);
+                    task.getEvents().add(configuration);
+                    task.storeInstance();
+
+                    new ConfigureEventMenu(task, extension, event, condition).INVENTORY.open(player);
+                }
+
+                if(e.isRightClick()) {
                     EventConfiguration configuration;
                     if(existingConfiguration.isPresent()) {
                         configuration = existingConfiguration.get();
@@ -77,23 +111,6 @@ public class SelectEventsMenu implements InventoryProvider {
                     // Refresh
                     this.INVENTORY.open(player);
                     return;
-                }
-
-                if(e.isRightClick()) {
-                    if(existingConfiguration.isPresent()) {
-                        new ConfigureEventMenu(task, extension, event, existingConfiguration.get().getCondition()).INVENTORY.open(player);
-                        return;
-                    }
-
-                    EventCondition condition = new EventCondition(task, ConditionType.SIMPLE,
-                            new EventSimpleCondition<>(task, "", ""), new ArrayList<>());
-                    EventConfiguration configuration = new EventConfiguration(task, true,
-                            extension.getConditionGroupName()
-                            , event.getEventName(), condition);
-                    task.getEvents().add(configuration);
-                    task.storeInstance();
-
-                    new ConfigureEventMenu(task, extension, event, condition).INVENTORY.open(player);
                 }
             });
         }).collect(Collectors.toList());

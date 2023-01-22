@@ -9,12 +9,12 @@ various conditions.
 
 ## Installation
 
-- You can build the plugin with Gradle (shadowJar) or [download the latest version](https://www.spigotmc.org/resources/command-timer.24141/)
+- You can build the plugin with Gradle (shadowJar)
+  or [download the latest version](https://www.spigotmc.org/resources/command-timer.24141/)
 - Put the jar file in your plugins folder and reload/restart
 - You will now see a CommandTimer folder
     - `timers` hold all the configuration files for your specific setup
     - `extensions` has all the external extensions that add more functions to CommandTimer
-  
 
 ## Commands
 
@@ -39,4 +39,19 @@ conditions to use in your timers.
 ![stats](https://bstats.org/signatures/bukkit/commandtimer.svg)
 
 ## For Developers
+
+### Color schemas
+
+- GUI panes should be in dark blue color
+- GUI titles should be in dark blue (%9%l)
+- Item titles and subtitles should be in aqua (%b)
+- Item lore should be in gray (&7)
+- Edit lore should be in green (&a)
+- Delete lore should be in red (%4)
+- Configuration values in lore should always be yellow (%e)
+
+### Item positions
+
+- The back button should always be on the bottom right
+
 
