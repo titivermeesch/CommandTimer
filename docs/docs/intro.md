@@ -7,7 +7,7 @@ sidebar_position: 1
 Follow this tutorial to create your first scheduled command.
 
 CommandTimer works with tasks. Tasks define a group of commands that follow the same execution schema. An execution
-schema is a set of settings that define when certain commands get executed
+schema is a collection of settings and conditions that define when certain commands get executed.
 
 ## Creating a task
 
