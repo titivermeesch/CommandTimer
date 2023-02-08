@@ -1,3 +1,7 @@
+---
+sidebar_position: 4
+---
+
 # Events
 
 Besides scheduling commands on a regular base, CommandTimer also offers a way to trigger commands based on events.

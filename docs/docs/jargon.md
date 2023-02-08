@@ -1,3 +1,6 @@
+---
+sidebar_position: 8
+---
 # Jargon
 
 The jargon is a collection of names and definitions specificly targetting a certain group or topic, in this case CommandTimer.

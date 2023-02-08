@@ -1,10 +1,13 @@
+---
+sidebar_position: 6
+---
 # JSON Schema
 
 If you prefer to use the JSON files directly instead of configuring tasks through the GUI, you can edit/create tasks
 following this JSON schema
 
 | Field      | Description                                                                    | Type                         |
-|------------|--------------------------------------------------------------------------------|------------------------------|
+| ---------- | ------------------------------------------------------------------------------ | ---------------------------- |
 | `name`     | Name of the task. Should only contain alphanumerical characters or underscores | `string`                     |
 | `commands` | List of commands to execute                                                    | Array<[Commands](#commands)> |
 | `interval` | List of fixed times to execute commands                                        | [Interval](#commands)        |

@@ -13,14 +13,13 @@ const config = {
   onBrokenLinks: "throw",
   onBrokenMarkdownLinks: "warn",
   favicon: "img/favicon.ico",
-  organizationName: "commandtimer",
+  organizationName: "titivermeesch",
   projectName: "commandtimer",
-
+  trailingSlash: false,
   i18n: {
     defaultLocale: "en",
     locales: ["en"],
   },
-
   presets: [
     [
       "classic",

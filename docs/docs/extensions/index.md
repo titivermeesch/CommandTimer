@@ -1,3 +1,6 @@
+---
+sidebar_position: 3
+---
 # Extensions
 
 Extensions are used to add extra functionnality that is not there by default. Each extension comes in the form of a jar file that CommandTimer will use to extends its original functionnality.
