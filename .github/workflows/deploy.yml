@@ -4,24 +4,28 @@ on:
     branches:
       - main
 jobs:
-  deploy:
+  Deploy-Documentation:
     name: Deploy to GitHub Pages
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
+        working-directory: ./docs
         with:
           node-version: 16
           cache: yarn
       - name: Install dependencies
-        run: cd docs && yarn install --frozen-lockfile
+        working-directory: ./docs
+        run: yarn install --frozen-lockfile
       - name: Build website
-        run: cd docs && yarn build
+        working-directory: ./docs
+        run: yarn build
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
+        working-directory: ./docs
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs/build
+          publish_dir: ./build
           user_name: github-actions[bot]
           user_email: 41898282+github-actions[bot]@users.noreply.github.com
   Build-Java-8:
