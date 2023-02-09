@@ -2,10 +2,9 @@ name: Test that everything can build properly and is tested
 on:
   pull_request:
     branches:
-      - master
+      - main
     paths:
       - 'src/**'
-
 jobs:
   Build-Java-8:
     runs-on: ubuntu-latest
