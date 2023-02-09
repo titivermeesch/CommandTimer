@@ -3,42 +3,31 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'src/**'
-      - '.github/**'
 jobs:
-  #  prepare-paths:
-  #    runs-on: ubuntu-latest
-  #    outputs:
-  #      plugins: ${{ steps.filter.outputs.plugins }}
-  #      docs: ${{ steps.filter.outputs.docs }}
-  #    steps:
-  #      - uses: dorny/paths-filter@v2
-  #        id: filter
-  #        with:
-  #          filters: |
-  #            plugins:
-  #              - 'src/**'
-  #            docs:
-  #              - 'docs/**'
-  #  Build-Documentation:
-  #    runs-on: ubuntu-latest
-  #    steps:
-  #      - name: Setup node
-  #        uses: actions/setup-node@v3
-  #        with:
-  #          node-version: 16
-  #      - name: Build
-  #        run: npm run build
-  #      - name: Setup Pages
-  #        uses: actions/configure-pages@v1
-  #      - name: Upload artifact
-  #        uses: actions/upload-pages-artifact@v1
-  #        with:
-  #          path: build
-  #      - name: Deploy to GitHub Pages
-  #        id: deployment
-  #        uses: actions/deploy-pages@v1
+  Deploy-Documentation:
+    name: Deploy to GitHub Pages
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        working-directory: ./docs
+        with:
+          node-version: 16
+          cache: yarn
+      - name: Install dependencies
+        working-directory: ./docs
+        run: yarn install --frozen-lockfile
+      - name: Build website
+        working-directory: ./docs
+        run: yarn build
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        working-directory: ./docs
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build
+          user_name: github-actions[bot]
+          user_email: 41898282+github-actions[bot]@users.noreply.github.com
   Build-Java-8:
     runs-on: ubuntu-latest
     steps:
