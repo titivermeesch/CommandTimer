@@ -60,7 +60,7 @@ public class GeneralLimitsMenu implements InventoryProvider {
         });
         contents.set(1, 1, clickableExecutionLimitItem);
 
-        contents.set(1, 7, ClickableItem.of(Items.getBackItem(), e -> new EditTaskMenu(task).INVENTORY.open(player)));
+        contents.set(2, 8, ClickableItem.of(Items.getBackItem(), e -> new EditTaskMenu(task).INVENTORY.open(player)));
     }
 
     @Override

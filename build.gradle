@@ -9,7 +9,7 @@ java {
 }
 
 group = 'me.playbosswar.com'
-version = '7.1.1'
+version = '8.0.0'
 description = 'CommandTimer'
 
 repositories {
@@ -51,7 +51,7 @@ dependencies {
     implementation 'io.sentry:sentry:6.4.1'
     compileOnly 'io.papermc.paper:paper-api:1.19.2-R0.1-SNAPSHOT'
     compileOnly 'me.clip:placeholderapi:2.10.9'
-    compileOnly 'org.jetbrains:annotations:23.0.0'
+    compileOnly 'org.jetbrains:annotations:23.1.0'
 }
 
 publishing {
@@ -59,7 +59,7 @@ publishing {
         maven(MavenPublication) {
             groupId = 'me.playbosswar.com'
             artifactId = 'commandtimer'
-            version = '7.1.1'
+            version = '8.0.0'
 
             from components.java
         }

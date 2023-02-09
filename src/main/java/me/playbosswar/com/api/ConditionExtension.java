@@ -2,15 +2,17 @@ package me.playbosswar.com.api;
 
 import com.cryptomorin.xseries.XMaterial;
 import me.playbosswar.com.CommandTimerPlugin;
+import me.playbosswar.com.api.events.EventExtension;
 import org.bukkit.Bukkit;
-import org.jeasy.rules.api.Rules;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
 
 public abstract class ConditionExtension {
     /**
      * Give back the name of your group of conditions.
-     *
+     * <p>
      * Please use capitals and _ only. No spaces, numbers or other special characters
      *
      * @return Condition group name
@@ -44,7 +46,9 @@ public abstract class ConditionExtension {
      */
     public XMaterial getGroupIcon() {
         return XMaterial.COMMAND_BLOCK;
-    };
+    }
+
+    ;
 
     /**
      * Get name of a required plugin for these conditions
@@ -90,4 +94,6 @@ public abstract class ConditionExtension {
     public boolean register() {
         return getCommandTimerPlugin().getConditionEngineManager().register(this);
     }
+
+    public abstract ArrayList<EventExtension> getEvents();
 }

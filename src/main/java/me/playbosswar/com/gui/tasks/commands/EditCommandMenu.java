@@ -64,7 +64,7 @@ public class EditCommandMenu implements InventoryProvider {
         });
         contents.set(1, 2, clickableGenderItem);
 
-        contents.set(1, 7, ClickableItem.of(Items.getBackItem(),
+        contents.set(2, 8, ClickableItem.of(Items.getBackItem(),
                 e -> new AllCommandsMenu(taskCommand.getTask()).INVENTORY.open(player)));
     }
 

@@ -1,13 +1,14 @@
 package me.playbosswar.com.api;
 
+// Class is used for both conditions engine and events engine
 public class NeededValue<T> implements INeededValue<T> {
     // Name that will be saved in config (should be YAML compliant)
-    private final String name;
+    private String name;
     // Visual name for the value
-    private final String label;
+    private String label;
     // Default type
-    private final T defaultValue;
-    private final Class<T> type;
+    private T defaultValue;
+    private Class<T> type;
 
     public NeededValue(String name, String label, Class<T> type, T defaultValue) {
         this.name = name;
@@ -35,5 +36,21 @@ public class NeededValue<T> implements INeededValue<T> {
 
     public Class<T> getType() {
         return type;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public void setDefaultValue(T defaultValue) {
+        this.defaultValue = defaultValue;
+    }
+
+    public void setType(Class<T> type) {
+        this.type = type;
     }
 }

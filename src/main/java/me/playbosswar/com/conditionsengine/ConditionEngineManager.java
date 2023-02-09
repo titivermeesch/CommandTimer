@@ -4,8 +4,10 @@ import me.playbosswar.com.CommandTimerPlugin;
 import me.playbosswar.com.api.ConditionExtension;
 import me.playbosswar.com.api.ConditionRule;
 import me.playbosswar.com.api.ConditionRules;
+import me.playbosswar.com.events.JoinEvents;
 import me.playbosswar.com.utils.Files;
 import me.playbosswar.com.utils.Futures;
+import me.playbosswar.com.utils.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
@@ -78,6 +80,15 @@ public class ConditionEngineManager {
             Objects.requireNonNull(condition.getVersion(), "The condition version is null!");
 
             condition.register();
+            if(condition.getEvents().size() > 0) {
+                condition.getEvents().forEach(event -> {
+                            if(event instanceof Listener) {
+                                Bukkit.getPluginManager().registerEvents((Listener) event,
+                                        CommandTimerPlugin.getPlugin());
+                            }
+                        }
+                );
+            }
         } catch(LinkageError | NullPointerException ex) {
             final String reason;
 

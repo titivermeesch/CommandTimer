@@ -94,7 +94,7 @@ public class EditSpecificTimeMenu implements InventoryProvider {
                     worlds, false).INVENTORY.open(player)));
         }
 
-        contents.set(1, 7, ClickableItem.of(Items.getBackItem(),
+        contents.set(2, 8, ClickableItem.of(Items.getBackItem(),
                 e -> new EditTimesMenu(taskTime.getTask()).INVENTORY.open(player)));
     }
 

@@ -1,6 +1,9 @@
 package me.playbosswar.com.utils;
 
 import me.playbosswar.com.CommandTimerPlugin;
+import me.playbosswar.com.api.events.EventCondition;
+import me.playbosswar.com.api.events.EventConfiguration;
+import me.playbosswar.com.api.events.EventExtension;
 import me.playbosswar.com.conditionsengine.validations.Condition;
 import me.playbosswar.com.conditionsengine.validations.ConditionType;
 import me.playbosswar.com.conditionsengine.validations.SimpleCondition;
@@ -55,6 +58,17 @@ public class Files {
         });
     }
 
+    private static void setTaskOnEventConditions(Task task, List<EventCondition> conditions) {
+        conditions.forEach(condition -> {
+            condition.setTask(task);
+            if(condition.getConditionType().equals(ConditionType.SIMPLE) || condition.getConditionType().equals(ConditionType.NOT)) {
+                condition.getSimpleCondition().setTask(task);
+            } else {
+                setTaskOnEventConditions(task, condition.getConditions());
+            }
+        });
+    }
+
     private static void healTask(Task task) {
         TaskInterval defaultInterval = new TaskInterval(task, 0, 0, 0, 5);
         if(task.getCommands() == null) {
@@ -81,7 +95,7 @@ public class Files {
         List<Task> tasks = new ArrayList<>();
 
         try {
-            if(directoryListing != null && directoryListing.length > 0) {
+            if(directoryListing != null) {
                 for(File file : directoryListing) {
                     if(!file.exists() || !file.getName().contains("json")) {
                         continue;
@@ -101,6 +115,21 @@ public class Files {
                         task.getCommandExecutionInterval().setTask(task);
                         Condition condition = task.getCondition();
                         condition.setTask(task);
+                        if(task.getEvents() == null) {
+                            task.setEvents(new ArrayList<>());
+                        }
+                        task.getEvents().forEach(e -> {
+                            EventCondition eventCondition = e.getCondition();
+                            e.setTask(task);
+                            eventCondition.setTask(task);
+                            if(eventCondition.getSimpleCondition() != null) {
+                                eventCondition.getSimpleCondition().setTask(task);
+                            }
+
+                            if(eventCondition.getConditionType().equals(ConditionType.OR) || eventCondition.getConditionType().equals(ConditionType.AND)) {
+                                setTaskOnEventConditions(task, eventCondition.getConditions());
+                            }
+                        });
 
                         SimpleCondition simpleCondition = condition.getSimpleCondition();
                         if(simpleCondition != null) {

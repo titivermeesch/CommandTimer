@@ -1,3 +1,18 @@
+## 8.0.0
+
+- Add new events system
+- Improve general stability of the plugin
+- Improve consistency across all the GUI
+- Add official documentation website
+- Improve i18n engine
+- Add missing permission for auto update message
+- Get rid of command UUID value
+
+## 7.1.1 - 19/11/2022
+
+- fix wrong NOT condition processing
+- small improvements in the conditions engine in general
+
 ## 7.1.0 - 12/11/2022
 
 - Add option to reset command execution index

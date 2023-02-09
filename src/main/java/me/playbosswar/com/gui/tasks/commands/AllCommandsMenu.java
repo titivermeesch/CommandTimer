@@ -24,7 +24,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.List;
-import java.util.UUID;
 
 public class AllCommandsMenu implements InventoryProvider {
     public SmartInventory INVENTORY;
@@ -55,7 +54,7 @@ public class AllCommandsMenu implements InventoryProvider {
         String[] addItemLore = languageManager.getList(LanguageKey.ADD_COMMAND_LORE).toArray(new String[]{});
         ItemStack addItem = Items.generateItem(LanguageKey.ADD_COMMAND, XMaterial.ANVIL, addItemLore);
         ClickableItem clickableAddItem = ClickableItem.of(addItem, e -> {
-            TaskCommand taskCommand = new TaskCommand(task, UUID.randomUUID(), "say This is my command",
+            TaskCommand taskCommand = new TaskCommand(task, "say This is my command",
                     Gender.CONSOLE);
             task.addCommand(taskCommand);
             new EditCommandMenu(taskCommand).INVENTORY.open(player);
