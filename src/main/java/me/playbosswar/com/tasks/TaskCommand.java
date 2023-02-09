@@ -5,14 +5,12 @@ import me.playbosswar.com.enums.Gender;
 import java.util.UUID;
 
 public class TaskCommand {
-    private final UUID uuid;
     private String command;
     private Gender gender;
     private transient Task task;
 
-    public TaskCommand(Task task, UUID uuid, String command, Gender gender) {
+    public TaskCommand(Task task, String command, Gender gender) {
         this.task = task;
-        this.uuid = uuid;
         this.command = command;
         this.gender = gender;
     }
@@ -37,26 +35,22 @@ public class TaskCommand {
 
     public void toggleGender() {
         if(gender.equals(Gender.OPERATOR)) {
-            gender = Gender.PLAYER;
-            task.storeInstance();
+            setGender(Gender.PLAYER);
             return;
         }
 
         if(gender.equals(Gender.PLAYER)) {
-            gender = Gender.CONSOLE;
-            task.storeInstance();
+            setGender(Gender.CONSOLE);
             return;
         }
 
         if(gender.equals(Gender.CONSOLE)) {
-            gender = Gender.CONSOLE_PER_USER;
-            task.storeInstance();
+            setGender(Gender.CONSOLE_PER_USER);
             return;
         }
 
         if(gender.equals(Gender.CONSOLE_PER_USER)) {
-            gender = Gender.OPERATOR;
-            task.storeInstance();
+            setGender(Gender.OPERATOR);
         }
     }
 
@@ -66,9 +60,5 @@ public class TaskCommand {
 
     public Task getTask() {
         return task;
-    }
-
-    public UUID getUuid() {
-        return uuid;
     }
 }

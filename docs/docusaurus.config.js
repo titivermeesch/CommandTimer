@@ -12,7 +12,7 @@ const config = {
   baseUrl: "/",
   onBrokenLinks: "throw",
   onBrokenMarkdownLinks: "warn",
-  favicon: "img/favicon.ico",
+  favicon: "img/logo.jpg",
   organizationName: "titivermeesch",
   projectName: "commandtimer",
   trailingSlash: false,
@@ -26,10 +26,10 @@ const config = {
       /** @type {import('@docusaurus/preset-classic').Options} */
       ({
         docs: {
-          sidebarPath: require.resolve("./sidebars.js"), // Please change this to your repo.
+          sidebarPath: require.resolve("./sidebars.js"),
         },
         blog: {
-          showReadingTime: true, // Please change this to your repo.
+          showReadingTime: true,
         },
         theme: {
           customCss: require.resolve("./src/css/custom.css"),
@@ -45,7 +45,7 @@ const config = {
         title: "CommandTimer",
         logo: {
           alt: "CommandTimer Logo",
-          src: "img/logo.svg",
+          src: "img/logo.jpg",
         },
         items: [
           {
@@ -76,6 +76,11 @@ const config = {
             label: "GitHub",
             position: "right",
           },
+          {
+            href: "https://patreon.com/commandtimer",
+            label: "Patreon",
+            position: "right"
+          }
         ],
       },
       footer: {

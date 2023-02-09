@@ -5,6 +5,8 @@
 - Improve consistency across all the GUI
 - Add official documentation website
 - Improve i18n engine
+- Add missing permission for auto update message
+- Get rid of command UUID value
 
 ## 7.1.1 - 19/11/2022
 

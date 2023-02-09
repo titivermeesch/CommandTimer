@@ -10,7 +10,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 public class JoinEvents implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
-        if(!e.getPlayer().isOp()) {
+        if(!e.getPlayer().isOp() || !e.getPlayer().hasPermission("commandtimer.update")) {
             return;
         }
 
