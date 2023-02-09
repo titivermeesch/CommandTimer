@@ -3,8 +3,6 @@ on:
   pull_request:
     branches:
       - main
-    paths:
-      - 'src/**'
 jobs:
   Build-Java-8:
     runs-on: ubuntu-latest
@@ -24,3 +22,17 @@ jobs:
           distribution: 'adopt'
           java-version: '17'
       - run: gradle :shadowJar
+  test-documentation:
+    name: Test Documentation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: yarn
+
+      - name: Install dependencies
+        run: cd docs && yarn install --frozen-lockfile
+      - name: Test build website
+        run: cd docs && yarn build
