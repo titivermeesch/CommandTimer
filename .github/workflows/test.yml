@@ -1,9 +1,6 @@
 name: Test that everything can build properly and is tested
 on:
-  push:
   pull_request:
-    branches:
-      - main
 
 jobs:
   Build-Java-8:
