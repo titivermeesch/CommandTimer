@@ -35,7 +35,7 @@ You made an extension and want to add it here? Open a ticket on [GitHub](https:/
 Creating an extension is pretty straight forward. Follow this guide to get started.
 
 1. Create a new Java project. Ideally you use a dependency manager like Maven or Gradle
-2. Add CommandTimer as dependency for your project. See [Developers Documentation](../developers) for further details
+2. Add CommandTimer as dependency for your project. See [Developers Documentation](../developers/index) for further details
 3. Create a class which will be the entry point for your extension. This class **needs** to
    extend `ConditionExtension` (located at `me.playbosswar.com.api.ConditionExtension`)
 4. Once that main class is set up, you can now continue reading to add true functionality. I would recommend to first
@@ -71,7 +71,7 @@ player. Here is a list of supported types:
 - String
 - ConditionCompare
 
-All these types are the native Java types, except `ConditionCompare`, which is used to define a comparaison between 2
+All these types are the native Java types, except `ConditionCompare`, which is used to define a comparison between 2
 values. This could be EQUAL, LESS_THEN, BIGGER_OR_EQUAL_THEN,... The different choices are available on the class
 itself. A good example of this is
 available [here](https://github.com/titivermeesch/CommandTimer_PlayerConditions/blob/master/src/main/java/me/playbosswar/cmtplayerconditions/conditions/PlayerTimeInWorldCondition.java)
