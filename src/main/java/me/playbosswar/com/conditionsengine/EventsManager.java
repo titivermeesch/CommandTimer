@@ -121,7 +121,7 @@ public class EventsManager {
 
         if(receivedValue.getType() == Double.class) {
             double value = (Double) receivedValue.getDefaultValue();
-            double expected = (double) simpleCondition.getValue();
+            double expected = (Double) simpleCondition.getValue();
             return ConditionHelpers.calculateConditionCompare(compare, value, expected);
         }
 

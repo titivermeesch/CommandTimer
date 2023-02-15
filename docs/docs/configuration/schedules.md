@@ -3,7 +3,7 @@ sidebar_position: 2
 ---
 # Schedules
 
-CommandTimer supports different types of scheduling, and can also be used together to accomodate for more complex scenarios
+CommandTimer supports different types of scheduling, and can also be used together to accommodate for more complex scenarios
 
 ## Intervals
 
@@ -25,7 +25,7 @@ It is possible to set a second time when configuring a fixed time. When doing so
 
 ### Minecraft world time
 
-For both fixed times and ranges, Minecraft time can be used instead of the server time. This can be activated per fixed time, meaning that in one single [task](../misc/jargon#task) server time and Minecraft time can be mixed.
+For both fixed times and ranges, Minecraft time can be used instead of the server time. This can be activated per fixed time, meaning that in one single [task](../jargon#task) server time and Minecraft time can be mixed.
 
 When configuring Minecraft time, a world also needs to be selected to use the time from.
 
@@ -33,6 +33,6 @@ If you want to know the world time, go to the world you want to check and execut
 
 ## Days
 
-In the days menu, you can select on which days the [task](../misc/jargon#task) will be executed. By default all the days are selected.
+In the days menu, you can select on which days the [task](../jargon#task) will be executed. By default all the days are selected.
 
 This also takes into account possible configured fixed times.

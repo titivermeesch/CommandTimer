@@ -80,7 +80,7 @@ multiple times to handle complex use-cases.
 
 ## Event
 
-Documentation about the Events Engine can be found [here](events/index.md)
+Documentation about the Events Engine can be found [here](events/index)
 
 | Field            | Description                                                                               | Type                                 |
 |------------------|-------------------------------------------------------------------------------------------|--------------------------------------|
