@@ -10,10 +10,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
-        working-directory: ./docs
         with:
           node-version: 16
           cache: yarn
+          cache-dependency-path: docs/yarn.lock
       - name: Install dependencies
         working-directory: ./docs
         run: yarn install --frozen-lockfile
@@ -22,10 +22,9 @@ jobs:
         run: yarn build
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
-        working-directory: ./docs
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./build
+          publish_dir: ./docs/build
           user_name: github-actions[bot]
           user_email: 41898282+github-actions[bot]@users.noreply.github.com
   Build-Java-8:

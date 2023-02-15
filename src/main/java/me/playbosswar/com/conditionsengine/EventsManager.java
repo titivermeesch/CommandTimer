@@ -114,14 +114,14 @@ public class EventsManager {
                 Double conditionValue = (Double) simpleCondition.getValue();
                 expected = conditionValue.intValue();
             } else {
-                expected = (int) simpleCondition.getValue();
+                expected = (Integer) simpleCondition.getValue();
             }
             return ConditionHelpers.calculateConditionCompare(compare, value, expected);
         }
 
         if(receivedValue.getType() == Double.class) {
             double value = (Double) receivedValue.getDefaultValue();
-            double expected = (double) simpleCondition.getValue();
+            double expected = (Double) simpleCondition.getValue();
             return ConditionHelpers.calculateConditionCompare(compare, value, expected);
         }
 

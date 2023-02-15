@@ -1,11 +1,10 @@
 name: Test that everything can build properly and is tested
 on:
   pull_request:
-    branches:
-      - main
     types:
       - opened
       - synchronize
+
 jobs:
   Build-Java-8:
     runs-on: ubuntu-latest
@@ -31,10 +30,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
-        working-directory: ./docs
         with:
           node-version: 16
           cache: yarn
+          cache-dependency-path: docs/yarn.lock
       - name: Install dependencies
         working-directory: ./docs
         run: yarn install --frozen-lockfile

@@ -24,7 +24,7 @@ following this JSON schema
 | `active`                      | Defines if the [task](jargon#task) is active or not                                                                          | `boolean`                                                                    |
 | `resetExecutionsAfterRestart` | Defines if the value `executionLimit` needs to be reset when plugin restarts                                                 | `boolean`                                                                    |
 | `condition`                   | Configuration for the [Conditions Engine](configuration/conditions)                                                          | [`Condition`](#condition)                                                    |
-| `event`                       | Configuration for the [Events Engine](events/index)                                                                          | [`Event[]`](#event)                                                          |
+| `event`                       | Configuration for the [Events Engine](events)                                                                                | [`Event[]`](#event)                                                          |
 
 ## Command
 
@@ -80,7 +80,7 @@ multiple times to handle complex use-cases.
 
 ## Event
 
-Documentation about the Events Engine can be found [here](events/index.md)
+Documentation about the Events Engine can be found [here](events)
 
 | Field            | Description                                                                               | Type                                 |
 |------------------|-------------------------------------------------------------------------------------------|--------------------------------------|
