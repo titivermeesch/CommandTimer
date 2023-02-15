@@ -35,7 +35,7 @@ You made an extension and want to add it here? Open a ticket on [GitHub](https:/
 Creating an extension is pretty straight forward. Follow this guide to get started.
 
 1. Create a new Java project. Ideally you use a dependency manager like Maven or Gradle
-2. Add CommandTimer as dependency for your project. See [Developers Documentation](../developers/index) for further details
+2. Add CommandTimer as dependency for your project. See [Developers Documentation](../developers/index.md) for further details
 3. Create a class which will be the entry point for your extension. This class **needs** to
    extend `ConditionExtension` (located at `me.playbosswar.com.api.ConditionExtension`)
 4. Once that main class is set up, you can now continue reading to add true functionality. I would recommend to first
