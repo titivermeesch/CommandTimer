@@ -9,7 +9,7 @@ const config = {
   title: "CommandTimer",
   tagline: "Schedule commands like you want",
   url: "https://pages.github.com",
-  baseUrl: "/",
+  baseUrl: "/CommandTimer/",
   onBrokenLinks: "throw",
   onBrokenMarkdownLinks: "warn",
   favicon: "img/logo.jpg",
