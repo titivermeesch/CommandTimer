@@ -19,15 +19,18 @@ public class TaskTimeUtils {
         List<Date> dates = new ArrayList<>();
 
         taskTimes.forEach(taskTime -> {
-            for(int i = 1; i <= 4; i++) {
-                int finalI = i;
+            Calendar cal = Calendar.getInstance();
+            // TODO: Caching could be used here
+            for(int i = 0; i <= 30; i++) {
+                cal.add(Calendar.DAY_OF_YEAR, i);
                 taskTime.getTask().getDays().forEach(day -> {
-                    Calendar cal = Calendar.getInstance();
+                    if(cal.get(Calendar.DAY_OF_WEEK) != DayOfWeek.valueOf(day).getValue() + 1) {
+                        return;
+                    }
+
                     cal.set(Calendar.HOUR_OF_DAY, taskTime.getTime1().getHour());
                     cal.set(Calendar.MINUTE, taskTime.getTime1().getMinute());
                     cal.set(Calendar.SECOND, taskTime.getTime1().getSecond());
-                    cal.set(Calendar.DAY_OF_WEEK, DayOfWeek.valueOf(day).getValue() + 1);
-                    cal.set(Calendar.WEEK_OF_MONTH, finalI);
                     dates.add(cal.getTime());
                 });
             }

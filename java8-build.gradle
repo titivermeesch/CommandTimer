@@ -9,7 +9,7 @@ java {
 }
 
 group = 'me.playbosswar.com'
-version = '8.0.0'
+version = '8.0.1'
 description = 'CommandTimer'
 
 repositories {

@@ -1,3 +1,7 @@
+## 8.0.1 - 15/04/2023
+
+- Fix placeholders not working when month contains 31 days
+
 ## 8.0.0
 
 - Add new events system
