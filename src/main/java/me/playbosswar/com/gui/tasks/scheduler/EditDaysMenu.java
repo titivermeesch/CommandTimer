@@ -13,6 +13,8 @@ import me.playbosswar.com.utils.Items;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.time.DayOfWeek;
+
 public class EditDaysMenu implements InventoryProvider {
     public final SmartInventory INVENTORY;
     private final Task task;
@@ -32,11 +34,9 @@ public class EditDaysMenu implements InventoryProvider {
     @Override
     public void init(Player player, InventoryContents contents) {
         contents.fillBorders(ClickableItem.empty(XMaterial.BLUE_STAINED_GLASS_PANE.parseItem()));
-
-        String[] days = new String[]{"MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"};
-
+        
         int i = 1;
-        for(String day : days) {
+        for(DayOfWeek day : DayOfWeek.values()) {
             ItemStack item = Items.getToggleItem("§b" + day, new String[]{}, task.getDays().contains(day));
             ClickableItem clickableItem = ClickableItem.of(item, e -> {
                 task.toggleDay(day);

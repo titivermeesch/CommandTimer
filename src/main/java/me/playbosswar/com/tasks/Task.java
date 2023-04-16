@@ -11,6 +11,7 @@ import me.playbosswar.com.utils.gson.GsonConverter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -21,7 +22,7 @@ public class Task {
     private TaskInterval interval = new TaskInterval(this, 0, 0, 0, 5);
     private List<TaskTime> times = new ArrayList<>();
     private double random = 1.0;
-    private List<String> days = new ArrayList<>();
+    private List<DayOfWeek> days = new ArrayList<>();
     private int executionLimit = -1;
     private int timesExecuted = 0;
     private int lastExecutedCommandIndex = 0;
@@ -35,13 +36,13 @@ public class Task {
 
     public Task(String name) {
         this.name = name;
-        this.days.add("MONDAY");
-        this.days.add("TUESDAY");
-        this.days.add("WEDNESDAY");
-        this.days.add("THURSDAY");
-        this.days.add("FRIDAY");
-        this.days.add("SATURDAY");
-        this.days.add("SUNDAY");
+        this.days.add(DayOfWeek.MONDAY);
+        this.days.add(DayOfWeek.TUESDAY);
+        this.days.add(DayOfWeek.WEDNESDAY);
+        this.days.add(DayOfWeek.THURSDAY);
+        this.days.add(DayOfWeek.FRIDAY);
+        this.days.add(DayOfWeek.SATURDAY);
+        this.days.add(DayOfWeek.SUNDAY);
         this.condition = new Condition(ConditionType.SIMPLE, new ArrayList<>(), new SimpleCondition(this), this);
         storeInstance();
     }
@@ -118,16 +119,16 @@ public class Task {
         storeInstance();
     }
 
-    public List<String> getDays() {
+    public List<DayOfWeek> getDays() {
         return days;
     }
 
-    public void setDays(List<String> days) {
+    public void setDays(List<DayOfWeek> days) {
         this.days = days;
         storeInstance();
     }
 
-    public void toggleDay(String day) {
+    public void toggleDay(DayOfWeek day) {
         if(days.contains(day)) {
             days.remove(day);
         } else {
