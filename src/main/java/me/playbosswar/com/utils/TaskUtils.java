@@ -10,6 +10,6 @@ public class TaskUtils {
     public static boolean checkTaskDaysContainToday(Task task) {
         DayOfWeek today = LocalDate.now().getDayOfWeek();
 
-        return task.getDays().contains(today.toString());
+        return task.getDays().contains(today);
     }
 }
