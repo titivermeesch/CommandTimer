@@ -22,7 +22,9 @@ public class TaskTimeUtils {
             Calendar cal = Calendar.getInstance();
             // TODO: Caching could be used here
             for(int i = 0; i <= 30; i++) {
-                cal.add(Calendar.DAY_OF_YEAR, 1);
+                if(i != 0) {
+                    cal.add(Calendar.DAY_OF_YEAR, 1);
+                }
                 taskTime.getTask().getDays().forEach(day -> {
                     if(cal.get(Calendar.DAY_OF_WEEK) != transformDow(day)) {
                         return;
