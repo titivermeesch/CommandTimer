@@ -9,7 +9,7 @@ java {
 }
 
 group = 'me.playbosswar.com'
-version = '8.1.0'
+version = '8.1.1'
 description = 'CommandTimer'
 
 repositories {
@@ -36,7 +36,6 @@ shadowJar {
         include(dependency('joda-time:joda-time:2.10.13'))
         include(dependency('org.jeasy:easy-rules-core:4.1.0'))
         include(dependency('org.apache.commons:commons-text:1.9'))
-        include(dependency('io.sentry:sentry:6.4.1'))
     }
     archiveFileName = "commandtimer-java17.jar"
 }
@@ -48,7 +47,6 @@ dependencies {
     implementation 'org.jeasy:easy-rules-core:4.1.0'
     implementation 'com.googlecode.json-simple:json-simple:1.1.1'
     implementation 'org.apache.commons:commons-text:1.9'
-    implementation 'io.sentry:sentry:6.18.1'
     compileOnly 'io.papermc.paper:paper-api:1.19.4-R0.1-SNAPSHOT'
     compileOnly 'me.clip:placeholderapi:2.10.9'
     compileOnly 'org.jetbrains:annotations:23.1.0'
@@ -59,7 +57,7 @@ publishing {
         maven(MavenPublication) {
             groupId = 'me.playbosswar.com'
             artifactId = 'commandtimer'
-            version = '8.1.0'
+            version = '8.1.1'
 
             from components.java
         }

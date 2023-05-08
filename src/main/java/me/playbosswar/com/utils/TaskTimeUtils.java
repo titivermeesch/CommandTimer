@@ -1,6 +1,5 @@
 package me.playbosswar.com.utils;
 
-import io.sentry.Sentry;
 import me.playbosswar.com.tasks.Task;
 import me.playbosswar.com.tasks.TaskTime;
 import org.bukkit.Bukkit;
@@ -65,7 +64,6 @@ public class TaskTimeUtils {
         } catch(IllegalArgumentException e) {
             Bukkit.getLogger().log(Level.SEVERE, "Last executed time seems to be in the future!");
             e.printStackTrace();
-            Sentry.captureException(e);
         }
 
         return false;
