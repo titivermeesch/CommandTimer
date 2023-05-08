@@ -25,3 +25,4 @@ Clicking the paper will create a fresh task for you.
 | `/cmt activate <task>`   | Enable the specified task                               | `commandtimer.activate` or `commandtimer.toggle`    |
 | `/cmt deactivate <task>` | Disable the specified task                              | `commandtimer.deactivate`  or `commandtimer.toggle` |
 | `/cmt execute <task>`    | Instantly execute the specified task                    | `commandtimer.execute`                              |
+| `/cmt reload`            | Reload the plugin                                       | `commandtimer.manage`                               |

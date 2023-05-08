@@ -15,6 +15,7 @@ public class GsonConverter {
         final GsonBuilder builder = new GsonBuilder();
         builder
                 .excludeFieldsWithModifiers(Modifier.STATIC, Modifier.TRANSIENT, Modifier.VOLATILE)
+                .setPrettyPrinting()
                 .registerTypeAdapter(LocalTime.class, new GsonLocalTime());
         this.gson = builder.create();
     }

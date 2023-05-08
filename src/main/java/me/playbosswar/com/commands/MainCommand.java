@@ -1,6 +1,7 @@
 package me.playbosswar.com.commands;
 
 import me.playbosswar.com.CommandTimerPlugin;
+import me.playbosswar.com.conditionsengine.ConditionEngineManager;
 import me.playbosswar.com.enums.CommandExecutionMode;
 import me.playbosswar.com.gui.MainMenu;
 import me.playbosswar.com.language.LanguageKey;
@@ -55,6 +56,25 @@ public class MainCommand implements CommandExecutor {
                 Player p = (Player) sender;
                 String worldTime = Tools.calculateWorldTime(p.getWorld());
                 Messages.sendMessage(sender, languageManager.get(LanguageKey.MINECRAFT_TIME, worldTime));
+                return true;
+            }
+
+            if(args[0].equalsIgnoreCase("reload")) {
+                if(!sender.hasPermission("commandtimer.manage")) {
+                    Messages.sendNoPermission(sender);
+                    return true;
+                }
+
+                CommandTimerPlugin pl = CommandTimerPlugin.getInstance();
+                pl.getConditionEngineManager().onDisable();
+                pl.getTasksManager().disable();
+                pl.saveDefaultConfig();
+
+                pl.setTasksManager(new TasksManager());
+                pl.setConditionEngineManager(new ConditionEngineManager());
+
+                // TODO: Reload extensions
+                sender.sendMessage(CommandTimerPlugin.getLanguageManager().get(LanguageKey.PLUGIN_RELOADED));
                 return true;
             }
         }

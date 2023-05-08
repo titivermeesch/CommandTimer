@@ -150,8 +150,16 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
         return tasksManager;
     }
 
+    public void setTasksManager(TasksManager tasksManager) {
+        CommandTimerPlugin.tasksManager = tasksManager;
+    }
+
     public ConditionEngineManager getConditionEngineManager() {
         return conditionEngineManager;
+    }
+
+    public void setConditionEngineManager(ConditionEngineManager conditionEngineManager) {
+        CommandTimerPlugin.conditionEngineManager = conditionEngineManager;
     }
 
     public EventsManager getEventsManager() {

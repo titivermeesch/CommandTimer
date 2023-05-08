@@ -35,6 +35,10 @@ public class ConditionEngineManager {
         registerAll();
     }
 
+    public void disable() {
+        unregisterAll();
+    }
+
     public List<ConditionExtension> getConditionExtensions() {
         return conditionExtensions;
     }
@@ -133,6 +137,10 @@ public class ConditionEngineManager {
 
             classes.stream().filter(Objects::nonNull).forEach(this::register);
         });
+    }
+
+    private void unregisterAll() {
+        this.conditionExtensions.clear();
     }
 
     @Nullable

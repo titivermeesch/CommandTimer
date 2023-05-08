@@ -10,6 +10,7 @@ import me.playbosswar.com.utils.StringEnhancer;
 import me.playbosswar.com.utils.Tools;
 import org.apache.commons.lang.RandomStringUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandException;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -20,7 +21,9 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
+
 public class TasksManager {
+    private static final String CONDITION_NO_MATCH = "Conditions did not match";
     private final List<Task> loadedTasks = new ArrayList<>();
     private final List<TaskCommand> scheduledExecutions = new ArrayList<>();
     private Thread runnerThread;
@@ -84,11 +87,21 @@ public class TasksManager {
             if(taskCommand.getTask().getCondition() != null) {
                 boolean valid = TaskValidationHelpers.processCondition(taskCommand.getTask().getCondition(), p);
                 if(!valid) {
-                    Messages.sendDebugConsole("Conditions did not match");
+                    Messages.sendDebugConsole(CONDITION_NO_MATCH);
                     continue;
                 }
             }
 
+            Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command, p));
+            executionsSinceLastSync++;
+        }
+    }
+
+    private void runConsolePerUserOfflineCommand(TaskCommand taskCommand) throws CommandException {
+        String command = taskCommand.getCommand();
+
+        // TODO: Caching could be used heres, Bukkit.getOfflinePlayers() is pretty expensive
+        for(OfflinePlayer p : Bukkit.getOfflinePlayers()) {
             Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command, p));
             executionsSinceLastSync++;
         }
@@ -102,7 +115,7 @@ public class TasksManager {
         if(taskCommand.getTask().getCondition() != null) {
             boolean valid = TaskValidationHelpers.processCondition(taskCommand.getTask().getCondition(), null);
             if(!valid) {
-                Messages.sendDebugConsole("Conditions did not match");
+                Messages.sendDebugConsole(CONDITION_NO_MATCH);
                 return;
             }
         }
@@ -128,7 +141,7 @@ public class TasksManager {
             if(taskCommand.getTask().getCondition() != null) {
                 boolean valid = TaskValidationHelpers.processCondition(taskCommand.getTask().getCondition(), p);
                 if(!valid) {
-                    Messages.sendDebugConsole("Conditions did not match");
+                    Messages.sendDebugConsole(CONDITION_NO_MATCH);
                     continue;
                 }
             }
@@ -168,7 +181,7 @@ public class TasksManager {
                 if(taskCommand.getTask().getCondition() != null) {
                     boolean valid = TaskValidationHelpers.processCondition(taskCommand.getTask().getCondition(), p);
                     if(!valid) {
-                        Messages.sendDebugConsole("Conditions did not match");
+                        Messages.sendDebugConsole(CONDITION_NO_MATCH);
 
                         if(!wasAlreadyOp) {
                             p.setOp(false);
@@ -207,6 +220,8 @@ public class TasksManager {
             runOperatorCommand(taskCommand);
         } else if(gender.equals(Gender.CONSOLE_PER_USER)) {
             runConsolePerUserCommand(taskCommand);
+        } else if(gender.equals(Gender.CONSOLE_PER_USER_OFFLINE)) {
+            runConsolePerUserOfflineCommand(taskCommand);
         }
     }
 

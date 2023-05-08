@@ -144,6 +144,7 @@ public enum LanguageKey {
     METRICS_INTEGRATION_LABEL,
     METRICS_INTEGRATION_DESCRIPTION,
     USED_MINECRAFT_WORLD,
+    PLUGIN_RELOADED,
     MINECRAFT_TIME;
 
     public static LanguageKey getByTag(String tag) {
