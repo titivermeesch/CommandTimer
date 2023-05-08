@@ -153,7 +153,6 @@ public class Task {
 
     public void setTimesExecuted(int timesExecuted) {
         this.timesExecuted = timesExecuted;
-        storeInstance();
     }
 
     public Date getLastExecuted() {
@@ -162,7 +161,6 @@ public class Task {
 
     public void setLastExecuted(Date lastExecuted) {
         this.lastExecuted = lastExecuted;
-        storeInstance();
     }
 
     public boolean isActive() {

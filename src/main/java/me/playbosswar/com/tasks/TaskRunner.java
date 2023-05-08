@@ -152,6 +152,8 @@ public class TaskRunner implements Runnable {
             task.setLastExecutedCommandIndex(task.getCommands().indexOf(taskCommand));
             tasksManager.addTaskCommandExecution(taskCommand);
         }
+
+        task.storeInstance();
     }
 
     @Override

@@ -142,6 +142,7 @@ public class Files {
 
                         if(task.isResetExecutionsAfterRestart()) {
                             task.setTimesExecuted(0);
+                            task.storeInstance();
                         }
 
                         tasks.add(task);
