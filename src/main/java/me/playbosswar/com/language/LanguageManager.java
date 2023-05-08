@@ -1,6 +1,5 @@
 package me.playbosswar.com.language;
 
-import io.sentry.Sentry;
 import me.playbosswar.com.CommandTimerPlugin;
 import me.playbosswar.com.utils.Messages;
 import org.bukkit.Bukkit;
@@ -37,7 +36,6 @@ public class LanguageManager {
             loadLanguage();
         } catch(Exception e) {
             e.printStackTrace();
-            Sentry.captureException(e);
         }
     }
 

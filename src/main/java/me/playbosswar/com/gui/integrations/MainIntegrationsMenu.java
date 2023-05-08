@@ -5,7 +5,6 @@ import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
-import io.sentry.Sentry;
 import me.playbosswar.com.CommandTimerPlugin;
 import me.playbosswar.com.gui.MainMenu;
 import me.playbosswar.com.hooks.HookType;
@@ -41,7 +40,6 @@ public class MainIntegrationsMenu implements InventoryProvider {
             boolean enabled = CommandTimerPlugin.getInstance().getHooksManager().isHookEnabled(hookType);
             ItemStack item = enabled ? XMaterial.GREEN_WOOL.parseItem() : XMaterial.RED_WOOL.parseItem();
             if(item == null) {
-                Sentry.captureException(new Exception("Tried creating intergrations menu but item not found"));
                 return;
             }
             ItemMeta meta = item.getItemMeta();

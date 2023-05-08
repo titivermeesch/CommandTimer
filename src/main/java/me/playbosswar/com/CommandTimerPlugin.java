@@ -1,7 +1,6 @@
 package me.playbosswar.com;
 
 import fr.minuskube.inv.InventoryManager;
-import io.sentry.Sentry;
 import me.playbosswar.com.commands.MainCommand;
 import me.playbosswar.com.conditionsengine.ConditionEngineManager;
 import me.playbosswar.com.conditionsengine.EventsManager;
@@ -42,9 +41,6 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
     public void onEnable() {
         plugin = this;
         instance = this;
-
-        // Load error handler as soon as possible
-        this.loadSentry();
 
         this.loadConfig();
         languageManager = new LanguageManager(this, getConfig().getString("language"));
@@ -89,24 +85,6 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
         saveDefaultConfig();
         getConfig().options().copyDefaults(true);
         loadDefaults();
-    }
-
-    private void loadSentry() {
-        Sentry.init(options -> {
-            options.setDsn("https://45383fac83f64e65a45d83c3059eb934@o1414814.ingest.sentry.io/6755132");
-            options.setTracesSampleRate(0.1);
-            options.setRelease(getDescription().getVersion());
-        });
-
-
-        Sentry.configureScope(scope -> {
-            scope.setContexts("version", Bukkit.getVersion());
-            scope.setContexts("pluginVersion", getDescription().getVersion());
-            try {
-                scope.setContexts("ip", InetAddress.getLocalHost());
-            } catch(UnknownHostException ignored) {
-            }
-        });
     }
 
     private void loadDefaults() {
