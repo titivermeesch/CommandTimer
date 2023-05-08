@@ -96,14 +96,6 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
             options.setDsn("https://45383fac83f64e65a45d83c3059eb934@o1414814.ingest.sentry.io/6755132");
             options.setTracesSampleRate(0.1);
             options.setRelease(getDescription().getVersion());
-            options.addInAppInclude("me.playbosswar");
-            options.setBeforeSend((event, hint) -> {
-                if(Arrays.stream(Objects.requireNonNull(event.getThrowable()).getStackTrace()).noneMatch(s -> s.getClassName().contains(
-                        "playbosswar"))) {
-                    return null;
-                }
-                return event;
-            });
         });
 
 

@@ -65,16 +65,14 @@ public class MainCommand implements CommandExecutor {
                     return true;
                 }
 
+                Messages.sendMessage(sender, "&4IT IS NOT RECOMMENDED TO RELOAD COMMANDTIMER");
                 CommandTimerPlugin pl = CommandTimerPlugin.getInstance();
-                pl.getConditionEngineManager().onDisable();
                 pl.getTasksManager().disable();
                 pl.saveDefaultConfig();
 
                 pl.setTasksManager(new TasksManager());
-                pl.setConditionEngineManager(new ConditionEngineManager());
 
-                // TODO: Reload extensions
-                sender.sendMessage(CommandTimerPlugin.getLanguageManager().get(LanguageKey.PLUGIN_RELOADED));
+                Messages.sendMessage(sender, CommandTimerPlugin.getLanguageManager().get(LanguageKey.PLUGIN_RELOADED));
                 return true;
             }
         }

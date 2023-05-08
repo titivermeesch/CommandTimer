@@ -9,4 +9,4 @@ You don't necessarily need to read this; other documentation pages will directly
 
 ## Task
 
-A task is a group of commands linked to a group of rules and conditions. Usually a task groups together commands that are all related to eachother, or execute different things to achieve a common goal.
+A task is a group of commands linked to a group of rules and conditions. Usually a task groups together commands that are all related to each-other, or execute different things to achieve a common goal.
