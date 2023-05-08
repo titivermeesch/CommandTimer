@@ -36,7 +36,13 @@ public class Files {
         File extensionsFolder = new File(pluginFolderPath + "/extensions");
         timersFile.mkdirs();
         extensionsFolder.mkdirs();
-        CommandTimerPlugin.getPlugin().saveResource("languages/en.json", false);
+
+        File dataFolder = CommandTimerPlugin.getPlugin().getDataFolder();
+        File enLangFile = new File(dataFolder.getAbsoluteFile() + "/languages/en.json");
+        if(!enLangFile.exists()) {
+            Messages.sendDebugConsole("could not find languages/en.json, creating default");
+            CommandTimerPlugin.getPlugin().saveResource("languages/en.json", false);
+        }
         CommandTimerPlugin.getPlugin().saveResource("languages/default.json", true);
     }
 
@@ -160,9 +166,7 @@ public class Files {
     }
 
     @Nullable
-    public static <T> Class<? extends T> findClass(@NotNull final File file,
-                                                   @NotNull final Class<T> clazz) throws IOException,
-            ClassNotFoundException {
+    public static <T> Class<? extends T> findClass(@NotNull final File file, @NotNull final Class<T> clazz) throws IOException, ClassNotFoundException {
         if(!file.exists()) {
             return null;
         }

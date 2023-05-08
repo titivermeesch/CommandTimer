@@ -50,6 +50,11 @@ public class TaskCommand {
         }
 
         if(gender.equals(Gender.CONSOLE_PER_USER)) {
+            setGender(Gender.CONSOLE_PER_USER_OFFLINE);
+            return;
+        }
+
+        if(gender.equals(Gender.CONSOLE_PER_USER_OFFLINE)) {
             setGender(Gender.OPERATOR);
         }
     }

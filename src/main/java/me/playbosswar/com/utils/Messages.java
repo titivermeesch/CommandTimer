@@ -45,7 +45,7 @@ public class Messages {
     }
 
     public static void sendDebugConsole(String message) {
-        if (debug) {
+        if(debug) {
             sendConsole(message);
         }
     }
@@ -57,6 +57,11 @@ public class Messages {
      * @param message
      */
     public static void sendMessage(CommandSender sender, String message) {
+        sender.sendMessage(colorize(getPrefix() + message));
+    }
+
+    public static void sendMessage(CommandSender sender, LanguageKey key) {
+        String message = CommandTimerPlugin.getLanguageManager().get(key);
         sender.sendMessage(colorize(getPrefix() + message));
     }
 
@@ -97,5 +102,6 @@ public class Messages {
         Messages.sendMessage(sender, "§e/cmt activate <task> - §7Activate a task");
         Messages.sendMessage(sender, "§e/cmt deactivate <task> - §7Deactivate a task");
         Messages.sendMessage(sender, "§e/cmt execute <task> - §7Instantly execute a task");
+        Messages.sendMessage(sender, "§e/cmt reload - §7Reload the plugin");
     }
 }

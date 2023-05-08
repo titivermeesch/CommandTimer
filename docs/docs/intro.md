@@ -17,11 +17,12 @@ Clicking the paper will create a fresh task for you.
 
 ## Commands
 
-| Command                  | Description                                             | Permission                                          |
-|--------------------------|---------------------------------------------------------|-----------------------------------------------------|
-| `/cmt`                   | Open main CommandTimer menu where everything is managed | `commandtimer.manage`                               |
-| `/cmt help`              | Get a list of all possible commands                     | Any CommandTimer permission                         |
-| `/cmt time`              | Get the current world time the player is in             | Any CommandTimer permission                         |
-| `/cmt activate <task>`   | Enable the specified task                               | `commandtimer.activate` or `commandtimer.toggle`    |
-| `/cmt deactivate <task>` | Disable the specified task                              | `commandtimer.deactivate`  or `commandtimer.toggle` |
-| `/cmt execute <task>`    | Instantly execute the specified task                    | `commandtimer.execute`                              |
+| Command                  | Description                                                                                       | Permission                                          |
+|--------------------------|---------------------------------------------------------------------------------------------------|-----------------------------------------------------|
+| `/cmt`                   | Open main CommandTimer menu where everything is managed                                           | `commandtimer.manage`                               |
+| `/cmt help`              | Get a list of all possible commands                                                               | Any CommandTimer permission                         |
+| `/cmt time`              | Get the current world time the player is in                                                       | Any CommandTimer permission                         |
+| `/cmt activate <task>`   | Enable the specified task                                                                         | `commandtimer.activate` or `commandtimer.toggle`    |
+| `/cmt deactivate <task>` | Disable the specified task                                                                        | `commandtimer.deactivate`  or `commandtimer.toggle` |
+| `/cmt execute <task>`    | Instantly execute the specified task                                                              | `commandtimer.execute`                              |
+| `/cmt reload`            | Reload the plugin. Extensions will not be reloaded. **It is not recommended to use this command** | `commandtimer.manage`                               |

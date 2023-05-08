@@ -17,5 +17,9 @@ public enum Gender {
     /**
      * Commands are executed by the player as if they were OP
      */
-    OPERATOR;
+    OPERATOR,
+    /**
+     * Commands are executed for each player that ever joined
+     */
+    CONSOLE_PER_USER_OFFLINE;
 }

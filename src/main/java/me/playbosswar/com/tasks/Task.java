@@ -55,7 +55,7 @@ public class Task {
         File oldFile = new File(Files.getTaskFile(this.name));
         oldFile.delete();
 
-        this.name = name;
+        this.name = name.replaceAll(" ", "");
         storeInstance();
     }
 
