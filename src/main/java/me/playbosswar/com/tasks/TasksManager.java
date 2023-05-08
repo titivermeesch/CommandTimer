@@ -211,7 +211,6 @@ public class TasksManager {
     public void processCommandExecution(TaskCommand taskCommand) {
         Gender gender = taskCommand.getGender();
 
-        // Choose correct gender executor
         if(gender.equals(Gender.CONSOLE)) {
             runConsoleCommand(taskCommand);
         } else if(gender.equals(Gender.PLAYER)) {

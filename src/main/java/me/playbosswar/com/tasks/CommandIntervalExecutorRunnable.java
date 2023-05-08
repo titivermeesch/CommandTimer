@@ -23,6 +23,7 @@ public class CommandIntervalExecutorRunnable implements Runnable {
         tasksManager.addTaskCommandExecution(task.getCommands().get(commandIndex));
         task.setLastExecuted(new Date());
         task.setTimesExecuted(task.getTimesExecuted() + 1);
+        task.storeInstance();
         commandIndex++;
 
         if(commandIndex == task.getCommands().size()) {
