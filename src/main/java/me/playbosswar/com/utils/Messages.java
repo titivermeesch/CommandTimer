@@ -10,7 +10,6 @@ import org.bukkit.entity.Player;
 
 public class Messages {
     private static final boolean debug = CommandTimerPlugin.getPlugin().getConfig().getBoolean("debug");
-    private static final LanguageManager languageManager = CommandTimerPlugin.getLanguageManager();
 
     public static String colorize(String message) {
         return ChatColor.translateAlternateColorCodes('&', message);
@@ -22,7 +21,7 @@ public class Messages {
      * @return prefix
      */
     private static String getPrefix() {
-        return languageManager.get(LanguageKey.PREFIX);
+        return CommandTimerPlugin.getLanguageManager().get(LanguageKey.PREFIX);
     }
 
     /**
@@ -71,7 +70,7 @@ public class Messages {
      * @param sender
      */
     public static void sendNeedToBePlayer(CommandSender sender) {
-        sender.sendMessage(colorize(getPrefix() + languageManager.get(LanguageKey.NO_CONSOLE)));
+        sender.sendMessage(colorize(getPrefix() + CommandTimerPlugin.getLanguageManager().get(LanguageKey.NO_CONSOLE)));
     }
 
     /**
@@ -80,11 +79,11 @@ public class Messages {
      * @param player
      */
     public static void sendNoPermission(Player player) {
-        player.sendMessage(colorize(getPrefix() + languageManager.get(LanguageKey.NO_PERMISSION)));
+        player.sendMessage(colorize(getPrefix() + CommandTimerPlugin.getLanguageManager().get(LanguageKey.NO_PERMISSION)));
     }
 
     public static void sendNoPermission(CommandSender sender) {
-        sender.sendMessage(colorize(getPrefix() + languageManager.get(LanguageKey.NO_PERMISSION)));
+        sender.sendMessage(colorize(getPrefix() + CommandTimerPlugin.getLanguageManager().get(LanguageKey.NO_PERMISSION)));
     }
 
     /**
@@ -93,7 +92,7 @@ public class Messages {
      * @param player
      */
     public static void sendFailedIO(Player player) {
-        Messages.sendMessageToPlayer(player, languageManager.get(LanguageKey.IO_ERROR));
+        Messages.sendMessageToPlayer(player, CommandTimerPlugin.getLanguageManager().get(LanguageKey.IO_ERROR));
     }
 
     public static void sendHelpMessage(CommandSender sender) {
