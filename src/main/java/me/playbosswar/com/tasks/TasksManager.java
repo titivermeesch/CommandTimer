@@ -81,7 +81,7 @@ public class TasksManager {
                     .stream()
                     .map(Bukkit::getPlayer)
                     .filter(Objects::nonNull)
-                    .toList();
+                    .collect(Collectors.toList());
         }
 
         for(Player p : affectedPlayers) {
@@ -136,7 +136,7 @@ public class TasksManager {
                     .stream()
                     .map(Bukkit::getPlayer)
                     .filter(Objects::nonNull)
-                    .toList();
+                    .collect(Collectors.toList());
         }
 
         for(Player p : affectedPlayers) {
@@ -173,7 +173,7 @@ public class TasksManager {
                     .stream()
                     .map(Bukkit::getPlayer)
                     .filter(Objects::nonNull)
-                    .toList();
+                    .collect(Collectors.toList());
         }
 
         for(Player p : affectedPlayers) {

@@ -74,7 +74,7 @@ public class EventsManager {
                 .stream()
                 .filter(c -> processConfiguration(c.getCondition(), values))
                 .map(EventConfiguration::getTask)
-                .toList();
+                .collect(Collectors.toList());
 
         tasksToExecute.forEach(task -> {
             Player p = null;
