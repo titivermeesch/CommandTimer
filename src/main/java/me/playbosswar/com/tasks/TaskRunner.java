@@ -53,7 +53,7 @@ public class TaskRunner implements Runnable {
         }
 
         boolean blockTime = true;
-        if(task.getTimes().size() > 0) {
+        if(!task.getTimes().isEmpty()) {
             Messages.sendDebugConsole("Task is time related, checking if can be executed now");
 
             for(TaskTime taskTime : task.getTimes()) {

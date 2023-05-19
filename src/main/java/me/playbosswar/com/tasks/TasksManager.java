@@ -1,6 +1,7 @@
 package me.playbosswar.com.tasks;
 
 import me.playbosswar.com.CommandTimerPlugin;
+import me.playbosswar.com.conditionsengine.validations.Condition;
 import me.playbosswar.com.enums.CommandExecutionMode;
 import me.playbosswar.com.enums.Gender;
 import me.playbosswar.com.hooks.PAPIHook;
@@ -75,7 +76,7 @@ public class TasksManager {
         String command = taskCommand.getCommand();
 
         Collection<Player> affectedPlayers = (Collection<Player>) Bukkit.getOnlinePlayers();
-        if(scopedPlayers.size() > 0) {
+        if(!scopedPlayers.isEmpty()) {
             affectedPlayers = scopedPlayers
                     .stream()
                     .map(Bukkit::getPlayer)
@@ -112,7 +113,8 @@ public class TasksManager {
     }
 
     private void runConsoleCommand(TaskCommand taskCommand) throws CommandException {
-        if(taskCommand.getTask().getCondition() != null) {
+        Condition condition = taskCommand.getTask().getCondition();
+        if(condition != null && (!condition.getConditions().isEmpty() || (condition.getSimpleCondition() != null && condition.getSimpleCondition().getConditionGroup() != null))) {
             boolean valid = TaskValidationHelpers.processCondition(taskCommand.getTask().getCondition(), null);
             if(!valid) {
                 Messages.sendDebugConsole(CONDITION_NO_MATCH);
@@ -129,7 +131,7 @@ public class TasksManager {
         String command = taskCommand.getCommand();
 
         Collection<Player> affectedPlayers = (Collection<Player>) Bukkit.getOnlinePlayers();
-        if(scopedPlayers.size() > 0) {
+        if(!scopedPlayers.isEmpty()) {
             affectedPlayers = scopedPlayers
                     .stream()
                     .map(Bukkit::getPlayer)
@@ -166,7 +168,7 @@ public class TasksManager {
         String command = taskCommand.getCommand();
 
         Collection<Player> affectedPlayers = (Collection<Player>) Bukkit.getOnlinePlayers();
-        if(scopedPlayers.size() > 0) {
+        if(!scopedPlayers.isEmpty()) {
             affectedPlayers = scopedPlayers
                     .stream()
                     .map(Bukkit::getPlayer)
