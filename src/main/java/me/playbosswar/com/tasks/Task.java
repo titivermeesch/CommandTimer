@@ -257,6 +257,23 @@ public class Task {
         this.events = events;
     }
 
+    public boolean hasCondition() {
+        if(this.condition == null) {
+            return false;
+        }
+
+        if(this.condition.getConditions().isEmpty() && this.condition.getSimpleCondition() == null) {
+            return false;
+        }
+
+        if(this.getCondition().getSimpleCondition().getConditionGroup() == null) {
+            return false;
+        }
+
+
+        return true;
+    }
+
     public void storeInstance() {
         GsonConverter gson = new GsonConverter();
         String json = gson.toJson(this);

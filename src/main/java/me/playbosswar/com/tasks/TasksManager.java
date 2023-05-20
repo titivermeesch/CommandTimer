@@ -85,7 +85,7 @@ public class TasksManager {
         }
 
         for(Player p : affectedPlayers) {
-            if(taskCommand.getTask().getCondition() != null) {
+            if(taskCommand.getTask().hasCondition()) {
                 boolean valid = TaskValidationHelpers.processCondition(taskCommand.getTask().getCondition(), p);
                 if(!valid) {
                     Messages.sendDebugConsole(CONDITION_NO_MATCH);
@@ -113,8 +113,7 @@ public class TasksManager {
     }
 
     private void runConsoleCommand(TaskCommand taskCommand) throws CommandException {
-        Condition condition = taskCommand.getTask().getCondition();
-        if(condition != null && (!condition.getConditions().isEmpty() || (condition.getSimpleCondition() != null && condition.getSimpleCondition().getConditionGroup() != null))) {
+        if(taskCommand.getTask().hasCondition()) {
             boolean valid = TaskValidationHelpers.processCondition(taskCommand.getTask().getCondition(), null);
             if(!valid) {
                 Messages.sendDebugConsole(CONDITION_NO_MATCH);
@@ -140,7 +139,7 @@ public class TasksManager {
         }
 
         for(Player p : affectedPlayers) {
-            if(taskCommand.getTask().getCondition() != null) {
+            if(taskCommand.getTask().hasCondition()) {
                 boolean valid = TaskValidationHelpers.processCondition(taskCommand.getTask().getCondition(), p);
                 if(!valid) {
                     Messages.sendDebugConsole(CONDITION_NO_MATCH);
@@ -180,7 +179,7 @@ public class TasksManager {
             boolean wasAlreadyOp = p.isOp();
 
             try {
-                if(taskCommand.getTask().getCondition() != null) {
+                if(taskCommand.getTask().hasCondition()) {
                     boolean valid = TaskValidationHelpers.processCondition(taskCommand.getTask().getCondition(), p);
                     if(!valid) {
                         Messages.sendDebugConsole(CONDITION_NO_MATCH);
