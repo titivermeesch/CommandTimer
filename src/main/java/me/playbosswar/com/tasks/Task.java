@@ -262,7 +262,11 @@ public class Task {
             return false;
         }
 
-        if(this.condition.getConditions().isEmpty() && this.condition.getSimpleCondition() == null) {
+        if(!this.condition.getConditions().isEmpty()) {
+            return true;
+        }
+
+        if(this.condition.getSimpleCondition() == null) {
             return false;
         }
 
