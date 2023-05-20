@@ -2,8 +2,6 @@ package me.playbosswar.com.tasks;
 
 import me.playbosswar.com.enums.Gender;
 
-import java.util.UUID;
-
 public class TaskCommand {
     private String command;
     private Gender gender;
