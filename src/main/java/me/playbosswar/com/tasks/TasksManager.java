@@ -93,12 +93,9 @@ public class TasksManager {
             }
 
             if(delayedExecutions) {
-                Bukkit.getScheduler().scheduleSyncDelayedTask(CommandTimerPlugin.getPlugin(), new Runnable() {
-                    @Override
-                    public void run() {
-                        Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command, p));
-                        executionsSinceLastSync++;
-                    }
+                Bukkit.getScheduler().scheduleSyncDelayedTask(CommandTimerPlugin.getPlugin(), () -> {
+                    Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command, p));
+                    executionsSinceLastSync++;
                 }, 20L * i * taskCommand.getInterval().toSeconds());
             } else {
                 Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command, p));
@@ -121,7 +118,6 @@ public class TasksManager {
                     executionsSinceLastSync++;
                 }, 20L * i * taskCommand.getInterval().toSeconds());
             } else {
-
                 Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command, p));
                 executionsSinceLastSync++;
             }
