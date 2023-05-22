@@ -50,6 +50,7 @@
   "gender_selector_lore": "\n&7Genders are one of the core concepts of\n&7CommandTimer. They allow you to specify\n&7how your task is executed.\n\n&7Current: &e$1\n\n&bAvailable genders:\n\n&7  - &eOPERATOR: &7All the commands in the task\n&7    will be executed for each individual player,\n&7    by the player. This means that CommandTimer will\n&7    force the player to execute the commands but ignore\n&7    the permissions linked to them.\n\n&7  - &ePLAYER: &7Same as above. CommandTimer will force\n&7    the player to execute the commands, but will take\n&7    into account the possible permissions the player\n&7    has or is lacking.\n\n&7  - &eCONSOLE: &7Execute the command in the console only\n\n&7  - &eCONSOLE PER USER: &7Execute the command in the console\n&7    for each individual player. This works very well with\n&7    placeholders\n\n&7  - &eCONSOLE_PER_USER_OFFLINE: &7Same as above but also takes into account offline players",
   "add_command": "&bAdd command",
   "add_command_lore": "\n&7Add a new command that will be\n&7executed on your specified schedule\n",
+  "command_interval_lore": "\n&7Define the delay between each player command execution",
   "current_interval": "&7Current interval: &e$1",
   "right_click_change_interval": "&aRight-click to change interval",
   "execution_mode": "&bExecution mode",

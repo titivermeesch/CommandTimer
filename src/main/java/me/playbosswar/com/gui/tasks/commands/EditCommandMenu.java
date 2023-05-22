@@ -6,7 +6,9 @@ import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
 import me.playbosswar.com.CommandTimerPlugin;
+import me.playbosswar.com.enums.Gender;
 import me.playbosswar.com.gui.tasks.general.TextInputConversationPrompt;
+import me.playbosswar.com.gui.tasks.scheduler.EditIntervalMenu;
 import me.playbosswar.com.language.LanguageKey;
 import me.playbosswar.com.language.LanguageManager;
 import me.playbosswar.com.tasks.TaskCommand;
@@ -63,6 +65,15 @@ public class EditCommandMenu implements InventoryProvider {
             this.INVENTORY.open(player);
         });
         contents.set(1, 2, clickableGenderItem);
+
+        if(!taskCommand.getGender().equals(Gender.CONSOLE)) {
+            ItemStack intervalItem = Items.generateItem(LanguageKey.TASK_INTERVAL_ITEM_TITLE, XMaterial.CLOCK,
+                    languageManager.getList(LanguageKey.COMMAND_INTERVAL_LORE).toArray(new String[]{}));
+            ClickableItem clickableIntervalItem = ClickableItem.of(intervalItem,
+                    e -> new EditIntervalMenu(taskCommand.getInterval(),
+                            ev -> new EditCommandMenu(taskCommand).INVENTORY.open(player)).INVENTORY.open(player));
+            contents.set(1, 3, clickableIntervalItem);
+        }
 
         contents.set(2, 8, ClickableItem.of(Items.getBackItem(),
                 e -> new AllCommandsMenu(taskCommand.getTask()).INVENTORY.open(player)));

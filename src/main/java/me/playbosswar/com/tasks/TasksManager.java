@@ -77,13 +77,12 @@ public class TasksManager {
 
         Collection<Player> affectedPlayers = (Collection<Player>) Bukkit.getOnlinePlayers();
         if(!scopedPlayers.isEmpty()) {
-            affectedPlayers = scopedPlayers
-                    .stream()
-                    .map(Bukkit::getPlayer)
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList());
+            affectedPlayers =
+                    scopedPlayers.stream().map(Bukkit::getPlayer).filter(Objects::nonNull).collect(Collectors.toList());
         }
 
+        boolean delayedExecutions = taskCommand.getInterval().toSeconds() > 0;
+        int i = 0;
         for(Player p : affectedPlayers) {
             if(taskCommand.getTask().hasCondition()) {
                 boolean valid = TaskValidationHelpers.processCondition(taskCommand.getTask().getCondition(), p);
@@ -93,18 +92,36 @@ public class TasksManager {
                 }
             }
 
-            Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command, p));
-            executionsSinceLastSync++;
+            if(delayedExecutions) {
+                Bukkit.getScheduler().scheduleSyncDelayedTask(CommandTimerPlugin.getPlugin(), () -> {
+                    Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command, p));
+                    executionsSinceLastSync++;
+                }, 20L * i * taskCommand.getInterval().toSeconds());
+            } else {
+                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command, p));
+                executionsSinceLastSync++;
+            }
+            i++;
         }
     }
 
     private void runConsolePerUserOfflineCommand(TaskCommand taskCommand) throws CommandException {
         String command = taskCommand.getCommand();
+        boolean delayedExecutions = taskCommand.getInterval().toSeconds() > 0;
 
+        int i = 0;
         // TODO: Caching could be used heres, Bukkit.getOfflinePlayers() is pretty expensive
         for(OfflinePlayer p : Bukkit.getOfflinePlayers()) {
-            Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command, p));
-            executionsSinceLastSync++;
+            if(delayedExecutions) {
+                Bukkit.getScheduler().scheduleSyncDelayedTask(CommandTimerPlugin.getPlugin(), () -> {
+                    Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command, p));
+                    executionsSinceLastSync++;
+                }, 20L * i * taskCommand.getInterval().toSeconds());
+            } else {
+                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command, p));
+                executionsSinceLastSync++;
+            }
+            i++;
         }
     }
 
@@ -131,13 +148,12 @@ public class TasksManager {
 
         Collection<Player> affectedPlayers = (Collection<Player>) Bukkit.getOnlinePlayers();
         if(!scopedPlayers.isEmpty()) {
-            affectedPlayers = scopedPlayers
-                    .stream()
-                    .map(Bukkit::getPlayer)
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList());
+            affectedPlayers =
+                    scopedPlayers.stream().map(Bukkit::getPlayer).filter(Objects::nonNull).collect(Collectors.toList());
         }
 
+        boolean delayedExecution = taskCommand.getInterval().toSeconds() > 0;
+        int i = 0;
         for(Player p : affectedPlayers) {
             if(taskCommand.getTask().hasCondition()) {
                 boolean valid = TaskValidationHelpers.processCondition(taskCommand.getTask().getCondition(), p);
@@ -147,16 +163,26 @@ public class TasksManager {
                 }
             }
 
-            String parsedCommand = PAPIHook.parsePAPI(command, p);
-            boolean executed = p.performCommand(parsedCommand);
-
-            if(!executed) {
-                String errorMessage = new StringEnhancer("Failed to execute command {command}").add("taskName",
-                        command).parse();
-                throw new CommandException(errorMessage);
+            if(delayedExecution) {
+                Bukkit.getScheduler().scheduleSyncDelayedTask(CommandTimerPlugin.getPlugin(), () -> runForPlayer(p,
+                        command), 20L * i * taskCommand.getInterval().toSeconds());
+            } else {
+                runForPlayer(p, command);
             }
-            executionsSinceLastSync++;
+            i++;
         }
+    }
+
+    private void runForPlayer(Player p, String command) {
+        String parsedCommand = PAPIHook.parsePAPI(command, p);
+        boolean executed = p.performCommand(parsedCommand);
+
+        if(!executed) {
+            String errorMessage =
+                    new StringEnhancer("Failed to execute command {command}").add("taskName", command).parse();
+            throw new CommandException(errorMessage);
+        }
+        executionsSinceLastSync++;
     }
 
     private void runPlayerCommand(TaskCommand taskCommand) {
@@ -168,13 +194,12 @@ public class TasksManager {
 
         Collection<Player> affectedPlayers = (Collection<Player>) Bukkit.getOnlinePlayers();
         if(!scopedPlayers.isEmpty()) {
-            affectedPlayers = scopedPlayers
-                    .stream()
-                    .map(Bukkit::getPlayer)
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList());
+            affectedPlayers =
+                    scopedPlayers.stream().map(Bukkit::getPlayer).filter(Objects::nonNull).collect(Collectors.toList());
         }
 
+        boolean delayedExecutions = taskCommand.getInterval().toSeconds() > 0;
+        int i = 0;
         for(Player p : affectedPlayers) {
             boolean wasAlreadyOp = p.isOp();
 
@@ -191,13 +216,22 @@ public class TasksManager {
                     }
                 }
 
-                p.performCommand(PAPIHook.parsePAPI(command, p));
-                executionsSinceLastSync++;
+                if(delayedExecutions) {
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(CommandTimerPlugin.getPlugin(), () -> {
+                        p.performCommand(PAPIHook.parsePAPI(command, p));
+                        executionsSinceLastSync++;
+                    }, 20L * i * taskCommand.getInterval().toSeconds());
+                } else {
+                    p.performCommand(PAPIHook.parsePAPI(command, p));
+                    executionsSinceLastSync++;
+                }
+
             } finally {
                 if(!wasAlreadyOp) {
                     p.setOp(false);
                 }
             }
+            i++;
         }
     }
 
