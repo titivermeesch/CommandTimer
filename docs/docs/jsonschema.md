@@ -32,7 +32,7 @@ following this JSON schema
 |------------|------------------------------------------------------------------------------------------------|------------------------------------------|
 | `command`  | Command to execute. Do not include `/` in front of the command                                 | `string`                                 |
 | `gender`   | Gender of the command                                                                          | [Gender](configuration/commands#genders) |
-| `interval` | Defined the iteration interval between each command when the execution iterates over all users | [Interval](interval)                     |
+| `interval` | Defined the iteration interval between each command when the execution iterates over all users | [Interval](#interval)                    |
 
 ## Interval
 
