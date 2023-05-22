@@ -252,7 +252,7 @@ public class TasksManager {
         } else if(task.getCommandExecutionMode().equals(CommandExecutionMode.ORDERED)) {
             int currentLatestCommandIndex = task.getLastExecutedCommandIndex();
 
-            if(currentLatestCommandIndex == task.getCommands().size() - 1) {
+            if(currentLatestCommandIndex >= task.getCommands().size() - 1) {
                 selectedCommandIndex = 0;
             } else {
                 selectedCommandIndex = currentLatestCommandIndex + 1;
