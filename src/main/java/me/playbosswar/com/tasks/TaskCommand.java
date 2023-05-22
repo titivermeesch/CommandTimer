@@ -5,12 +5,14 @@ import me.playbosswar.com.enums.Gender;
 public class TaskCommand {
     private String command;
     private Gender gender;
+    private TaskInterval interval;
     private transient Task task;
 
     public TaskCommand(Task task, String command, Gender gender) {
         this.task = task;
         this.command = command;
         this.gender = gender;
+        this.interval = new TaskInterval(task, 0, 0, 0, 0);
     }
 
     public String getCommand() {
@@ -63,5 +65,13 @@ public class TaskCommand {
 
     public Task getTask() {
         return task;
+    }
+
+    public TaskInterval getInterval() {
+        return interval;
+    }
+
+    public void setInterval(TaskInterval interval) {
+        this.interval = interval;
     }
 }
