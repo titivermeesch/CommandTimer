@@ -117,8 +117,8 @@ public class Files {
                         // We relink the tasks to commands and times because we lose this structure during serializing
                         task.getCommands().forEach(command -> {
                             command.setTask(task);
-                            if(command.getInterval() != null) {
-                                command.getInterval().setTask(task);
+                            if(command.getInterval() == null) {
+                                command.setInterval(new TaskInterval(task, 0, 0, 0, 0));
                             }
                         });
                         task.getTimes().forEach(time -> time.setTask(task));
