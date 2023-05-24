@@ -6,6 +6,7 @@ public class TaskCommand {
     private String command;
     private Gender gender;
     private TaskInterval interval;
+    private TaskInterval delay;
     private transient Task task;
 
     public TaskCommand(Task task, String command, Gender gender) {
@@ -13,6 +14,7 @@ public class TaskCommand {
         this.command = command;
         this.gender = gender;
         this.interval = new TaskInterval(task, 0, 0, 0, 0);
+        this.delay = new TaskInterval(task, 0, 0, 0, 0);
     }
 
     public String getCommand() {
@@ -73,5 +75,13 @@ public class TaskCommand {
 
     public void setInterval(TaskInterval interval) {
         this.interval = interval;
+    }
+
+    public TaskInterval getDelay() {
+        return delay;
+    }
+
+    public void setDelay(TaskInterval delay) {
+        this.delay = delay;
     }
 }

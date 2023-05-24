@@ -6,6 +6,7 @@ import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
 import me.playbosswar.com.CommandTimerPlugin;
+import me.playbosswar.com.enums.CommandExecutionMode;
 import me.playbosswar.com.enums.Gender;
 import me.playbosswar.com.gui.tasks.general.TextInputConversationPrompt;
 import me.playbosswar.com.gui.tasks.scheduler.EditIntervalMenu;
@@ -68,11 +69,26 @@ public class EditCommandMenu implements InventoryProvider {
 
         if(!taskCommand.getGender().equals(Gender.CONSOLE)) {
             ItemStack intervalItem = Items.generateItem(LanguageKey.TASK_INTERVAL_ITEM_TITLE, XMaterial.CLOCK,
-                    languageManager.getList(LanguageKey.COMMAND_INTERVAL_LORE).toArray(new String[]{}));
+                    languageManager.getList(LanguageKey.COMMAND_INTERVAL_LORE, taskCommand.getInterval().toString()).toArray(new String[]{}));
             ClickableItem clickableIntervalItem = ClickableItem.of(intervalItem,
                     e -> new EditIntervalMenu(taskCommand.getInterval(),
                             ev -> new EditCommandMenu(taskCommand).INVENTORY.open(player)).INVENTORY.open(player));
             contents.set(1, 3, clickableIntervalItem);
+        }
+
+        if(taskCommand.getTask().getCommandExecutionMode().equals(CommandExecutionMode.ORDERED)) {
+            ItemStack delayItem = Items.generateItem(LanguageKey.COMMAND_DELAY_TITLE, XMaterial.CLOCK,
+                    languageManager.getList(LanguageKey.COMMAND_DELAY_LORE, taskCommand.getDelay().toString()).toArray(new String[]{}));
+            ClickableItem clickableDelayItem = ClickableItem.of(delayItem,
+                    e -> new EditIntervalMenu(taskCommand.getDelay(),
+                            ev -> new EditCommandMenu(taskCommand).INVENTORY.open(player)).INVENTORY.open(player));
+
+            // Calculate position for item
+            if(!taskCommand.getGender().equals(Gender.CONSOLE)) {
+                contents.set(1, 4, clickableDelayItem);
+            } else {
+                contents.set(1, 3, clickableDelayItem);
+            }
         }
 
         contents.set(2, 8, ClickableItem.of(Items.getBackItem(),

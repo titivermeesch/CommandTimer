@@ -120,6 +120,12 @@ public class Files {
                             if(command.getInterval() == null) {
                                 command.setInterval(new TaskInterval(task, 0, 0, 0, 0));
                             }
+                            if(command.getDelay() == null) {
+                                command.setDelay(new TaskInterval(task, 0, 0, 0, 0));
+                            }
+
+                            command.getInterval().setTask(task);
+                            command.getDelay().setTask(task);
                         });
                         task.getTimes().forEach(time -> time.setTask(task));
                         task.getInterval().setTask(task);
