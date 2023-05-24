@@ -130,12 +130,24 @@ public class TaskRunner implements Runnable {
             return;
         }
 
-        if(task.getCommandExecutionMode().equals(CommandExecutionMode.INTERVAL)) {
-            Bukkit.getScheduler().runTaskTimer(
-                    CommandTimerPlugin.getPlugin(),
-                    new CommandIntervalExecutorRunnable(task),
-                    0,
-                    task.getCommandExecutionInterval().toSeconds() * 20L);
+        CommandExecutionMode executionMode = task.getCommandExecutionMode();
+        if(executionMode.equals(CommandExecutionMode.INTERVAL)) {
+            Bukkit.getScheduler().runTaskTimer(CommandTimerPlugin.getPlugin(),
+                    new CommandIntervalExecutorRunnable(task), 0, task.getCommandExecutionInterval().toSeconds() * 20L);
+            return;
+        }
+
+        boolean hasDelayedCommands = task.getCommands().stream().anyMatch(c -> c.getDelay().toSeconds() > 0);
+        if(executionMode.equals(CommandExecutionMode.ORDERED) && hasDelayedCommands) {
+            final int[] accumulatedDelaySeconds = {0};
+            task.getCommands().forEach(command -> {
+                Bukkit.getScheduler().scheduleSyncDelayedTask(CommandTimerPlugin.getPlugin(),
+                        () -> tasksManager.addTaskCommandExecution(command), 20L * accumulatedDelaySeconds[0]);
+                accumulatedDelaySeconds[0] += command.getDelay().toSeconds();
+            });
+            task.setLastExecuted(new Date());
+            task.setTimesExecuted(task.getTimesExecuted() + 1);
+            task.storeInstance();
             return;
         }
 

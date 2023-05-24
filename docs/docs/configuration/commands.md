@@ -50,3 +50,18 @@ applied on each execution of this specific command. This means that if you use t
 on 2 seconds, it will execute the command for each player but with a 2 second interval between each player. Do not
 confuse this with the normal [interval](schedules.md#intervals), which will still work as usual in combination with
 this.
+
+## Individual command delays
+
+When your [task](../jargon#task) is configured with [execution mode](#execution-modes) ORDERED, you can set a delay for
+each command. This delay will be added at the end of each command, which means the next command in line will only be
+executed once that delay passed.
+
+Let's say you have this:
+
+- Command 1 with a delay of 5 seconds
+- Command 2 with a delay of 10 seconds
+- Command 3
+
+The first command will be executed according to the configuration of the task. The second command will be executed after
+5 seconds and the 3rd command after 15 seconds (it will wait for the second command to execute before counting down).
