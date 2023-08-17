@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 
 public class TasksManager {
     private static final String CONDITION_NO_MATCH = "Conditions did not match";
-    private final List<Task> loadedTasks = new ArrayList<>();
+    private List<Task> loadedTasks = new ArrayList<>();
     private final List<TaskCommand> scheduledExecutions = new ArrayList<>();
     private Thread runnerThread;
     public boolean stopRunner = false;
@@ -63,6 +63,10 @@ public class TasksManager {
 
     public List<Task> getLoadedTasks() {
         return loadedTasks;
+    }
+
+    public void setLoadedTasks(List<Task> loadedTasks) {
+        this.loadedTasks = loadedTasks;
     }
 
     private void startRunner() {
@@ -297,8 +301,11 @@ public class TasksManager {
     }
 
     public void disable() {
-        loadedTasks.forEach(Task::storeInstance);
+        List<Task> tasksToStore = loadedTasks.stream().filter(Task::isActive).toList();
+        tasksToStore.forEach(Task::storeInstance);
         stopRunner = true;
-        runnerThread.stop();
+        if(runnerThread != null && runnerThread.isAlive()) {
+            runnerThread.stop();
+        }
     }
 }

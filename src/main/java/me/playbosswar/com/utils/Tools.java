@@ -3,9 +3,7 @@ package me.playbosswar.com.utils;
 import org.bukkit.World;
 
 import java.text.SimpleDateFormat;
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -69,9 +67,8 @@ public class Tools {
     }
 
     public static String getTimeString(int seconds, String format) {
-        Date d = new Date(seconds * 1000L);
-        SimpleDateFormat df = new SimpleDateFormat(format);
-        return df.format(d);
+        LocalDateTime local =  LocalDateTime.ofInstant(Instant.ofEpochSecond(seconds), ZoneId.of("GMT"));
+        return local.format(DateTimeFormatter.ofPattern(format));
     }
 
     private static String getTenthNumeric(long val) {
