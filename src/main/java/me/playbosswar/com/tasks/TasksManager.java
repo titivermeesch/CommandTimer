@@ -301,7 +301,7 @@ public class TasksManager {
     }
 
     public void disable() {
-        List<Task> tasksToStore = loadedTasks.stream().filter(Task::isActive).toList();
+        List<Task> tasksToStore = loadedTasks.stream().filter(Task::isActive).collect(Collectors.toList());
         tasksToStore.forEach(Task::storeInstance);
         stopRunner = true;
         if(runnerThread != null && runnerThread.isAlive()) {
