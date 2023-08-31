@@ -96,7 +96,7 @@ public class PAPIPlaceholders extends PlaceholderExpansion {
             if(!task.getTimes().isEmpty()) {
                 Date date = TaskTimeUtils.getSoonestTaskTime(task.getTimes());
 
-                if(date == null) {
+                if(date == null || !task.isActive()) {
                     return fallbackMessage != null ? fallbackMessage : "";
                 }
 
@@ -107,15 +107,21 @@ public class PAPIPlaceholders extends PlaceholderExpansion {
 
             Interval interval = new Interval(task.getLastExecuted().getTime(), new Date().getTime());
             Duration period = interval.toDuration();
+            int seconds = task.getInterval().toSeconds();
+            long timeLeft = seconds - period.getStandardSeconds();
 
-            return task.getInterval().toSeconds() - period.getStandardSeconds() + "";
+            if((timeLeft < 0 || !task.isActive()) && fallbackMessage != null) {
+                return fallbackMessage;
+            }
+
+            return timeLeft + "";
         }
 
         if(commandField.equalsIgnoreCase("nextExecutionFormat")) {
             if(!task.getTimes().isEmpty()) {
                 Date date = TaskTimeUtils.getSoonestTaskTime(task.getTimes());
 
-                if(date == null) {
+                if(date == null || !task.isActive()) {
                     return fallbackMessage != null ? fallbackMessage : "";
                 }
 
@@ -126,8 +132,12 @@ public class PAPIPlaceholders extends PlaceholderExpansion {
 
             Interval interval = new Interval(task.getLastExecuted().getTime(), new Date().getTime());
             Duration period = interval.toDuration();
+            int seconds = task.getInterval().toSeconds();
+            long timeLeft = seconds - period.getStandardSeconds();
 
-            long timeLeft = task.getInterval().toSeconds() - period.getStandardSeconds();
+            if((timeLeft < 0 || !task.isActive()) && fallbackMessage != null) {
+                return fallbackMessage;
+            }
 
             return Tools.getTimeString((int) timeLeft);
         }
@@ -135,7 +145,7 @@ public class PAPIPlaceholders extends PlaceholderExpansion {
         if(!task.getTimes().isEmpty()) {
             Date date = TaskTimeUtils.getSoonestTaskTime(task.getTimes());
 
-            if(date == null) {
+            if(date == null || !task.isActive()) {
                 return fallbackMessage != null ? fallbackMessage : "";
             }
 
@@ -146,8 +156,13 @@ public class PAPIPlaceholders extends PlaceholderExpansion {
 
         Interval interval = new Interval(task.getLastExecuted().getTime(), new Date().getTime());
         Duration period = interval.toDuration();
+        int seconds = task.getInterval().toSeconds();
+        long timeLeft = seconds - period.getStandardSeconds();
 
-        long timeLeft = task.getInterval().toSeconds() - period.getStandardSeconds();
+        if((timeLeft < 0 || !task.isActive()) && fallbackMessage != null) {
+            return fallbackMessage;
+        }
+
 
         return Tools.getTimeString((int) timeLeft, commandField);
     }
