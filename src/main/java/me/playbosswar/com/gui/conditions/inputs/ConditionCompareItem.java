@@ -36,7 +36,7 @@ public class ConditionCompareItem {
             lore.add("§7 - " + it.next());
         }
         lore.add("");
-        lore.add(languageManager.get(LanguageKey.GUI_CURRENT, conditionParamField.getValue().toString()));
+        lore.add(languageManager.get(LanguageKey.GUI_CURRENT, String.valueOf(conditionParamField.getValue())));
         lore.add("");
         lore.add(languageManager.get(LanguageKey.LEFT_CLICK_SWITCH));
 
