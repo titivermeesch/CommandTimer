@@ -20,6 +20,7 @@ import java.io.*;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
@@ -159,6 +160,7 @@ public class Files {
 
                         if(task.isResetExecutionsAfterRestart()) {
                             task.setTimesExecuted(0);
+                            task.setLastExecuted(new Date());
                             task.storeInstance();
                         }
 
