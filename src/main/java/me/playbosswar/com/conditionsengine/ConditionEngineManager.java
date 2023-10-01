@@ -84,7 +84,7 @@ public class ConditionEngineManager {
             Objects.requireNonNull(condition.getVersion(), "The condition version is null!");
 
             condition.register();
-            if(condition.getEvents().size() > 0) {
+            if(!condition.getEvents().isEmpty()) {
                 condition.getEvents().forEach(event -> {
                             if(event instanceof Listener) {
                                 Bukkit.getPluginManager().registerEvents((Listener) event,

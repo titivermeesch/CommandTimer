@@ -16,6 +16,7 @@ import me.playbosswar.com.gui.HorizontalIteratorWithBorder;
 import me.playbosswar.com.language.LanguageKey;
 import me.playbosswar.com.language.LanguageManager;
 import me.playbosswar.com.tasks.Task;
+import me.playbosswar.com.utils.Callback;
 import me.playbosswar.com.utils.Items;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -51,7 +52,7 @@ public class SelectEventsMenu implements InventoryProvider {
         contents.fillBorders(ClickableItem.empty(XMaterial.BLUE_STAINED_GLASS_PANE.parseItem()));
         Pagination pagination = contents.pagination();
 
-        List<ClickableItem> items = extension.getEvents().stream().map(event -> {
+        pagination.setItems(extension.getEvents().stream().map(event -> {
             Optional<EventConfiguration> existingConfiguration = task
                     .getEvents()
                     .stream()
@@ -77,9 +78,10 @@ public class SelectEventsMenu implements InventoryProvider {
             ItemStack item = Items.generateItem("&b" + event.getEventName(), XMaterial.BEACON,
                     lore.toArray(new String[0]));
             return ClickableItem.of(item, e -> {
+                final Callback<?> internalCallback = data -> this.INVENTORY.open(player);
                 if(e.isLeftClick()) {
                     if(existingConfiguration.isPresent()) {
-                        new ConfigureEventMenu(task, extension, event, existingConfiguration.get().getCondition()).INVENTORY.open(player);
+                        new ConfigureEventMenu(task, extension, event, existingConfiguration.get().getCondition(), internalCallback).INVENTORY.open(player);
                         return;
                     }
 
@@ -91,7 +93,7 @@ public class SelectEventsMenu implements InventoryProvider {
                     task.getEvents().add(configuration);
                     task.storeInstance();
 
-                    new ConfigureEventMenu(task, extension, event, condition).INVENTORY.open(player);
+                    new ConfigureEventMenu(task, extension, event, condition, internalCallback).INVENTORY.open(player);
                 }
 
                 if(e.isRightClick()) {
@@ -108,14 +110,10 @@ public class SelectEventsMenu implements InventoryProvider {
 
                     configuration.setActive(!configuration.isActive());
                     task.storeInstance();
-                    // Refresh
                     this.INVENTORY.open(player);
-                    return;
                 }
             });
-        }).collect(Collectors.toList());
-
-        pagination.setItems(items.toArray(new ClickableItem[0]));
+        }).toArray(ClickableItem[]::new));
         new HorizontalIteratorWithBorder(player, contents, INVENTORY);
 
         contents.set(5, 8, ClickableItem.of(Items.getBackItem(), e -> new MainEventsMenu(task).INVENTORY.open(player)));

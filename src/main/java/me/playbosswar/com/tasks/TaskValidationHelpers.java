@@ -10,6 +10,7 @@ import me.playbosswar.com.conditionsengine.validations.Condition;
 import me.playbosswar.com.conditionsengine.validations.ConditionType;
 import me.playbosswar.com.conditionsengine.validations.SimpleCondition;
 import me.playbosswar.com.utils.Messages;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.jeasy.rules.api.Facts;
 import org.jetbrains.annotations.Nullable;
@@ -84,6 +85,10 @@ public class TaskValidationHelpers {
 
                 if(neededValue.getType() == String.class) {
                     facts.put(conditionParamField.getName(), (String) conditionParamField.getValue());
+                }
+
+                if(neededValue.getType() == World.class) {
+                    facts.put(conditionParamField.getName(), (World) conditionParamField.getValue());
                 }
             }
         }
