@@ -68,7 +68,7 @@ public class EventConditionsMenu implements InventoryProvider {
                     new ArrayList<>());
             this.condition.addCondition(newCondition);
 
-            new ConfigureEventMenu(condition.getTask(), extension, eventExtension, condition).INVENTORY.open(player);
+            new ConfigureEventMenu(condition.getTask(), extension, eventExtension, condition, internalCallback).INVENTORY.open(player);
         });
         contents.set(0, 0, clickableCreate);
 
@@ -130,7 +130,7 @@ public class EventConditionsMenu implements InventoryProvider {
                     XMaterial.COMMAND_BLOCK, lore);
             items[i] = ClickableItem.of(item, e -> {
                 if(e.getClick().equals(ClickType.LEFT)) {
-                    new ConfigureEventMenu(condition.getTask(), extension, eventExtension, condition).INVENTORY.open(p);
+                    new ConfigureEventMenu(condition.getTask(), extension, eventExtension, condition, internalCallback).INVENTORY.open(p);
                     return;
                 }
 

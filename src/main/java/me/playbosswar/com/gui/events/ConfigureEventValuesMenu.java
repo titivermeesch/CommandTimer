@@ -14,15 +14,20 @@ import me.playbosswar.com.api.events.EventSimpleCondition;
 import me.playbosswar.com.conditionsengine.ConditionCompare;
 import me.playbosswar.com.gui.HorizontalIteratorWithBorder;
 import me.playbosswar.com.gui.tasks.general.TextInputConversationPrompt;
+import me.playbosswar.com.gui.tasks.scheduler.EditSpecificTimeMenu;
+import me.playbosswar.com.gui.worlds.WorldSelector;
 import me.playbosswar.com.language.LanguageKey;
 import me.playbosswar.com.language.LanguageManager;
 import me.playbosswar.com.tasks.Task;
 import me.playbosswar.com.utils.ArrayUtils;
+import me.playbosswar.com.utils.Callback;
 import me.playbosswar.com.utils.Items;
+import org.bukkit.World;
 import org.bukkit.conversations.ConversationFactory;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,13 +39,15 @@ public class ConfigureEventValuesMenu implements InventoryProvider {
     private final EventCondition condition;
     private final Task task;
     private final EventExtension eventExtension;
+    private final Callback<?> callback;
 
     public ConfigureEventValuesMenu(Task task, ConditionExtension extension, EventExtension eventExtension,
-                                    EventCondition condition) {
+                                    EventCondition condition, Callback<?> callback) {
         this.extension = extension;
         this.task = task;
         this.condition = condition;
         this.eventExtension = eventExtension;
+        this.callback = callback;
 
         INVENTORY = SmartInventory.builder()
                 .id("configure-event-values")
@@ -55,7 +62,7 @@ public class ConfigureEventValuesMenu implements InventoryProvider {
     public void init(Player player, InventoryContents contents) {
         contents.fillBorders(ClickableItem.empty(XMaterial.BLUE_STAINED_GLASS_PANE.parseItem()));
         Pagination pagination = contents.pagination();
-        List<ClickableItem> items = eventExtension.getReturnedValues().stream().map(v -> {
+        pagination.setItems(eventExtension.getReturnedValues().stream().map(v -> {
             boolean isActiveValue = condition.getSimpleCondition().getFieldName().equals(v.getName());
             String[] lore;
             if(isActiveValue) {
@@ -78,7 +85,7 @@ public class ConfigureEventValuesMenu implements InventoryProvider {
                                                     new EventSimpleCondition<>(task, v.getName(), text,
                                                             ConditionCompare.EQUAL);
                                             condition.setSimpleCondition(simpleCondition);
-                                            new ConfigureEventValuesMenu(task, extension, eventExtension, condition).INVENTORY.open(player);
+                                            new ConfigureEventValuesMenu(task, extension, eventExtension, condition, callback).INVENTORY.open(player);
                                         }));
                         conversationFactory.buildConversation(player).begin();
                         player.closeInventory();
@@ -95,7 +102,7 @@ public class ConfigureEventValuesMenu implements InventoryProvider {
                                                     new EventSimpleCondition<>(task, v.getName(), text,
                                                             ConditionCompare.EQUAL);
                                             condition.setSimpleCondition(simpleCondition);
-                                            new ConfigureEventValuesMenu(task, extension, eventExtension, condition).INVENTORY.open(player);
+                                            new ConfigureEventValuesMenu(task, extension, eventExtension, condition, callback).INVENTORY.open(player);
                                         }));
                         conversationFactory.buildConversation(player).begin();
                         player.closeInventory();
@@ -111,10 +118,24 @@ public class ConfigureEventValuesMenu implements InventoryProvider {
                                                     new EventSimpleCondition<>(task, v.getName(), text,
                                                             ConditionCompare.EQUAL);
                                             condition.setSimpleCondition(simpleCondition);
-                                            new ConfigureEventValuesMenu(task, extension, eventExtension, condition).INVENTORY.open(player);
+                                            new ConfigureEventValuesMenu(task, extension, eventExtension, condition, callback).INVENTORY.open(player);
                                         }));
                         conversationFactory.buildConversation(player).begin();
                         player.closeInventory();
+                    }
+
+                    if(v.getType() == World.class) {
+                        Callback<List<String>> worldCallback = worlds -> {
+                            EventSimpleCondition<String> simpleCondition =
+                                    new EventSimpleCondition<>(task, v.getName(), worlds.get(0),
+                                            ConditionCompare.EQUAL);
+                            condition.setSimpleCondition(simpleCondition);
+                            new ConfigureEventValuesMenu(task, extension, eventExtension, condition, callback).INVENTORY.open(player);
+
+                        };
+                        ArrayList<String> worlds = new ArrayList<>();
+                        worlds.add(condition.getSimpleCondition().getValue().toString());
+                        new WorldSelector(worldCallback, worlds, false).INVENTORY.open(player);
                     }
                 }
 
@@ -124,15 +145,14 @@ public class ConfigureEventValuesMenu implements InventoryProvider {
                             .getNextValueInArray(ConditionCompare.values(),
                                     condition.getSimpleCondition().getCompare());
                     condition.getSimpleCondition().setCompare(nextConditionCompare);
-                    new ConfigureEventValuesMenu(task, extension, eventExtension, condition).INVENTORY.open(player);
+                    new ConfigureEventValuesMenu(task, extension, eventExtension, condition, callback).INVENTORY.open(player);
                 }
             });
-        }).collect(Collectors.toList());
-        pagination.setItems(items.toArray(new ClickableItem[0]));
+        }).toArray(ClickableItem[]::new));
         new HorizontalIteratorWithBorder(player, contents, INVENTORY);
 
         contents.set(5, 8, ClickableItem.of(Items.getBackItem(),
-                e -> new ConfigureEventMenu(task, extension, eventExtension, condition).INVENTORY.open(player)));
+                e -> new ConfigureEventMenu(task, extension, eventExtension, condition, callback).INVENTORY.open(player)));
     }
 
     @Override

@@ -27,14 +27,16 @@ public class ConfigureEventMenu implements InventoryProvider {
     private final ConditionExtension extension;
     private final EventExtension eventExtension;
     private final EventCondition condition;
+    private final Callback<?> callback;
     private final Task task;
 
     public ConfigureEventMenu(Task task, ConditionExtension extension, EventExtension eventExtension,
-                              EventCondition condition) {
+                              EventCondition condition, Callback<?> callback) {
         this.task = task;
         this.extension = extension;
         this.eventExtension = eventExtension;
         this.condition = condition;
+        this.callback = callback;
 
         INVENTORY = SmartInventory.builder()
                 .id("configure-event")
@@ -54,12 +56,12 @@ public class ConfigureEventMenu implements InventoryProvider {
         // 1. Item for condition type (SIMPLE, AND, OR, NOT)
         ClickableItem conditionTypeItem = MenuUtils.getConditionTypeItem(condition, type -> {
             condition.setConditionType(type);
-            new ConfigureEventMenu(task, extension, eventExtension, condition).INVENTORY.open(player);
+            new ConfigureEventMenu(task, extension, eventExtension, condition, internalCallback).INVENTORY.open(player);
         });
         contents.set(1, 1, conditionTypeItem);
 
         contents.set(2, 8, ClickableItem.of(Items.getBackItem(),
-                e -> new SelectEventsMenu(task, extension).INVENTORY.open(player)));
+                e -> callback.execute(null)));
 
         // 2. With simple/or, we show a second item to configure all the values
         if(condition.getConditionType().equals(ConditionType.SIMPLE) || condition.getConditionType().equals(ConditionType.NOT)) {
@@ -73,7 +75,8 @@ public class ConfigureEventMenu implements InventoryProvider {
                     task,
                     extension,
                     eventExtension,
-                    condition
+                    condition,
+                    internalCallback
             ).INVENTORY.open(player)));
             return;
         }

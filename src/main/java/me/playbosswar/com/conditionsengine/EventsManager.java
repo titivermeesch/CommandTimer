@@ -1,8 +1,6 @@
 package me.playbosswar.com.conditionsengine;
 
-import me.playbosswar.com.CommandTimerPlugin;
 import me.playbosswar.com.api.ConditionExtension;
-import me.playbosswar.com.api.ConditionRule;
 import me.playbosswar.com.api.events.EventCondition;
 import me.playbosswar.com.api.events.EventConfiguration;
 import me.playbosswar.com.api.events.EventExtension;
@@ -10,14 +8,13 @@ import me.playbosswar.com.api.NeededValue;
 import me.playbosswar.com.api.events.EventSimpleCondition;
 import me.playbosswar.com.conditionsengine.conditions.ConditionHelpers;
 import me.playbosswar.com.conditionsengine.validations.ConditionType;
-import me.playbosswar.com.conditionsengine.validations.SimpleCondition;
 import me.playbosswar.com.tasks.Task;
 import me.playbosswar.com.tasks.TaskValidationHelpers;
 import me.playbosswar.com.tasks.TasksManager;
 import me.playbosswar.com.utils.Messages;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.jeasy.rules.api.Facts;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -87,6 +84,8 @@ public class EventsManager {
 
             if(valid) {
                 task.getCommands().forEach(tasksManager::processCommandExecution);
+            } else {
+                Messages.sendDebugConsole("EVENT ENGINE: Processed event but conditions did not match");
             }
         });
     }
@@ -123,6 +122,19 @@ public class EventsManager {
             double value = (Double) receivedValue.getDefaultValue();
             double expected = (Double) simpleCondition.getValue();
             return ConditionHelpers.calculateConditionCompare(compare, value, expected);
+        }
+
+        if(receivedValue.getType() == String.class) {
+            String value = (String) receivedValue.getDefaultValue();
+            String expected = (String) simpleCondition.getValue();
+            return value.equals(expected);
+        }
+
+        if(receivedValue.getType() == World.class) {
+            World value = (World) receivedValue.getDefaultValue();
+            World expected = Bukkit.getWorld(simpleCondition.getValue().toString());
+
+            return value.getName().equals(expected.getName());
         }
 
         return false;

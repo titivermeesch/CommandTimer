@@ -117,6 +117,10 @@ public class TaskRunner implements Runnable {
                 }
             }
         } else {
+            if(task.getInterval().toSeconds() == 0 && !task.getEvents().isEmpty()) {
+                Messages.sendDebugConsole("Timer has no interval set and uses events, skipping");
+                return;
+            }
             blockTime = false;
             boolean hasPassedInterval = TaskTimeUtils.hasPassedInterval(task);
             if(!hasPassedInterval) {

@@ -12,6 +12,7 @@ import me.playbosswar.com.tasks.TasksManager;
 import me.playbosswar.com.updater.Updater;
 import me.playbosswar.com.utils.*;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Listener;
@@ -20,10 +21,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.Arrays;
-import java.util.Objects;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CommandTimerPlugin extends JavaPlugin implements Listener {
     private static Plugin plugin;
@@ -63,6 +62,15 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
             tasksManager.executionsSinceLastSync = 0;
             return v;
         }));
+        metrics.addCustomChart(new Metrics.MultiLineChart("loaded_extensions", () -> {
+            Map<String, Integer> map = new HashMap<>();
+            conditionEngineManager.getConditionExtensions().forEach(conditionExtension -> {
+                map.put(conditionExtension.getConditionGroupName(), 1);
+            });
+
+            return map;
+        }));
+
 
         Tools.printDate();
         Messages.sendConsole("&e" + getDescription().getVersion() + "&a loaded!");
