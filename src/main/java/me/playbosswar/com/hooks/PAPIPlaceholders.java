@@ -3,6 +3,7 @@ package me.playbosswar.com.hooks;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.playbosswar.com.CommandTimerPlugin;
 import me.playbosswar.com.tasks.TaskTime;
+import me.playbosswar.com.utils.TaskUtils;
 import me.playbosswar.com.utils.Tools;
 import me.playbosswar.com.tasks.Task;
 import me.playbosswar.com.utils.Messages;
@@ -13,9 +14,11 @@ import org.jetbrains.annotations.NotNull;
 import org.joda.time.Duration;
 import org.joda.time.Interval;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.time.temporal.TemporalAdjusters;
+import java.util.*;
 
 public class PAPIPlaceholders extends PlaceholderExpansion {
     private final Plugin plugin;
@@ -59,18 +62,18 @@ public class PAPIPlaceholders extends PlaceholderExpansion {
             return "INVALID PLACEHOLDER";
         }
 
-        if(placeholder.getTaskName().equals("ALLTASKS")) {
-            return getAllTasksNextExecutionText(placeholder.getFallbackMessage());
-        }
-
         Task task = CommandTimerPlugin.getInstance().getTasksManager().getTaskByName(placeholder.getTaskName());
+        String fallbackMessage = placeholder.getFallbackMessage();
+
+        if(placeholder.getTaskName().equals("ALLTASKS")) {
+            task = getSoonestTask(CommandTimerPlugin.getInstance().getTasksManager().getActiveTasks());
+        }
 
         if(task == null) {
             Messages.sendConsole("Tried to use PAPI placeholder for unknown task:" + placeholder.getTaskName());
-            return null;
+            return fallbackMessage;
         }
 
-        String fallbackMessage = placeholder.getFallbackMessage();
 
         if(placeholder.getPlaceholderType().equalsIgnoreCase("seconds")) {
             return getSecondsText(task, fallbackMessage, false);
@@ -105,84 +108,63 @@ public class PAPIPlaceholders extends PlaceholderExpansion {
         return seconds + "";
     }
 
-    private String getNextExecutionText(Task task, String fallbackMessage, boolean format, String timeFormat) {
+    // Get time in seconds before next task execution
+    private long getNextExecution(Task task) {
+        // TODO: Take into account the days
+        // TODO: Take into account the hour ranges
         if(!task.getTimes().isEmpty()) {
             Date date = TaskTimeUtils.getSoonestTaskTime(task.getTimes());
 
             if(date == null || !task.isActive()) {
-                return fallbackMessage != null ? fallbackMessage : "";
+                return -1;
             }
 
-            long seconds = (date.getTime() - new Date().getTime()) / 1000;
-
-            if(format) {
-                return Tools.getTimeString((int) seconds, timeFormat);
-            }
-
-            return seconds + "";
+            return (date.getTime() - new Date().getTime()) / 1000;
         }
 
-        long timeLeft = getTaskTimeLeft(task);
+        Interval interval = new Interval(task.getLastExecuted().getTime(), new Date().getTime());
+        Duration period = interval.toDuration();
+        long timeLeft = task.getInterval().toSeconds() - period.getStandardSeconds();
 
-        if((timeLeft < 0 || !task.isActive()) && fallbackMessage != null) {
-            return fallbackMessage;
+        if((timeLeft < 0 || !task.isActive())) {
+            return -1;
+        }
+
+        return timeLeft;
+    }
+
+    private String getNextExecutionText(Task task, String fallbackMessage, boolean format, String timeFormat) {
+        long seconds = getNextExecution(task);
+
+        if(seconds == -1) {
+            return fallbackMessage != null ? fallbackMessage : "";
         }
 
         if(format) {
-            return Tools.getTimeString((int) timeLeft, timeFormat);
+            return Tools.getTimeString((int) seconds, timeFormat);
         }
 
-        return timeLeft + "";
+        return seconds + "";
     }
 
     private String getNextExecutionText(Task task, String fallbackMessage, boolean format) {
         return getNextExecutionText(task, fallbackMessage, format, "HH:mm:ss");
     }
 
-    private String getAllTasksNextExecutionText(String fallbackMessage) {
-        List<Task> tasks = CommandTimerPlugin.getInstance().getTasksManager().getLoadedTasks();
-        List<TaskTime> taskTimes = new ArrayList<>();
+    // Get first task that will execute
+    private Task getSoonestTask(List<Task> tasks) {
+        Map<Task, Long> timeTillExecution = new HashMap<>();
         tasks.forEach(t -> {
-            if(!t.isActive()) {
-                return;
-            }
-
-            taskTimes.addAll(t.getTimes());
-        });
-        // Soonest date for all task times
-        Date date = TaskTimeUtils.getSoonestTaskTime(taskTimes);
-
-        // Next execution in seconds for tasks who don't have time
-        final int[] seconds = {-1};
-        tasks.forEach(t -> {
-            if(!t.getTimes().isEmpty() || !t.isActive()) {
-                return;
-            }
-
-            long timeLeft = getTaskTimeLeft(t);
-            if((timeLeft < seconds[0] || seconds[0] == -1) && timeLeft >= 0) {
-                seconds[0] = (int) timeLeft;
+            long seconds = getNextExecution(t);
+            if(seconds > 0) {
+                timeTillExecution.put(t, seconds);
             }
         });
 
-        if(seconds[0] == -1 && date == null && fallbackMessage != null) {
-            return fallbackMessage;
+        if(timeTillExecution.isEmpty()) {
+            return null;
         }
 
-        if(date == null) {
-            return seconds[0] + "";
-        }
-
-        long soonestTaskTimeExecution = (date.getTime() - new Date().getTime()) / 1000;
-        int nextExecution = seconds[0] > soonestTaskTimeExecution ? (int) soonestTaskTimeExecution : seconds[0];
-
-        return nextExecution + "";
-    }
-
-    private long getTaskTimeLeft(Task task) {
-        Interval interval = new Interval(task.getLastExecuted().getTime(), new Date().getTime());
-        Duration period = interval.toDuration();
-        int seconds = task.getInterval().toSeconds();
-        return seconds - period.getStandardSeconds();
+        return Collections.min(timeTillExecution.entrySet(), Map.Entry.comparingByValue()).getKey();
     }
 }

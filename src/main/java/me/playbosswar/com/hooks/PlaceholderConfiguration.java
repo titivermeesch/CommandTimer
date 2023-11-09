@@ -9,7 +9,7 @@ public class PlaceholderConfiguration {
     public PlaceholderConfiguration(String placeholder) {
         String[] parts = placeholder.split("_");
 
-        if(parts.length < 1) {
+        if(parts.length < 2) {
             this.valid = false;
             return;
         }
