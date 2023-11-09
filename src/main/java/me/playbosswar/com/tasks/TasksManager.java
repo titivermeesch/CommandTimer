@@ -65,6 +65,10 @@ public class TasksManager {
         return loadedTasks;
     }
 
+    public List<Task> getActiveTasks() {
+        return loadedTasks.stream().filter(Task::isActive).collect(Collectors.toList());
+    }
+
     public void setLoadedTasks(List<Task> loadedTasks) {
         this.loadedTasks = loadedTasks;
     }

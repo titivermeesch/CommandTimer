@@ -19,9 +19,12 @@ to replace `task` with your actual task name.
   will need the placeholder `%commandtimer_task_HH'h'mm'm'ss's'%`. Depending on your configuration file, you will need
   to change your outer `'` quotes with `"` to keep a valid configuration.
 
+The `task` value can be replaced with `ALLTASKS` for `nextExection`, `nextExecutionFormat` and `timeFormat` if you want
+to take into account all active tasks
+
 ## Fallback values
 
-`%commandtimer_task_nextExecutionFormat%` and `%commandtimer_task_timeFormat%` can be suffixed with a fallback value in
+`nextExecution`, `nextExecutionFormat` and `timeFormat` can be suffixed with a fallback value in
 case there is no next execution anymore. For example- `%commandtimer_task_nextExecutionFormat_No next execution%`
 
 ## PAPI Placeholders

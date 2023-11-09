@@ -2,6 +2,8 @@ package me.playbosswar.com.hooks;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.playbosswar.com.CommandTimerPlugin;
+import me.playbosswar.com.tasks.TaskTime;
+import me.playbosswar.com.utils.TaskUtils;
 import me.playbosswar.com.utils.Tools;
 import me.playbosswar.com.tasks.Task;
 import me.playbosswar.com.utils.Messages;
@@ -12,8 +14,11 @@ import org.jetbrains.annotations.NotNull;
 import org.joda.time.Duration;
 import org.joda.time.Interval;
 
-import java.util.Date;
-import java.util.Objects;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.time.temporal.TemporalAdjusters;
+import java.util.*;
 
 public class PAPIPlaceholders extends PlaceholderExpansion {
     private final Plugin plugin;
@@ -48,122 +53,118 @@ public class PAPIPlaceholders extends PlaceholderExpansion {
     }
 
     @Override
-    public String onPlaceholderRequest(Player player, String identifier) {
-        String[] identifierParts = identifier.split("_");
+    public String onPlaceholderRequest(Player player, @NotNull String identifier) {
+        PlaceholderConfiguration placeholder = new PlaceholderConfiguration(identifier);
 
-        if(identifierParts.length < 2) {
+        if(!placeholder.isValid()) {
             Messages.sendConsole("Used a CommandTimer placeholder wrong. Example: " +
                     "%commandtimer_testtask_nextExecutionFormat%");
-            return null;
+            return "INVALID PLACEHOLDER";
         }
 
-        String commandName = identifierParts[0];
-        String commandField = identifierParts[1];
-        String fallbackMessage = null;
+        Task task = CommandTimerPlugin.getInstance().getTasksManager().getTaskByName(placeholder.getTaskName());
+        String fallbackMessage = placeholder.getFallbackMessage();
 
-        if(identifierParts.length == 3) {
-            fallbackMessage = identifierParts[2];
+        if(placeholder.getTaskName().equals("ALLTASKS")) {
+            task = getSoonestTask(CommandTimerPlugin.getInstance().getTasksManager().getActiveTasks());
         }
-
-        Task task = CommandTimerPlugin.getInstance().getTasksManager().getTaskByName(commandName);
 
         if(task == null) {
-            Messages.sendConsole("Tried to use PAPI placeholder for unknown command:" + identifier);
-            return null;
-        }
-
-        if(commandField.equalsIgnoreCase("seconds")) {
-            int seconds = task.getInterval().toSeconds();
-
-            if(seconds < 0 && fallbackMessage != null) {
-                return fallbackMessage;
-            }
-
-            return seconds + "";
-        }
-
-        if(commandField.equalsIgnoreCase("secondsFormat")) {
-            int seconds = task.getInterval().toSeconds();
-
-            if(seconds < 0 && fallbackMessage != null) {
-                return fallbackMessage;
-            }
-
-            return Tools.getTimeString(seconds);
-        }
-
-        if(commandField.equalsIgnoreCase("nextExecution")) {
-            if(!task.getTimes().isEmpty()) {
-                Date date = TaskTimeUtils.getSoonestTaskTime(task.getTimes());
-
-                if(date == null || !task.isActive()) {
-                    return fallbackMessage != null ? fallbackMessage : "";
-                }
-
-                long seconds = (date.getTime() - new Date().getTime()) / 1000;
-
-                return seconds + "";
-            }
-
-            Interval interval = new Interval(task.getLastExecuted().getTime(), new Date().getTime());
-            Duration period = interval.toDuration();
-            int seconds = task.getInterval().toSeconds();
-            long timeLeft = seconds - period.getStandardSeconds();
-
-            if((timeLeft < 0 || !task.isActive()) && fallbackMessage != null) {
-                return fallbackMessage;
-            }
-
-            return timeLeft + "";
-        }
-
-        if(commandField.equalsIgnoreCase("nextExecutionFormat")) {
-            if(!task.getTimes().isEmpty()) {
-                Date date = TaskTimeUtils.getSoonestTaskTime(task.getTimes());
-
-                if(date == null || !task.isActive()) {
-                    return fallbackMessage != null ? fallbackMessage : "";
-                }
-
-                long seconds = (date.getTime() - new Date().getTime()) / 1000;
-
-                return Tools.getTimeString((int) seconds);
-            }
-
-            Interval interval = new Interval(task.getLastExecuted().getTime(), new Date().getTime());
-            Duration period = interval.toDuration();
-            int seconds = task.getInterval().toSeconds();
-            long timeLeft = seconds - period.getStandardSeconds();
-
-            if((timeLeft < 0 || !task.isActive()) && fallbackMessage != null) {
-                return fallbackMessage;
-            }
-
-            return Tools.getTimeString((int) timeLeft);
-        }
-
-        if(!task.getTimes().isEmpty()) {
-            Date date = TaskTimeUtils.getSoonestTaskTime(task.getTimes());
-
-            if(date == null || !task.isActive()) {
-                return fallbackMessage != null ? fallbackMessage : "";
-            }
-
-            long seconds = (date.getTime() - new Date().getTime()) / 1000;
-
-            return Tools.getTimeString((int) seconds, commandField);
-        }
-
-        Interval interval = new Interval(task.getLastExecuted().getTime(), new Date().getTime());
-        Duration period = interval.toDuration();
-        int seconds = task.getInterval().toSeconds();
-        long timeLeft = seconds - period.getStandardSeconds();
-
-        if((timeLeft < 0 || !task.isActive()) && fallbackMessage != null) {
+            Messages.sendConsole("Tried to use PAPI placeholder for unknown task:" + placeholder.getTaskName());
             return fallbackMessage;
         }
 
 
-        return Tools.getTimeString((int) timeLeft, commandField);
+        if(placeholder.getPlaceholderType().equalsIgnoreCase("seconds")) {
+            return getSecondsText(task, fallbackMessage, false);
+        }
+
+        if(placeholder.getPlaceholderType().equalsIgnoreCase("secondsFormat")) {
+            return getSecondsText(task, fallbackMessage, true);
+        }
+
+        if(placeholder.getPlaceholderType().equalsIgnoreCase("nextExecution")) {
+            return getNextExecutionText(task, fallbackMessage, false);
+        }
+
+        if(placeholder.getPlaceholderType().equalsIgnoreCase("nextExecutionFormat")) {
+            return getNextExecutionText(task, fallbackMessage, true);
+        }
+
+        return getNextExecutionText(task, fallbackMessage, true, placeholder.getPlaceholderType());
+    }
+
+    private String getSecondsText(Task task, String fallbackMessage, boolean format) {
+        int seconds = task.getInterval().toSeconds();
+
+        if(seconds < 0 && fallbackMessage != null) {
+            return fallbackMessage;
+        }
+
+        if(format) {
+            return Tools.getTimeString(seconds);
+        }
+
+        return seconds + "";
+    }
+
+    // Get time in seconds before next task execution
+    private long getNextExecution(Task task) {
+        // TODO: Take into account the days
+        // TODO: Take into account the hour ranges
+        if(!task.getTimes().isEmpty()) {
+            Date date = TaskTimeUtils.getSoonestTaskTime(task.getTimes());
+
+            if(date == null || !task.isActive()) {
+                return -1;
+            }
+
+            return (date.getTime() - new Date().getTime()) / 1000;
+        }
+
+        Interval interval = new Interval(task.getLastExecuted().getTime(), new Date().getTime());
+        Duration period = interval.toDuration();
+        long timeLeft = task.getInterval().toSeconds() - period.getStandardSeconds();
+
+        if((timeLeft < 0 || !task.isActive())) {
+            return -1;
+        }
+
+        return timeLeft;
+    }
+
+    private String getNextExecutionText(Task task, String fallbackMessage, boolean format, String timeFormat) {
+        long seconds = getNextExecution(task);
+
+        if(seconds == -1) {
+            return fallbackMessage != null ? fallbackMessage : "";
+        }
+
+        if(format) {
+            return Tools.getTimeString((int) seconds, timeFormat);
+        }
+
+        return seconds + "";
+    }
+
+    private String getNextExecutionText(Task task, String fallbackMessage, boolean format) {
+        return getNextExecutionText(task, fallbackMessage, format, "HH:mm:ss");
+    }
+
+    // Get first task that will execute
+    private Task getSoonestTask(List<Task> tasks) {
+        Map<Task, Long> timeTillExecution = new HashMap<>();
+        tasks.forEach(t -> {
+            long seconds = getNextExecution(t);
+            if(seconds > 0) {
+                timeTillExecution.put(t, seconds);
+            }
+        });
+
+        if(timeTillExecution.isEmpty()) {
+            return null;
+        }
+
+        return Collections.min(timeTillExecution.entrySet(), Map.Entry.comparingByValue()).getKey();
     }
 }
