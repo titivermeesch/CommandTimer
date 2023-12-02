@@ -1,5 +1,7 @@
 package me.playbosswar.com.tasks;
 
+import io.sentry.ITransaction;
+import io.sentry.Sentry;
 import me.playbosswar.com.CommandTimerPlugin;
 import me.playbosswar.com.enums.CommandExecutionMode;
 import me.playbosswar.com.utils.TaskTimeUtils;
@@ -184,7 +186,11 @@ public class TaskRunner implements Runnable {
 
                 List<Task> tasks = CommandTimerPlugin.getInstance().getTasksManager().getLoadedTasks();
 
-                tasks.forEach(task -> processTask(task));
+                tasks.forEach(task -> {
+                    ITransaction transaction = Sentry.startTransaction("processTask()", "task");
+                    processTask(task);
+                    transaction.finish();
+                });
             }
             // Sync runner with the clock
         }, System.currentTimeMillis() % 20, 20);

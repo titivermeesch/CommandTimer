@@ -1,5 +1,8 @@
 package me.playbosswar.com.utils;
 
+import com.google.gson.GsonBuilder;
+import io.sentry.ITransaction;
+import io.sentry.Sentry;
 import me.playbosswar.com.CommandTimerPlugin;
 import me.playbosswar.com.api.events.EventCondition;
 import me.playbosswar.com.api.events.EventConfiguration;
@@ -96,6 +99,7 @@ public class Files {
     }
 
     public static List<Task> deserializeJsonFilesIntoCommandTimers() {
+        ITransaction transaction = Sentry.startTransaction("deserializeJsonFilesIntoCommandTimers()", "initiation");
         File dir = new File(pluginFolderPath + "/timers");
         File[] directoryListing = dir.listFiles();
         JSONParser jsonParser = new JSONParser();
@@ -173,6 +177,9 @@ public class Files {
             }
         } catch(IOException e) {
             e.printStackTrace();
+            transaction.setThrowable(e);
+        } finally {
+            transaction.finish();
         }
 
         return tasks;
