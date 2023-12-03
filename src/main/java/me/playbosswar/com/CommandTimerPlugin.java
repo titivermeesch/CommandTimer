@@ -1,6 +1,7 @@
 package me.playbosswar.com;
 
 import fr.minuskube.inv.InventoryManager;
+import io.sentry.ITransaction;
 import me.playbosswar.com.commands.MainCommand;
 import me.playbosswar.com.conditionsengine.ConditionEngineManager;
 import me.playbosswar.com.conditionsengine.EventsManager;
@@ -12,7 +13,6 @@ import me.playbosswar.com.tasks.TasksManager;
 import me.playbosswar.com.updater.Updater;
 import me.playbosswar.com.utils.*;
 import org.bukkit.Bukkit;
-import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Listener;
@@ -23,6 +23,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
+import io.sentry.Sentry;
 
 public class CommandTimerPlugin extends JavaPlugin implements Listener {
     private static Plugin plugin;
@@ -40,6 +42,19 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
     public void onEnable() {
         plugin = this;
         instance = this;
+
+        Sentry.init(options -> {
+            options.setDsn("https://45383fac83f64e65a45d83c3059eb934@o1414814.ingest.sentry.io/6755132");
+            options.setTracesSampleRate(0.8);
+            options.setRelease(getDescription().getVersion());
+        });
+
+        Sentry.configureScope(scope -> {
+            scope.setExtra("bukkit_version", getServer().getBukkitVersion());
+            scope.setExtra("server_name", getServer().getName());
+        });
+
+        ITransaction transaction = Sentry.startTransaction("server_startup", "initiation");
 
         this.loadConfig();
         languageManager = new LanguageManager(this, getConfig().getString("language"));
@@ -72,8 +87,11 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
         }));
 
 
-        Tools.printDate();
+        if(getConfig().getBoolean("timeonload")) {
+            Tools.printDate();
+        }
         Messages.sendConsole("&e" + getDescription().getVersion() + "&a loaded!");
+        transaction.finish();
     }
 
     @Override

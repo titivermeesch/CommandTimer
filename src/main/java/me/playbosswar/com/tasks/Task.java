@@ -1,5 +1,8 @@
 package me.playbosswar.com.tasks;
 
+import io.sentry.ITransaction;
+import io.sentry.Sentry;
+import io.sentry.SpanStatus;
 import me.playbosswar.com.api.events.EventConfiguration;
 import me.playbosswar.com.conditionsengine.validations.Condition;
 import me.playbosswar.com.conditionsengine.validations.ConditionType;
@@ -279,8 +282,10 @@ public class Task {
     }
 
     public void storeInstance() {
+        ITransaction transaction = Sentry.startTransaction("storeInstance()", "task");
         GsonConverter gson = new GsonConverter();
         String json = gson.toJson(this);
+        transaction.setContext("task", json);
 
         try {
             FileWriter jsonFile = new FileWriter(Files.getTaskFile(name));
@@ -288,6 +293,10 @@ public class Task {
             jsonFile.flush();
         } catch(IOException e) {
             e.printStackTrace();
+            transaction.setThrowable(e);
+            transaction.setStatus(SpanStatus.INTERNAL_ERROR);
+        } finally {
+            transaction.finish();
         }
     }
 }
