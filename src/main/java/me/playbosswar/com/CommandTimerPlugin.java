@@ -51,7 +51,6 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
 
         Sentry.configureScope(scope -> {
             scope.setExtra("bukkit_version", getServer().getBukkitVersion());
-            scope.setExtra("minecraft_version", getServer().getMinecraftVersion());
             scope.setExtra("server_name", getServer().getName());
         });
 
