@@ -40,6 +40,7 @@ shadowJar {
         include(dependency('joda-time:joda-time:2.10.13'))
         include(dependency('org.jeasy:easy-rules-core:4.1.0'))
         include(dependency('org.apache.commons:commons-text:1.9'))
+        include(dependency('io.sentry:sentry:7.0.0'))
     }
     // Needed in case the server software already packs sentry
     relocate 'io.sentry', 'me.playbosswar.com.commandtimer.sentry'
@@ -57,8 +58,7 @@ dependencies {
     implementation 'org.jeasy:easy-rules-core:4.1.0'
     implementation 'com.googlecode.json-simple:json-simple:1.1.1'
     implementation 'org.apache.commons:commons-text:1.9'
-    implementation platform('io.sentry:sentry-bom:7.0.0')
-    implementation('io.sentry:sentry')
+    implementation 'io.sentry:sentry:7.0.0'
     compileOnly 'org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT'
     compileOnly 'me.clip:placeholderapi:2.10.9'
     compileOnly 'org.jetbrains:annotations:23.0.0'
