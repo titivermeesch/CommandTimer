@@ -9,7 +9,7 @@ java {
 }
 
 group = 'me.playbosswar.com'
-version = '8.5.2'
+version = '8.5.3'
 description = 'CommandTimer'
 
 repositories {
@@ -61,7 +61,7 @@ publishing {
         maven(MavenPublication) {
             groupId = 'me.playbosswar.com'
             artifactId = 'commandtimer'
-            version = '8.5.2'
+            version = '8.5.3'
 
             from components.java
         }
