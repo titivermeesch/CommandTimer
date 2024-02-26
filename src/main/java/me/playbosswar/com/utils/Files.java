@@ -1,12 +1,9 @@
 package me.playbosswar.com.utils;
 
-import com.google.gson.GsonBuilder;
 import io.sentry.ITransaction;
 import io.sentry.Sentry;
 import me.playbosswar.com.CommandTimerPlugin;
 import me.playbosswar.com.api.events.EventCondition;
-import me.playbosswar.com.api.events.EventConfiguration;
-import me.playbosswar.com.api.events.EventExtension;
 import me.playbosswar.com.conditionsengine.validations.Condition;
 import me.playbosswar.com.conditionsengine.validations.ConditionType;
 import me.playbosswar.com.conditionsengine.validations.SimpleCondition;

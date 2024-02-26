@@ -7,17 +7,19 @@ import java.io.Reader;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.time.LocalTime;
+import java.util.Date;
 
 public class GsonConverter {
     protected final Gson gson;
 
     public GsonConverter() {
         final GsonBuilder builder = new GsonBuilder();
-        builder
+        this.gson = builder
                 .excludeFieldsWithModifiers(Modifier.STATIC, Modifier.TRANSIENT, Modifier.VOLATILE)
                 .setPrettyPrinting()
-                .registerTypeAdapter(LocalTime.class, new GsonLocalTime());
-        this.gson = builder.create();
+                .registerTypeAdapter(Date.class, new GsonDate())
+                .registerTypeAdapter(LocalTime.class, new GsonLocalTime())
+                .create();
     }
 
     public <T> String toJson(T obj) {
