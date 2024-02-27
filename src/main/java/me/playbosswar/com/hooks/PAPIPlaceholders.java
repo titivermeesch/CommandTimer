@@ -2,8 +2,6 @@ package me.playbosswar.com.hooks;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.playbosswar.com.CommandTimerPlugin;
-import me.playbosswar.com.tasks.TaskTime;
-import me.playbosswar.com.utils.TaskUtils;
 import me.playbosswar.com.utils.Tools;
 import me.playbosswar.com.tasks.Task;
 import me.playbosswar.com.utils.Messages;
@@ -14,10 +12,6 @@ import org.jetbrains.annotations.NotNull;
 import org.joda.time.Duration;
 import org.joda.time.Interval;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.ZoneOffset;
-import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 
 public class PAPIPlaceholders extends PlaceholderExpansion {
