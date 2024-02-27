@@ -1,8 +1,11 @@
 package me.playbosswar.com.utils;
 
 import org.bukkit.World;
+import org.joda.time.Duration;
+import org.joda.time.Period;
+import org.joda.time.format.PeriodFormatter;
+import org.joda.time.format.PeriodFormatterBuilder;
 
-import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -66,9 +69,29 @@ public class Tools {
         return realHours + ":" + mm;
     }
 
-    public static String getTimeString(int seconds, String format) {
-        LocalDateTime local =  LocalDateTime.ofInstant(Instant.ofEpochSecond(seconds), ZoneId.of("GMT"));
+    private static String getTimeStringLegacy(int seconds, String format) {
+        LocalDateTime local = LocalDateTime.ofInstant(Instant.ofEpochSecond(seconds), ZoneId.of("GMT"));
         return local.format(DateTimeFormatter.ofPattern(format));
+    }
+
+    public static String getTimeString(int seconds, String format) {
+        // If we don't have days, we don't need to handle it ourselves
+        if(!format.contains("DD")) {
+            return getTimeStringLegacy(seconds, format);
+        }
+
+        Duration duration = Duration.standardSeconds(seconds);
+
+        int days = (int) duration.getStandardDays();
+        int hours = (int) duration.getStandardHours();
+        int minutes = (int) (duration.getStandardMinutes() % 60);
+        int remainingSeconds = (int) (duration.getStandardSeconds() % 60);
+
+        return format
+                .replace("DD", String.format("%02d", days))
+                .replace("HH", String.format("%02d", hours))
+                .replace("mm", String.format("%02d", minutes))
+                .replace("ss", String.format("%02d", remainingSeconds));
     }
 
     private static String getTenthNumeric(long val) {
