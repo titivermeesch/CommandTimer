@@ -18,6 +18,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Date;
+
 public class MainCommand implements CommandExecutor {
     private final LanguageManager languageManager = CommandTimerPlugin.getLanguageManager();
 
@@ -121,6 +123,17 @@ public class MainCommand implements CommandExecutor {
                             0,
                             task.getCommandExecutionInterval().toSeconds() * 20L);
 
+                    Messages.sendMessage(sender, languageManager.get(LanguageKey.TASK_EXECUTION_ONGOING));
+                    return true;
+                }
+
+                if(task.getCommandExecutionMode().equals(CommandExecutionMode.ORDERED)) {
+                    final int[] accumulatedDelaySeconds = {0};
+                    task.getCommands().forEach(command -> {
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(CommandTimerPlugin.getPlugin(),
+                                () -> tasksManager.addTaskCommandExecution(command), 20L * accumulatedDelaySeconds[0]);
+                        accumulatedDelaySeconds[0] += command.getDelay().toSeconds();
+                    });
                     Messages.sendMessage(sender, languageManager.get(LanguageKey.TASK_EXECUTION_ONGOING));
                     return true;
                 }
