@@ -252,6 +252,10 @@ public class TasksManager {
     }
 
     public void processCommandExecution(TaskCommand taskCommand) {
+        if(!taskCommand.getTask().isActive()) {
+            return;
+        }
+
         Gender gender = taskCommand.getGender();
 
         if(gender.equals(Gender.CONSOLE)) {
