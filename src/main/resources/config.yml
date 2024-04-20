@@ -4,3 +4,4 @@ showUpdateMessage: true
 timezoneOverwrite: false
 timezoneOverwriteValue: 'GMT'
 language: 'en'
+disablePapiPlaceholderWarnings: false

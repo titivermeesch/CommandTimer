@@ -64,6 +64,10 @@ public class PAPIPlaceholders extends PlaceholderExpansion {
         }
 
         if(task == null) {
+            if(CommandTimerPlugin.getInstance().getConfig().getBoolean("disablePapiPlaceholderWarnings")) {
+                return fallbackMessage;
+            }
+
             Messages.sendConsole("Tried to use PAPI placeholder for unknown task:" + placeholder.getTaskName());
             return fallbackMessage;
         }
