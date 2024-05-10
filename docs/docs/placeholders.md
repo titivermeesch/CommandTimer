@@ -11,6 +11,7 @@ to replace `task` with your actual task name.
 
 - `%commandtimer_task_seconds%`: Get the configured [interval](configuration/schedules#intervals) in seconds
 - `%commandtimer_task_secondsFormat%`: Same as previous placeholder, but formated as `HH:mm:ss`
+- `%commandtimer_ALLTASKS_nextTaskName%`: Show the name of the next task that will be executed
 - `%commandtimer_task_nextExecution%`: Get the next execution time in seconds
 - `%commandtimer_task_nextExecutionFormat%`: Same as previous placeholder, but formatted in `HH:mm:ss`
 - `%commandtimer_task_timeFormat%`: Same as previous placeholder, but you can replace `timeFormat` with a format of your
@@ -24,7 +25,7 @@ to take into account all active tasks
 
 ## Fallback values
 
-`nextExecution`, `nextExecutionFormat` and `timeFormat` can be suffixed with a fallback value in
+`nextExecution`, `nextExecutionFormat`, `timeFormat` and `nextTaskName` can be suffixed with a fallback value in
 case there is no next execution anymore. For example- `%commandtimer_task_nextExecutionFormat_No next execution%`
 
 ## PAPI Placeholders
