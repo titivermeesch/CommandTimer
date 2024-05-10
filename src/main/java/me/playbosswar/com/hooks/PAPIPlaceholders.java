@@ -72,6 +72,10 @@ public class PAPIPlaceholders extends PlaceholderExpansion {
             return fallbackMessage;
         }
 
+        if(placeholder.getPlaceholderType().equals("nextTaskName")) {
+            return task.getName();
+        }
+
 
         if(placeholder.getPlaceholderType().equalsIgnoreCase("seconds")) {
             return getSecondsText(task, fallbackMessage, false);
