@@ -2,6 +2,13 @@
 sidebar_position: 1
 ---
 
+# Other languages
+
+Here is a list of community maintained translations. These are not guaranteed to always be up to date
+
+- Chinese: https://snowcutieowo.github.io/CommandTimer/#/
+
+
 # Getting Started
 
 Follow this tutorial to create your first scheduled command.
