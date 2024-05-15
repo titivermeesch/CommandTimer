@@ -8,10 +8,10 @@ jobs:
     name: Deploy to GitHub Pages
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
-          node-version: 20
+          node-version: 16
           cache: yarn
           cache-dependency-path: docs/yarn.lock
       - name: Install dependencies
@@ -21,7 +21,7 @@ jobs:
         working-directory: ./docs
         run: yarn build
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+        uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs/build
@@ -30,25 +30,25 @@ jobs:
   Build-Java-8:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
         with:
           distribution: 'adopt'
           java-version: '8'
       - run: gradle :shadowJar -b java8-build.gradle
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v2
         with:
           path: build/libs/commandtimer-java8.jar
   Build-Java-17:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
         with:
           distribution: 'adopt'
           java-version: '17'
       - run: gradle :shadowJar
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v2
         with:
           path: build/libs/commandtimer-java17.jar
   Release:
@@ -57,8 +57,8 @@ jobs:
       - Build-Java-17
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v3
+      - uses: actions/download-artifact@v3
       - run: echo "PLUGIN_VERSION=$(./scripts/get-version.sh)" >> $GITHUB_ENV
       - run: gh release create ${{ env.PLUGIN_VERSION }} -t ${{ env.PLUGIN_VERSION }} artifact/*.jar
     env:
