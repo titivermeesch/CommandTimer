@@ -25,10 +25,14 @@ community extensions, as the name says, are made by the community.
 - [Player Extension](https://www.spigotmc.org/resources/player-conditions-commandtimer-extension.97186/)
 - [Server Extension](https://www.spigotmc.org/resources/server-conditions-commandtimer-extension.97188/)
 - [GriefDefender Extension](https://www.spigotmc.org/resources/griefdefender-conditions-commandtimer-extension.106330/)
+- [WorldGuard Extension](https://www.spigotmc.org/resources/worldguard-conditions-commandtimer-extension.112403/)
+- [Vault Extension](https://www.spigotmc.org/resources/vault-conditions-commandtimer-extension.112471/)
 
 ### Community extensions
 
 You made an extension and want to add it here? Open a ticket on [GitHub](https://github.com/titivermeesch/CommandTimer)
+
+- [PlaceholderAPI Extension](https://github.com/TreemanKing/CommandTimer-PAPIConditions)
 
 ## Creating your own extension
 
