@@ -19,7 +19,7 @@ Once the jar file is in that folder, you should see the extension in different m
 Here is a list of extensions that can be installed. Official extensions are made by the team behind CommandTimer, while
 community extensions, as the name says, are made by the community.
 
-### Oficial extensions
+### Official extensions
 
 - [Time Extension](https://www.spigotmc.org/resources/time-conditions-commandtimer-extension.105591/)
 - [Player Extension](https://www.spigotmc.org/resources/player-conditions-commandtimer-extension.97186/)
@@ -79,11 +79,3 @@ All these types are the native Java types, except `ConditionCompare`, which is u
 values. This could be EQUAL, LESS_THEN, BIGGER_OR_EQUAL_THEN,... The different choices are available on the class
 itself. A good example of this is
 available [here](https://github.com/titivermeesch/CommandTimer_PlayerConditions/blob/master/src/main/java/me/playbosswar/cmtplayerconditions/conditions/PlayerTimeInWorldCondition.java)
-
-### Examples
-
-A few examples can be found here:
-
-- <https://github.com/titivermeesch/CommandTimer_TimeConditions>
-- <https://github.com/titivermeesch/CommandTimer_GriefDefender>
-- <https://github.com/titivermeesch/CommandTimer_PlayerConditions>
