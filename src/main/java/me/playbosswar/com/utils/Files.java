@@ -116,6 +116,7 @@ public class Files {
                         GsonConverter gson = new GsonConverter();
                         Task task = gson.fromJson(jsonParser.parse(fr).toString(), Task.class);
                         healTask(task);
+                        task.storeInstance();
                         // We relink the tasks to commands and times because we lose this structure during serializing
                         task.getCommands().forEach(command -> {
                             command.setTask(task);

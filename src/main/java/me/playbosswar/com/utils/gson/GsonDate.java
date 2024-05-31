@@ -6,24 +6,31 @@ import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
+
 
 public class GsonDate implements JsonSerializer<Date>, JsonDeserializer<Date> {
+    private final String FORMAT = "yyyy-MM-dd'T'HH:mm:ss. SSSXXX";
 
     @Override
     public Date deserialize(JsonElement jsonElement, Type type,
                             JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-        SimpleDateFormat formatter = new SimpleDateFormat("MMM d, yyyy, H:mm:ss a", Locale.US);
+        SimpleDateFormat formatter = new SimpleDateFormat(FORMAT);
         try {
             return formatter.parse(jsonElement.getAsString());
         } catch(ParseException e) {
-            throw new JsonParseException(e);
+            // Check if maybe it's in the old format
+            try {
+                SimpleDateFormat oldFormatter = new SimpleDateFormat("MMM d, yyyy, H:mm:ss a");
+                return oldFormatter.parse(jsonElement.getAsString());
+            } catch(ParseException ex) {
+                throw new JsonParseException(e);
+            }
         }
     }
 
     @Override
     public JsonElement serialize(Date date, Type type, JsonSerializationContext jsonSerializationContext) {
-        SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy, H:mm:ss a", Locale.US);
+        SimpleDateFormat sdf = new SimpleDateFormat(FORMAT);
         return new JsonPrimitive(sdf.format(date));
     }
 }
