@@ -13,6 +13,7 @@ import me.playbosswar.com.tasks.TaskValidationHelpers;
 import me.playbosswar.com.tasks.TasksManager;
 import me.playbosswar.com.utils.Messages;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
@@ -74,10 +75,10 @@ public class EventsManager {
                 .collect(Collectors.toList());
 
         tasksToExecute.forEach(task -> {
-            Player p = null;
+            OfflinePlayer p = null;
             UUID uuid = findPotentialPlayer(values);
             if(uuid != null) {
-                p = Bukkit.getPlayer(uuid);
+                p = Bukkit.getOfflinePlayer(uuid);
             }
 
             boolean valid = TaskValidationHelpers.processCondition(task.getCondition(), p);
