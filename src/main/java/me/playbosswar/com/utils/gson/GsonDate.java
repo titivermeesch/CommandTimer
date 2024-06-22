@@ -17,13 +17,18 @@ public class GsonDate implements JsonSerializer<Date>, JsonDeserializer<Date> {
         SimpleDateFormat formatter = new SimpleDateFormat(FORMAT);
         try {
             return formatter.parse(jsonElement.getAsString());
-        } catch(ParseException e) {
+        } catch(ParseException ex1) {
             // Check if maybe it's in the old format
             try {
                 SimpleDateFormat oldFormatter = new SimpleDateFormat("MMM d, yyyy, H:mm:ss a");
                 return oldFormatter.parse(jsonElement.getAsString());
-            } catch(ParseException ex) {
-                throw new JsonParseException(e);
+            } catch(ParseException ex2) {
+                try {
+                    SimpleDateFormat oldFormatter = new SimpleDateFormat("MMM d, yyyy, HH:mm:ss a");
+                    return oldFormatter.parse(jsonElement.getAsString());
+                } catch(ParseException ex3) {
+                    throw new JsonParseException(ex3);
+                }
             }
         }
     }

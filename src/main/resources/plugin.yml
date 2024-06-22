@@ -1,6 +1,6 @@
 main: me.playbosswar.com.CommandTimerPlugin
 name: "CommandTimer"
-version: "8.7.0"
+version: "8.7.1"
 description: "Schedule commands like you want"
 author: PlayBossWar
 api-version: 1.13
