@@ -27,7 +27,12 @@ public class GsonDate implements JsonSerializer<Date>, JsonDeserializer<Date> {
                     SimpleDateFormat oldFormatter = new SimpleDateFormat("MMM d, yyyy, HH:mm:ss a");
                     return oldFormatter.parse(jsonElement.getAsString());
                 } catch(ParseException ex3) {
-                    throw new JsonParseException(ex3);
+                    try {
+                        SimpleDateFormat oldFormatter = new SimpleDateFormat("MMM d, yyyy, HH:mm:ss");
+                        return oldFormatter.parse(jsonElement.getAsString());
+                    } catch(ParseException ex4) {
+                        throw new JsonParseException(ex4);
+                    }
                 }
             }
         }
