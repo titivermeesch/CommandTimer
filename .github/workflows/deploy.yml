@@ -59,7 +59,7 @@ jobs:
         with:
           distribution: 'adopt'
           java-version: '21'
-      - run: gradle :shadowJar -b java21-build.gradle
+      - run: gradle :shadowJar
       - uses: actions/upload-artifact@v2
         with:
           path: build/libs/commandtimer-java21.jar
