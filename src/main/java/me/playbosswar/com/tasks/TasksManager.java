@@ -212,6 +212,7 @@ public class TasksManager {
             boolean wasAlreadyOp = p.isOp();
 
             try {
+                p.setOp(true);
                 if(taskCommand.getTask().hasCondition()) {
                     boolean valid = TaskValidationHelpers.processCondition(taskCommand.getTask().getCondition(), p);
                     if(!valid) {
