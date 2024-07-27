@@ -1,5 +1,7 @@
 package utils;
 
+import me.playbosswar.com.CommandTimerPlugin;
+import me.playbosswar.com.language.LanguageManager;
 import me.playbosswar.com.tasks.Task;
 import me.playbosswar.com.tasks.TaskTime;
 
@@ -27,5 +29,6 @@ public class TaskTimeUtilsTest {
         taskTimes.add(new TaskTime(task, LocalTime.of(14, 0, 0, 0), false));
 
         Date soonestDate = TaskTimeUtils.getSoonestTaskTime(taskTimes);
+        System.out.println(soonestDate);
     }
 }
