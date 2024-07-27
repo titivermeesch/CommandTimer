@@ -86,9 +86,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   Release:
     needs:
-      - Build-Java-8
-      - Build-Java-17
-      - Build-Java-21
+      - Build-Deploy-Java-8
+      - Build-Deploy-Java-17
+      - Build-Deploy-Java-21
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
