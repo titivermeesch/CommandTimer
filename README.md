@@ -40,6 +40,10 @@ conditions to use in your timers.
 
 ## For Developers
 
+### Maven
+
+All published versions are available at https://github.com/titivermeesch/CommandTimer/packages/
+
 ### Color schemas
 
 - GUI panes should be in dark blue color
