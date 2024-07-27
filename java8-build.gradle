@@ -68,7 +68,7 @@ publishing {
     publications {
         maven(MavenPublication) {
             groupId = 'me.playbosswar.com'
-            artifactId = 'commandtimer'
+            artifactId = 'commandtimer-java8'
             version = '8.7.3'
 
             from components.java
