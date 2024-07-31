@@ -14,11 +14,11 @@ public class JoinEvents implements Listener {
             return;
         }
 
-        if(!CommandTimerPlugin.getUpdater().getResult().equals(Updater.Result.UPDATE_FOUND)) {
+        if(!CommandTimerPlugin.getPlugin().getConfig().getBoolean("showUpdateMessage")) {
             return;
         }
 
-        if(!CommandTimerPlugin.getPlugin().getConfig().getBoolean("showUpdateMessage")) {
+        if(!CommandTimerPlugin.getUpdater().getResult().equals(Updater.Result.UPDATE_FOUND)) {
             return;
         }
 
