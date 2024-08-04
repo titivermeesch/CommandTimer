@@ -161,11 +161,16 @@ public class Updater {
      */
     private void waitThread() {
         if (thread != null && thread.isAlive()) {
-            try {
-                thread.join();
-            } catch (InterruptedException e) {
-                this.plugin.getLogger().log(Level.SEVERE, null, e);
-            }
+            this.plugin.getServer().getScheduler().runTaskAsynchronously(this.plugin, () -> {
+                try {
+                    this.plugin.getLogger().log(Level.INFO, "Waiting for updater thread to finish.");
+                    thread.join();
+                    this.plugin.getLogger().log(Level.INFO, "Update done.");
+                } catch (InterruptedException e) {
+                    this.plugin.getLogger().log(Level.SEVERE, null, e);
+                }
+            });
+
         }
     }
 
