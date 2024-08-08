@@ -12,6 +12,7 @@ import me.playbosswar.com.language.LanguageManager;
 import me.playbosswar.com.tasks.TasksManager;
 import me.playbosswar.com.updater.Updater;
 import me.playbosswar.com.utils.*;
+import me.playbosswar.com.utils.gson.GsonConverter;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -23,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 
 import io.sentry.Sentry;
 
@@ -61,7 +63,7 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
         this.registerCommands();
 
         Bukkit.getPluginManager().registerEvents(new JoinEvents(), this);
-
+        
         updater = new Updater(this);
         metrics = new Metrics(CommandTimerPlugin.getPlugin(), 9657);
         hooksManager = new HooksManager();
@@ -70,7 +72,8 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
         conditionEngineManager = new ConditionEngineManager();
         eventsManager = new EventsManager(tasksManager);
         inventoryManager.init();
-
+        GsonConverter gson = new GsonConverter();
+        plugin.getLogger().log(Level.INFO, "Loading tasks...");
         metrics.addCustomChart(new Metrics.SingleLineChart("loaded_tasks", () -> tasksManager.getLoadedTasks().size()));
         metrics.addCustomChart(new Metrics.SingleLineChart("executed_tasks", () -> {
             int v = Integer.valueOf(tasksManager.executionsSinceLastSync);
@@ -96,6 +99,8 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
 
     @Override
     public void onDisable() {
+        if(tasksManager == null) return;
+        
         tasksManager.disable();
         conditionEngineManager.onDisable();
         saveDefaultConfig();

@@ -1,11 +1,14 @@
 package me.playbosswar.com.utils.gson;
 
 import com.google.gson.*;
+import org.bukkit.Bukkit;
 
 import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
+import java.util.logging.Level;
 
 
 public class GsonDate implements JsonSerializer<Date>, JsonDeserializer<Date> {
@@ -19,12 +22,14 @@ public class GsonDate implements JsonSerializer<Date>, JsonDeserializer<Date> {
             return formatter.parse(jsonElement.getAsString());
         } catch(ParseException ex1) {
             // Check if maybe it's in the old format
+            Bukkit.getLogger().log(Level.WARNING, "Could not parse date in new format, trying old format");
             try {
                 SimpleDateFormat oldFormatter = new SimpleDateFormat("MMM d, yyyy, H:mm:ss a");
                 return oldFormatter.parse(jsonElement.getAsString());
             } catch(ParseException ex2) {
+                Bukkit.getLogger().log(Level.WARNING, "Could not parse date in new format, trying old format");
                 try {
-                    SimpleDateFormat oldFormatter = new SimpleDateFormat("MMM d, yyyy, HH:mm:ss a");
+                    SimpleDateFormat oldFormatter = new SimpleDateFormat("MMM d, yyyy, hh:mm:ss a", Locale.ENGLISH);
                     return oldFormatter.parse(jsonElement.getAsString());
                 } catch(ParseException ex3) {
                     try {
