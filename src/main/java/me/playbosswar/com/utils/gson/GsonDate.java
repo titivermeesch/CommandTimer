@@ -1,18 +1,12 @@
 package me.playbosswar.com.utils.gson;
 
 import com.google.gson.*;
-import me.playbosswar.com.utils.Messages;
-import org.bukkit.Bukkit;
-import org.yaml.snakeyaml.parser.ParserException;
-
-import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
-import java.util.logging.Level;
 
 
 public class GsonDate implements JsonSerializer<Date>, JsonDeserializer<Date> {
@@ -21,7 +15,7 @@ public class GsonDate implements JsonSerializer<Date>, JsonDeserializer<Date> {
     @Override
     public Date deserialize(JsonElement jsonElement, Type type,
                             JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-        List<SimpleDateFormat> formats = List.of(
+        List<SimpleDateFormat> formats = Arrays.asList(
                 new SimpleDateFormat(FORMAT),
                 new SimpleDateFormat("MMM d, yyyy, H:mm:ss a"),
                 new SimpleDateFormat("MMM d, yyyy, HH:mm:ss a"),
