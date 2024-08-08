@@ -1,12 +1,16 @@
 package me.playbosswar.com.utils.gson;
 
 import com.google.gson.*;
+import me.playbosswar.com.utils.Messages;
 import org.bukkit.Bukkit;
+import org.yaml.snakeyaml.parser.ParserException;
 
+import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
 
@@ -17,30 +21,20 @@ public class GsonDate implements JsonSerializer<Date>, JsonDeserializer<Date> {
     @Override
     public Date deserialize(JsonElement jsonElement, Type type,
                             JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-        SimpleDateFormat formatter = new SimpleDateFormat(FORMAT);
-        try {
-            return formatter.parse(jsonElement.getAsString());
-        } catch(ParseException ex1) {
-            // Check if maybe it's in the old format
-            Bukkit.getLogger().log(Level.WARNING, "Could not parse date in new format, trying old format");
+        List<SimpleDateFormat> formats = List.of(
+                new SimpleDateFormat(FORMAT),
+                new SimpleDateFormat("MMM d, yyyy, H:mm:ss a"),
+                new SimpleDateFormat("MMM d, yyyy, HH:mm:ss a"),
+                new SimpleDateFormat("MMM d, yyyy, HH:mm:ss"),
+                new SimpleDateFormat("MMM d, yyyy, hh:mm:ss a"));
+        for (SimpleDateFormat dataFormat : formats) {
             try {
-                SimpleDateFormat oldFormatter = new SimpleDateFormat("MMM d, yyyy, H:mm:ss a");
-                return oldFormatter.parse(jsonElement.getAsString());
-            } catch(ParseException ex2) {
-                Bukkit.getLogger().log(Level.WARNING, "Could not parse date in new format, trying old format");
-                try {
-                    SimpleDateFormat oldFormatter = new SimpleDateFormat("MMM d, yyyy, hh:mm:ss a", Locale.ENGLISH);
-                    return oldFormatter.parse(jsonElement.getAsString());
-                } catch(ParseException ex3) {
-                    try {
-                        SimpleDateFormat oldFormatter = new SimpleDateFormat("MMM d, yyyy, HH:mm:ss");
-                        return oldFormatter.parse(jsonElement.getAsString());
-                    } catch(ParseException ex4) {
-                        throw new JsonParseException(ex4);
-                    }
-                }
+                return dataFormat.parse(jsonElement.getAsString());
+            } catch (ParseException ex) {
+                // ignore
             }
         }
+        throw new JsonParseException("Can not parse data: " + jsonElement.getAsString());
     }
 
     @Override

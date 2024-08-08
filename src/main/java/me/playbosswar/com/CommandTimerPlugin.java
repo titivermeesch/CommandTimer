@@ -72,8 +72,6 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
         conditionEngineManager = new ConditionEngineManager();
         eventsManager = new EventsManager(tasksManager);
         inventoryManager.init();
-        GsonConverter gson = new GsonConverter();
-        plugin.getLogger().log(Level.INFO, "Loading tasks...");
         metrics.addCustomChart(new Metrics.SingleLineChart("loaded_tasks", () -> tasksManager.getLoadedTasks().size()));
         metrics.addCustomChart(new Metrics.SingleLineChart("executed_tasks", () -> {
             int v = Integer.valueOf(tasksManager.executionsSinceLastSync);
