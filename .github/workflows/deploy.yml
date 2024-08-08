@@ -44,6 +44,7 @@ jobs:
           path: build/libs/commandtimer-java8.jar
       - name: Publish package
         run: gradle publish -b java8-build.gradle
+        continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   Build-Deploy-Java-17:
@@ -62,6 +63,7 @@ jobs:
         with:
           path: build/libs/commandtimer-java17.jar
       - name: Publish package
+        continue-on-error: true
         run: gradle publish -b java17-build.gradle
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -82,6 +84,7 @@ jobs:
           path: build/libs/commandtimer-java21.jar
       - name: Publish package
         run: gradle publish
+        continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   Release:
