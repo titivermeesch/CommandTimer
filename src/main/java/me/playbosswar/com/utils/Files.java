@@ -1,5 +1,6 @@
 package me.playbosswar.com.utils;
 
+import com.google.gson.JsonParseException;
 import io.sentry.ITransaction;
 import io.sentry.Sentry;
 import me.playbosswar.com.CommandTimerPlugin;
@@ -40,7 +41,7 @@ public class Files {
 
         File dataFolder = CommandTimerPlugin.getPlugin().getDataFolder();
         File enLangFile = new File(dataFolder.getAbsoluteFile() + "/languages/en.json");
-        if(!enLangFile.exists()) {
+        if (!enLangFile.exists()) {
             Messages.sendDebugConsole("could not find languages/en.json, creating default");
             CommandTimerPlugin.getPlugin().saveResource("languages/en.json", false);
         }
@@ -57,7 +58,7 @@ public class Files {
     private static void setTaskOnConditions(Task task, List<Condition> conditions) {
         conditions.forEach(condition -> {
             condition.setTask(task);
-            if(condition.getConditionType().equals(ConditionType.SIMPLE) || condition.getConditionType().equals(ConditionType.NOT)) {
+            if (condition.getConditionType().equals(ConditionType.SIMPLE) || condition.getConditionType().equals(ConditionType.NOT)) {
                 condition.getSimpleCondition().setTask(task);
             } else {
                 setTaskOnConditions(task, condition.getConditions());
@@ -68,7 +69,7 @@ public class Files {
     private static void setTaskOnEventConditions(Task task, List<EventCondition> conditions) {
         conditions.forEach(condition -> {
             condition.setTask(task);
-            if(condition.getConditionType().equals(ConditionType.SIMPLE) || condition.getConditionType().equals(ConditionType.NOT)) {
+            if (condition.getConditionType().equals(ConditionType.SIMPLE) || condition.getConditionType().equals(ConditionType.NOT)) {
                 condition.getSimpleCondition().setTask(task);
             } else {
                 setTaskOnEventConditions(task, condition.getConditions());
@@ -78,19 +79,19 @@ public class Files {
 
     private static void healTask(Task task) {
         TaskInterval defaultInterval = new TaskInterval(task, 0, 0, 0, 5);
-        if(task.getCommands() == null) {
+        if (task.getCommands() == null) {
             task.setCommands(new ArrayList<>());
         }
 
-        if(task.getInterval() == null) {
+        if (task.getInterval() == null) {
             task.setInterval(defaultInterval);
         }
 
-        if(task.getTimes() == null) {
+        if (task.getTimes() == null) {
             task.setTimes(new ArrayList<>());
         }
 
-        if(task.getCommandExecutionInterval() == null) {
+        if (task.getCommandExecutionInterval() == null) {
             task.setCommandExecutionInterval(defaultInterval);
         }
     }
@@ -103,9 +104,9 @@ public class Files {
         List<Task> tasks = new ArrayList<>();
 
         try {
-            if(directoryListing != null) {
-                for(File file : directoryListing) {
-                    if(!file.exists() || !file.getName().contains("json")) {
+            if (directoryListing != null) {
+                for (File file : directoryListing) {
+                    if (!file.exists() || !file.getName().contains("json")) {
                         continue;
                     }
 
@@ -120,10 +121,10 @@ public class Files {
                         // We relink the tasks to commands and times because we lose this structure during serializing
                         task.getCommands().forEach(command -> {
                             command.setTask(task);
-                            if(command.getInterval() == null) {
+                            if (command.getInterval() == null) {
                                 command.setInterval(new TaskInterval(task, 0, 0, 0, 0));
                             }
-                            if(command.getDelay() == null) {
+                            if (command.getDelay() == null) {
                                 command.setDelay(new TaskInterval(task, 0, 0, 0, 0));
                             }
 
@@ -135,48 +136,51 @@ public class Files {
                         task.getCommandExecutionInterval().setTask(task);
                         Condition condition = task.getCondition();
                         condition.setTask(task);
-                        if(task.getEvents() == null) {
+                        if (task.getEvents() == null) {
                             task.setEvents(new ArrayList<>());
                         }
                         task.getEvents().forEach(e -> {
                             EventCondition eventCondition = e.getCondition();
                             e.setTask(task);
                             eventCondition.setTask(task);
-                            if(eventCondition.getSimpleCondition() != null) {
+                            if (eventCondition.getSimpleCondition() != null) {
                                 eventCondition.getSimpleCondition().setTask(task);
                             }
 
-                            if(eventCondition.getConditionType().equals(ConditionType.OR) || eventCondition.getConditionType().equals(ConditionType.AND)) {
+                            if (eventCondition.getConditionType().equals(ConditionType.OR) || eventCondition.getConditionType().equals(ConditionType.AND)) {
                                 setTaskOnEventConditions(task, eventCondition.getConditions());
                             }
                         });
 
                         SimpleCondition simpleCondition = condition.getSimpleCondition();
-                        if(simpleCondition != null) {
+                        if (simpleCondition != null) {
                             simpleCondition.setTask(task);
                         }
 
-                        if(condition.getConditionType().equals(ConditionType.OR) || condition.getConditionType().equals(ConditionType.AND)) {
+                        if (condition.getConditionType().equals(ConditionType.OR) || condition.getConditionType().equals(ConditionType.AND)) {
                             setTaskOnConditions(task, condition.getConditions());
                         }
 
-                        if(task.isResetExecutionsAfterRestart()) {
+                        if (task.isResetExecutionsAfterRestart()) {
                             task.setTimesExecuted(0);
                             task.setLastExecuted(new Date());
                             task.storeInstance();
                         }
 
                         tasks.add(task);
-                    } catch(ParseException e) {
-                        Bukkit.getLogger().log(Level.SEVERE, "Failed to process " + file.getName());
+                    } catch (JsonParseException e) {
+                        Bukkit.getLogger().log(Level.SEVERE, "Failed to process " + file.getName() + ": " + e);
+                    } catch (ParseException e) {
+                        Bukkit.getLogger().log(Level.SEVERE, "Failed to process " + file.getName() + ": " + e);
                     }
-
                 }
             }
-        } catch(IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             transaction.setThrowable(e);
-        } finally {
+        } catch(Exception e) {
+            Bukkit.getLogger().log(Level.SEVERE, "Unhandled exception threw: failed to process tasks " + e);
+        }finally {
             transaction.finish();
         }
 
@@ -185,7 +189,7 @@ public class Files {
 
     @Nullable
     public static <T> Class<? extends T> findClass(@NotNull final File file, @NotNull final Class<T> clazz) throws IOException, ClassNotFoundException {
-        if(!file.exists()) {
+        if (!file.exists()) {
             return null;
         }
 
@@ -194,28 +198,28 @@ public class Files {
         final List<String> matches = new ArrayList<>();
         final List<Class<? extends T>> classes = new ArrayList<>();
 
-        try(final JarInputStream stream = new JarInputStream(jar.openStream())) {
+        try (final JarInputStream stream = new JarInputStream(jar.openStream())) {
             JarEntry entry;
-            while((entry = stream.getNextJarEntry()) != null) {
+            while ((entry = stream.getNextJarEntry()) != null) {
                 final String name = entry.getName();
-                if(!name.endsWith(".class")) {
+                if (!name.endsWith(".class")) {
                     continue;
                 }
 
                 matches.add(name.substring(0, name.lastIndexOf('.')).replace('/', '.'));
             }
 
-            for(final String match : matches) {
+            for (final String match : matches) {
                 try {
                     final Class<?> loaded = loader.loadClass(match);
-                    if(clazz.isAssignableFrom(loaded)) {
+                    if (clazz.isAssignableFrom(loaded)) {
                         classes.add(loaded.asSubclass(clazz));
                     }
-                } catch(final NoClassDefFoundError ignored) {
+                } catch (final NoClassDefFoundError ignored) {
                 }
             }
         }
-        if(classes.isEmpty()) {
+        if (classes.isEmpty()) {
             loader.close();
             return null;
         }

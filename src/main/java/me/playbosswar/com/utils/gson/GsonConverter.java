@@ -15,9 +15,9 @@ public class GsonConverter {
         final GsonBuilder builder = new GsonBuilder();
         this.gson = builder
                 .excludeFieldsWithModifiers(Modifier.STATIC, Modifier.TRANSIENT, Modifier.VOLATILE)
-                .setPrettyPrinting()
                 .registerTypeAdapter(Date.class, new GsonDate())
                 .registerTypeAdapter(LocalTime.class, new GsonLocalTime())
+                .setPrettyPrinting()
                 .create();
     }
 
