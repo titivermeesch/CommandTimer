@@ -39,7 +39,7 @@ jobs:
           distribution: 'adopt'
           java-version: '8'
       - run: gradle :shadowJar -b java8-build.gradle
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         with:
           path: build/libs/commandtimer-java8.jar
       - name: Publish package
@@ -59,7 +59,7 @@ jobs:
           distribution: 'adopt'
           java-version: '17'
       - run: gradle :shadowJar -b java17-build.gradle
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         with:
           path: build/libs/commandtimer-java17.jar
       - name: Publish package
@@ -79,7 +79,7 @@ jobs:
           distribution: 'adopt'
           java-version: '21'
       - run: gradle :shadowJar
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         with:
           path: build/libs/commandtimer-java21.jar
       - name: Publish package
@@ -95,7 +95,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
       - run: echo "PLUGIN_VERSION=$(./scripts/get-version.sh)" >> $GITHUB_ENV
       - run: gh release create ${{ env.PLUGIN_VERSION }} -t ${{ env.PLUGIN_VERSION }} artifact/*.jar
     env:
