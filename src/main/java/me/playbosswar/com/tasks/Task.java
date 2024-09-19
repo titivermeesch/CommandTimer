@@ -1,43 +1,67 @@
 package me.playbosswar.com.tasks;
 
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 import io.sentry.ITransaction;
 import io.sentry.Sentry;
 import io.sentry.SpanStatus;
+import me.playbosswar.com.CommandTimerPlugin;
 import me.playbosswar.com.api.events.EventConfiguration;
 import me.playbosswar.com.conditionsengine.validations.Condition;
 import me.playbosswar.com.conditionsengine.validations.ConditionType;
 import me.playbosswar.com.conditionsengine.validations.SimpleCondition;
 import me.playbosswar.com.enums.CommandExecutionMode;
+import me.playbosswar.com.tasks.persistors.*;
 import me.playbosswar.com.utils.Files;
 import me.playbosswar.com.utils.gson.GsonConverter;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.time.DayOfWeek;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
+@DatabaseTable(tableName = "tasks")
 public class Task {
-    private String name;
-    private List<TaskCommand> commands = new ArrayList<>();
-    private TaskInterval interval = new TaskInterval(this, 0, 0, 0, 5);
-    private List<TaskTime> times = new ArrayList<>();
+    @DatabaseField(id = true)
+    private UUID id;
+    @DatabaseField
+    private String name = "";
+    @DatabaseField(persisterClass = TaskCommandPersistor.class)
+    private Collection<TaskCommand> commands = new ArrayList<>();
+    @DatabaseField(persisterClass = TaskIntervalPersistor.class)
+    private TaskInterval interval = new TaskInterval(0, 0, 0, 5);
+    @DatabaseField(persisterClass = TaskTimePersistor.class)
+    private Collection<TaskTime> times = new ArrayList<>();
+    @DatabaseField
     private double random = 1.0;
-    private List<DayOfWeek> days = new ArrayList<>();
+    @DatabaseField(persisterClass = DaysPersistor.class)
+    private Collection<DayOfWeek> days = new ArrayList<>();
+    @DatabaseField
     private int executionLimit = -1;
     private int timesExecuted = 0;
     private int lastExecutedCommandIndex = 0;
     private Date lastExecuted = new Date();
+    @DatabaseField
     private CommandExecutionMode commandExecutionMode = CommandExecutionMode.ALL;
-    private TaskInterval commandExecutionInterval = new TaskInterval(this, 0, 0, 0, 1);
+    @DatabaseField(persisterClass = TaskIntervalPersistor.class)
+    private TaskInterval commandExecutionInterval = new TaskInterval(0, 0, 0, 1);
+    @DatabaseField
     private boolean active = false;
+    @DatabaseField
     private boolean resetExecutionsAfterRestart = false;
+    @DatabaseField(persisterClass = ConditionPersistor.class)
     private Condition condition;
-    private List<EventConfiguration> events = new ArrayList<>();
+    @DatabaseField(persisterClass = EventConfigurationPersistor.class)
+    private Collection<EventConfiguration> events = new ArrayList<>();
+
+    Task() {
+        // all persisted classes must define a no-arg constructor with at least package visibility
+    }
 
     public Task(String name) {
+        this.id = UUID.randomUUID();
         this.name = name;
         this.days.add(DayOfWeek.MONDAY);
         this.days.add(DayOfWeek.TUESDAY);
@@ -46,7 +70,7 @@ public class Task {
         this.days.add(DayOfWeek.FRIDAY);
         this.days.add(DayOfWeek.SATURDAY);
         this.days.add(DayOfWeek.SUNDAY);
-        this.condition = new Condition(ConditionType.SIMPLE, new ArrayList<>(), new SimpleCondition(this), this);
+        this.condition = new Condition(ConditionType.SIMPLE, new ArrayList<>(), new SimpleCondition());
         storeInstance();
     }
 
@@ -55,15 +79,12 @@ public class Task {
     }
 
     public void setName(String name) {
-        File oldFile = new File(Files.getTaskFile(this.name));
-        oldFile.delete();
-
         this.name = name.replaceAll(" ", "");
         storeInstance();
     }
 
     public List<TaskCommand> getCommands() {
-        return commands;
+        return commands.stream().collect(Collectors.toList());
     }
 
     public void setCommands(List<TaskCommand> commands) {
@@ -71,13 +92,12 @@ public class Task {
         storeInstance();
     }
 
-    public int addCommand(TaskCommand command) {
+    public void addCommand(TaskCommand command) {
         if(command.getCommand().startsWith("/")) {
             command.setCommand(command.getCommand().substring(1));
         }
         this.commands.add(command);
         storeInstance();
-        return commands.indexOf(command);
     }
 
     public void removeCommand(TaskCommand command) {
@@ -95,7 +115,7 @@ public class Task {
     }
 
     public List<TaskTime> getTimes() {
-        return times;
+        return times.stream().collect(Collectors.toList());
     }
 
     public void setTimes(List<TaskTime> times) {
@@ -123,7 +143,7 @@ public class Task {
     }
 
     public List<DayOfWeek> getDays() {
-        return days;
+        return days.stream().collect(Collectors.toList());
     }
 
     public void setDays(List<DayOfWeek> days) {
@@ -253,7 +273,8 @@ public class Task {
     }
 
     public List<EventConfiguration> getEvents() {
-        return events;
+        // Convert events collection to list
+        return events.stream().collect(Collectors.toList());
     }
 
     public void setEvents(List<EventConfiguration> events) {
@@ -281,14 +302,31 @@ public class Task {
         return true;
     }
 
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
     public void storeInstance() {
+        if(CommandTimerPlugin.getInstance().getConfig().getBoolean("database.enabled")) {
+            try {
+                CommandTimerPlugin.getTaskDao().createOrUpdate(this);
+                Files.updateLocalTaskMetadata(this);
+            } catch(SQLException e) {
+                throw new RuntimeException(e);
+            }
+            return;
+        }
         ITransaction transaction = Sentry.startTransaction("storeInstance()", "task");
         GsonConverter gson = new GsonConverter();
         String json = gson.toJson(this);
         transaction.setContext("task", json);
 
         try {
-            FileWriter jsonFile = new FileWriter(Files.getTaskFile(name));
+            FileWriter jsonFile = new FileWriter(Files.getTaskFile(id));
             jsonFile.write(json);
             jsonFile.flush();
         } catch(IOException e) {

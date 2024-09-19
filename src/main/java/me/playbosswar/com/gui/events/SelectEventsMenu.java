@@ -81,13 +81,14 @@ public class SelectEventsMenu implements InventoryProvider {
                 final Callback<?> internalCallback = data -> this.INVENTORY.open(player);
                 if(e.isLeftClick()) {
                     if(existingConfiguration.isPresent()) {
-                        new ConfigureEventMenu(task, extension, event, existingConfiguration.get().getCondition(), internalCallback).INVENTORY.open(player);
+                        new ConfigureEventMenu(task, extension, event, existingConfiguration.get().getCondition(),
+                                internalCallback).INVENTORY.open(player);
                         return;
                     }
 
-                    EventCondition condition = new EventCondition(task, ConditionType.SIMPLE,
-                            new EventSimpleCondition<>(task, "", ""), new ArrayList<>());
-                    EventConfiguration configuration = new EventConfiguration(task, true,
+                    EventCondition condition = new EventCondition(ConditionType.SIMPLE,
+                            new EventSimpleCondition<>("", ""), new ArrayList<>());
+                    EventConfiguration configuration = new EventConfiguration(true,
                             extension.getConditionGroupName()
                             , event.getEventName(), condition);
                     task.getEvents().add(configuration);
@@ -101,9 +102,9 @@ public class SelectEventsMenu implements InventoryProvider {
                     if(existingConfiguration.isPresent()) {
                         configuration = existingConfiguration.get();
                     } else {
-                        EventCondition condition = new EventCondition(task, ConditionType.SIMPLE,
-                                new EventSimpleCondition<>(task, "", ""), new ArrayList<>());
-                        configuration = new EventConfiguration(task, true,
+                        EventCondition condition = new EventCondition(ConditionType.SIMPLE,
+                                new EventSimpleCondition<>("", ""), new ArrayList<>());
+                        configuration = new EventConfiguration(true,
                                 extension.getConditionGroupName()
                                 , event.getEventName(), condition);
                     }

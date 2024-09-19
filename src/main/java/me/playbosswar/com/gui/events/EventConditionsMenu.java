@@ -16,6 +16,7 @@ import me.playbosswar.com.conditionsengine.validations.ConditionType;
 import me.playbosswar.com.gui.HorizontalIteratorWithBorder;
 import me.playbosswar.com.language.LanguageKey;
 import me.playbosswar.com.language.LanguageManager;
+import me.playbosswar.com.tasks.Task;
 import me.playbosswar.com.utils.Callback;
 import me.playbosswar.com.utils.Items;
 import org.bukkit.entity.Player;
@@ -29,13 +30,15 @@ import java.util.List;
 public class EventConditionsMenu implements InventoryProvider {
     private final LanguageManager languageManager = CommandTimerPlugin.getLanguageManager();
     public SmartInventory INVENTORY;
+    private final Task task;
     private final EventCondition condition;
     private final ConditionExtension extension;
     private final EventExtension eventExtension;
     private final Callback<String> callback;
 
-    public EventConditionsMenu(EventCondition condition, ConditionExtension extension, EventExtension eventExtension,
+    public EventConditionsMenu(Task task, EventCondition condition, ConditionExtension extension, EventExtension eventExtension,
                                Callback<String> callback) {
+        this.task = task;
         this.condition = condition;
         this.extension = extension;
         this.eventExtension = eventExtension;
@@ -62,13 +65,13 @@ public class EventConditionsMenu implements InventoryProvider {
         ItemStack createItem = Items.generateItem(LanguageKey.ADD_CONDITION, XMaterial.ANVIL);
         ClickableItem clickableCreate = ClickableItem.of(createItem, e -> {
             EventCondition newCondition = new EventCondition(
-                    condition.getTask(),
                     ConditionType.SIMPLE,
-                    new EventSimpleCondition<>(condition.getTask(), "", ""),
+                    new EventSimpleCondition<>("", ""),
                     new ArrayList<>());
             this.condition.addCondition(newCondition);
+            task.storeInstance();
 
-            new ConfigureEventMenu(condition.getTask(), extension, eventExtension, condition, internalCallback).INVENTORY.open(player);
+            new ConfigureEventMenu(task, extension, eventExtension, condition, internalCallback).INVENTORY.open(player);
         });
         contents.set(0, 0, clickableCreate);
 
@@ -130,12 +133,13 @@ public class EventConditionsMenu implements InventoryProvider {
                     XMaterial.COMMAND_BLOCK, lore);
             items[i] = ClickableItem.of(item, e -> {
                 if(e.getClick().equals(ClickType.LEFT)) {
-                    new ConfigureEventMenu(condition.getTask(), extension, eventExtension, condition, internalCallback).INVENTORY.open(p);
+                    new ConfigureEventMenu(task, extension, eventExtension, condition, internalCallback).INVENTORY.open(p);
                     return;
                 }
 
                 if(e.getClick().equals(ClickType.RIGHT)) {
                     this.condition.removeCondition(condition);
+                    task.storeInstance();
                     this.INVENTORY.open(p);
                 }
             });

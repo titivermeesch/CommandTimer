@@ -13,6 +13,7 @@ import me.playbosswar.com.conditionsengine.validations.SimpleCondition;
 import me.playbosswar.com.gui.HorizontalIteratorWithBorder;
 import me.playbosswar.com.language.LanguageKey;
 import me.playbosswar.com.language.LanguageManager;
+import me.playbosswar.com.tasks.Task;
 import me.playbosswar.com.utils.Callback;
 import me.playbosswar.com.utils.Items;
 import org.bukkit.entity.Player;
@@ -25,10 +26,12 @@ import java.util.List;
 public class ConditionsMenu implements InventoryProvider {
     private final LanguageManager languageManager = CommandTimerPlugin.getLanguageManager();
     public SmartInventory INVENTORY;
+    private final Task task;
     private final Condition condition;
     private final Callback<?> onClose;
 
-    public ConditionsMenu(Condition condition, Callback<?> onClose) {
+    public ConditionsMenu(Task task, Condition condition, Callback<?> onClose) {
+        this.task = task;
         this.condition = condition;
         this.onClose = onClose;
         INVENTORY = SmartInventory.builder()
@@ -55,11 +58,11 @@ public class ConditionsMenu implements InventoryProvider {
             Condition newCondition = new Condition(
                     ConditionType.SIMPLE,
                     new ArrayList<>(),
-                    new SimpleCondition(condition.getTask()),
-                    condition.getTask());
+                    new SimpleCondition());
             this.condition.addCondition(newCondition);
+            task.storeInstance();
 
-            new ConditionMenu(newCondition, internalCallback).INVENTORY.open(player);
+            new ConditionMenu(task, newCondition, internalCallback).INVENTORY.open(player);
         });
         contents.set(0, 0, clickableCreate);
 
@@ -119,12 +122,13 @@ public class ConditionsMenu implements InventoryProvider {
                     XMaterial.COMMAND_BLOCK, lore);
             items[i] = ClickableItem.of(item, e -> {
                 if(e.getClick().equals(ClickType.LEFT)) {
-                    new ConditionMenu(condition, internalCallback).INVENTORY.open(p);
+                    new ConditionMenu(task, condition, internalCallback).INVENTORY.open(p);
                     return;
                 }
 
                 if(e.getClick().equals(ClickType.RIGHT)) {
                     this.condition.removeCondition(condition);
+                    task.storeInstance();
                     this.INVENTORY.open(p);
                 }
             });

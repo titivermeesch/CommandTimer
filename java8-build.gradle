@@ -9,7 +9,7 @@ java {
 }
 
 group = 'me.playbosswar.com'
-version = '8.8.1'
+version = '8.9.0'
 description = 'CommandTimer'
 
 repositories {
@@ -40,6 +40,7 @@ shadowJar {
         include(dependency('org.jeasy:easy-rules-core:4.1.0'))
         include(dependency('org.apache.commons:commons-text:1.9'))
         include(dependency('io.sentry:sentry:7.0.0'))
+        include(dependency('com.j256.ormlite:ormlite-jdbc:6.1'))
     }
     // Needed in case the server software already packs sentry
     relocate 'io.sentry', 'me.playbosswar.com.commandtimer.sentry'
@@ -58,6 +59,7 @@ dependencies {
     implementation 'com.googlecode.json-simple:json-simple:1.1.1'
     implementation 'org.apache.commons:commons-text:1.9'
     implementation 'io.sentry:sentry:7.0.0'
+    implementation 'com.j256.ormlite:ormlite-jdbc:6.1'
     compileOnly 'org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT'
     compileOnly 'me.clip:placeholderapi:2.11.6'
     compileOnly 'org.jetbrains:annotations:23.0.0'
@@ -68,7 +70,7 @@ publishing {
         maven(MavenPublication) {
             groupId = 'me.playbosswar.com'
             artifactId = 'commandtimer-java8'
-            version = '8.8.1'
+            version = '8.9.0'
 
             from components.java
         }

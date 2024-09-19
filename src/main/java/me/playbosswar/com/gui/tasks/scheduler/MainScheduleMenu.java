@@ -46,6 +46,7 @@ public class MainScheduleMenu implements InventoryProvider {
         ClickableItem clickableSecondsItem = ClickableItem.of(
                 intervalItem,
                 e -> new EditIntervalMenu(
+                        task,
                         task.getInterval(),
                         e2 -> new MainScheduleMenu(task).INVENTORY.open(player)).INVENTORY.open(player));
         contents.set(1, 1, clickableSecondsItem);

@@ -1,7 +1,14 @@
 package me.playbosswar.com;
 
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.DaoManager;
+import com.j256.ormlite.field.DataPersisterManager;
+import com.j256.ormlite.jdbc.JdbcConnectionSource;
+import com.j256.ormlite.support.ConnectionSource;
+import com.j256.ormlite.table.TableUtils;
 import fr.minuskube.inv.InventoryManager;
 import io.sentry.ITransaction;
+import io.sentry.Sentry;
 import me.playbosswar.com.commands.MainCommand;
 import me.playbosswar.com.conditionsengine.ConditionEngineManager;
 import me.playbosswar.com.conditionsengine.EventsManager;
@@ -9,9 +16,13 @@ import me.playbosswar.com.events.JoinEvents;
 import me.playbosswar.com.hooks.HooksManager;
 import me.playbosswar.com.hooks.Metrics;
 import me.playbosswar.com.language.LanguageManager;
+import me.playbosswar.com.tasks.Task;
 import me.playbosswar.com.tasks.TasksManager;
+import me.playbosswar.com.tasks.persistors.*;
 import me.playbosswar.com.updater.Updater;
-import me.playbosswar.com.utils.*;
+import me.playbosswar.com.utils.Files;
+import me.playbosswar.com.utils.Messages;
+import me.playbosswar.com.utils.Tools;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -21,10 +32,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-
-import io.sentry.Sentry;
 
 public class CommandTimerPlugin extends JavaPlugin implements Listener {
     private static Plugin plugin;
@@ -37,6 +47,7 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
     public static Metrics metrics;
     public static Updater updater;
     public static LanguageManager languageManager;
+    public static Dao<Task, Integer> taskDao;
 
     @Override
     public void onEnable() {
@@ -62,6 +73,22 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
 
         Bukkit.getPluginManager().registerEvents(new JoinEvents(), this);
 
+        Files.migrateFileNamesToFileUuids();
+        if(getConfig().getBoolean("database.enabled")) {
+            try {
+                Class.forName("com.mysql.jdbc.Driver");
+                ConnectionSource connectionSource = new JdbcConnectionSource(getConfig().getString("database.url"));
+                DataPersisterManager.registerDataPersisters(TaskCommandPersistor.getSingleton(),
+                        TaskIntervalPersistor.getSingleton(), TaskTimePersistor.getSingleton(),
+                        ConditionPersistor.getSingleton(), EventConfigurationPersistor.getSingleton(),
+                        DaysPersistor.getSingleton());
+                taskDao = DaoManager.createDao(connectionSource, Task.class);
+                TableUtils.createTableIfNotExists(connectionSource, Task.class);
+            } catch(SQLException | ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
         updater = new Updater(this);
         metrics = new Metrics(CommandTimerPlugin.getPlugin(), 9657);
         hooksManager = new HooksManager();
@@ -70,7 +97,24 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
         conditionEngineManager = new ConditionEngineManager();
         eventsManager = new EventsManager(tasksManager);
         inventoryManager.init();
+        loadMetrics();
 
+        if(getConfig().getBoolean("timeonload")) {
+            Tools.printDate();
+        }
+        Messages.sendConsole("&e" + getDescription().getVersion() + "&a loaded " + getTasksManager().getLoadedTasks().size() + " tasks!");
+        transaction.finish();
+    }
+
+    @Override
+    public void onDisable() {
+        tasksManager.disable();
+        conditionEngineManager.onDisable();
+        saveDefaultConfig();
+        plugin = null;
+    }
+
+    private void loadMetrics() {
         metrics.addCustomChart(new Metrics.SingleLineChart("loaded_tasks", () -> tasksManager.getLoadedTasks().size()));
         metrics.addCustomChart(new Metrics.SingleLineChart("executed_tasks", () -> {
             int v = Integer.valueOf(tasksManager.executionsSinceLastSync);
@@ -85,21 +129,6 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
 
             return map;
         }));
-
-
-        if(getConfig().getBoolean("timeonload")) {
-            Tools.printDate();
-        }
-        Messages.sendConsole("&e" + getDescription().getVersion() + "&a loaded!");
-        transaction.finish();
-    }
-
-    @Override
-    public void onDisable() {
-        tasksManager.disable();
-        conditionEngineManager.onDisable();
-        saveDefaultConfig();
-        plugin = null;
     }
 
     public void registerCommands() {
@@ -176,5 +205,9 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
 
     public static LanguageManager getLanguageManager() {
         return languageManager;
+    }
+
+    public static Dao<Task, Integer> getTaskDao() {
+        return taskDao;
     }
 }

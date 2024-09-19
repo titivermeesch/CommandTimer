@@ -17,4 +17,4 @@ Add `register: true` in your MyCommand config and restart/reload the server
 
 ## Can I donate?
 
-If you would like to donate, this can be done through my PayPal account `titivermeesch@live.be`
+If you would like to donate, this can be done through my PayPal account `titivermeesch@gmail.com`

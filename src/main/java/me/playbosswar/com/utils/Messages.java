@@ -102,5 +102,6 @@ public class Messages {
         Messages.sendMessage(sender, "§e/cmt deactivate <task> - §7Deactivate a task");
         Messages.sendMessage(sender, "§e/cmt execute <task> - §7Instantly execute a task");
         Messages.sendMessage(sender, "§e/cmt reload - §7Reload the plugin");
+        Messages.sendMessage(sender, "§e/cmt migrateToDatabase - §7Migrate JSON files to database");
     }
 }

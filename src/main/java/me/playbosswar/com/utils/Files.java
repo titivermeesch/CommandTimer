@@ -3,11 +3,8 @@ package me.playbosswar.com.utils;
 import io.sentry.ITransaction;
 import io.sentry.Sentry;
 import me.playbosswar.com.CommandTimerPlugin;
-import me.playbosswar.com.api.events.EventCondition;
-import me.playbosswar.com.conditionsengine.validations.Condition;
-import me.playbosswar.com.conditionsengine.validations.ConditionType;
-import me.playbosswar.com.conditionsengine.validations.SimpleCondition;
 import me.playbosswar.com.tasks.Task;
+import me.playbosswar.com.tasks.TaskExecutionMetadata;
 import me.playbosswar.com.tasks.TaskInterval;
 import me.playbosswar.com.utils.gson.GsonConverter;
 import org.bukkit.Bukkit;
@@ -16,12 +13,15 @@ import org.jetbrains.annotations.Nullable;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 import java.util.logging.Level;
@@ -50,34 +50,16 @@ public class Files {
     /**
      * Returns timer json file
      */
-    public static String getTaskFile(String name) {
-        return pluginFolderPath + "/timers/" + name + ".json";
+    public static String getTaskFile(UUID id) {
+        return pluginFolderPath + "/timers/" + id + ".json";
     }
 
-    private static void setTaskOnConditions(Task task, List<Condition> conditions) {
-        conditions.forEach(condition -> {
-            condition.setTask(task);
-            if(condition.getConditionType().equals(ConditionType.SIMPLE) || condition.getConditionType().equals(ConditionType.NOT)) {
-                condition.getSimpleCondition().setTask(task);
-            } else {
-                setTaskOnConditions(task, condition.getConditions());
-            }
-        });
-    }
-
-    private static void setTaskOnEventConditions(Task task, List<EventCondition> conditions) {
-        conditions.forEach(condition -> {
-            condition.setTask(task);
-            if(condition.getConditionType().equals(ConditionType.SIMPLE) || condition.getConditionType().equals(ConditionType.NOT)) {
-                condition.getSimpleCondition().setTask(task);
-            } else {
-                setTaskOnEventConditions(task, condition.getConditions());
-            }
-        });
+    public static String getTaskLocalExecutionFile(UUID id) {
+        return pluginFolderPath + "/timers/" + id + ".local.json";
     }
 
     private static void healTask(Task task) {
-        TaskInterval defaultInterval = new TaskInterval(task, 0, 0, 0, 5);
+        TaskInterval defaultInterval = new TaskInterval(0, 0, 0, 5);
         if(task.getCommands() == null) {
             task.setCommands(new ArrayList<>());
         }
@@ -95,10 +77,89 @@ public class Files {
         }
     }
 
-    public static List<Task> deserializeJsonFilesIntoCommandTimers() {
-        ITransaction transaction = Sentry.startTransaction("deserializeJsonFilesIntoCommandTimers()", "initiation");
+    public static void migrateFileNamesToFileUuids() {
         File dir = new File(pluginFolderPath + "/timers");
-        File[] directoryListing = dir.listFiles();
+        File[] directoryListing = dir.listFiles(file -> !file.getName().contains(".local.json"));
+
+        if(directoryListing != null) {
+            for(File file : directoryListing) {
+                if(!file.exists() || !file.getName().contains("json")) {
+                    continue;
+                }
+
+                try {
+                    UUID.fromString(file.getName().replace(".json", ""));
+                } catch(IllegalArgumentException e) {
+                    try {
+                        UUID uuid = UUID.randomUUID();
+
+                        FileReader fr = new FileReader(file.getPath());
+                        JSONParser jsonParser = new JSONParser();
+                        Task task = new GsonConverter().fromJson(jsonParser.parse(fr).toString(), Task.class);
+                        task.setId(uuid);
+
+                        GsonConverter gson = new GsonConverter();
+                        String json = gson.toJson(task);
+                        FileWriter jsonFile = new FileWriter(pluginFolderPath + "/timers/" + uuid + ".json");
+                        jsonFile.write(json);
+                        jsonFile.flush();
+
+                        file.delete();
+                        Messages.sendConsole("Migrated " + file.getName() + " to " + uuid + ".json");
+                    } catch(IOException | ParseException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
+            }
+        }
+    }
+
+    public static TaskExecutionMetadata getOrCreateTaskMetadata(Task task) {
+        try {
+            String path = getTaskLocalExecutionFile(task.getId());
+            File file = new File(path);
+            if(!file.exists()) {
+                TaskExecutionMetadata metadata = new TaskExecutionMetadata(task.getTimesExecuted(),
+                        task.getLastExecutedCommandIndex(), task.getLastExecuted());
+                GsonConverter gson = new GsonConverter();
+                String json = gson.toJson(metadata);
+                FileWriter jsonFile = new FileWriter(path);
+                jsonFile.write(json);
+                jsonFile.flush();
+                return metadata;
+            }
+
+            FileReader fr = new FileReader(getTaskLocalExecutionFile(task.getId()));
+            JSONParser jsonParser = new JSONParser();
+            TaskExecutionMetadata metadata = new GsonConverter().fromJson(jsonParser.parse(fr).toString(),
+                    TaskExecutionMetadata.class);
+            return metadata;
+        } catch(IOException | ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static void updateLocalTaskMetadata(Task task) {
+        TaskExecutionMetadata metadata = new TaskExecutionMetadata(task.getTimesExecuted(),
+                task.getLastExecutedCommandIndex(), task.getLastExecuted());
+
+        GsonConverter gson = new GsonConverter();
+        String json = gson.toJson(metadata);
+        try {
+            FileWriter jsonFile = new FileWriter(getTaskLocalExecutionFile(task.getId()));
+            jsonFile.write(json);
+            jsonFile.flush();
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static List<Task> deserializeJsonFilesIntoCommandTimers() {
+        ITransaction transaction = Sentry.startTransaction("deserializeJsonFilesIntoCommandTimers()",
+                "initiation");
+        File dir = new File(pluginFolderPath + "/timers");
+        File[] directoryListing = dir.listFiles(file -> !file.getName().contains(".local.json"));
         JSONParser jsonParser = new JSONParser();
         List<Task> tasks = new ArrayList<>();
 
@@ -116,54 +177,17 @@ public class Files {
                         GsonConverter gson = new GsonConverter();
                         Task task = gson.fromJson(jsonParser.parse(fr).toString(), Task.class);
                         healTask(task);
-                        task.storeInstance();
-                        // We relink the tasks to commands and times because we lose this structure during serializing
+
                         task.getCommands().forEach(command -> {
-                            command.setTask(task);
                             if(command.getInterval() == null) {
-                                command.setInterval(new TaskInterval(task, 0, 0, 0, 0));
+                                command.setInterval(new TaskInterval(0, 0, 0, 0));
                             }
                             if(command.getDelay() == null) {
-                                command.setDelay(new TaskInterval(task, 0, 0, 0, 0));
+                                command.setDelay(new TaskInterval(0, 0, 0, 0));
                             }
-
-                            command.getInterval().setTask(task);
-                            command.getDelay().setTask(task);
                         });
-                        task.getTimes().forEach(time -> time.setTask(task));
-                        task.getInterval().setTask(task);
-                        task.getCommandExecutionInterval().setTask(task);
-                        Condition condition = task.getCondition();
-                        condition.setTask(task);
                         if(task.getEvents() == null) {
                             task.setEvents(new ArrayList<>());
-                        }
-                        task.getEvents().forEach(e -> {
-                            EventCondition eventCondition = e.getCondition();
-                            e.setTask(task);
-                            eventCondition.setTask(task);
-                            if(eventCondition.getSimpleCondition() != null) {
-                                eventCondition.getSimpleCondition().setTask(task);
-                            }
-
-                            if(eventCondition.getConditionType().equals(ConditionType.OR) || eventCondition.getConditionType().equals(ConditionType.AND)) {
-                                setTaskOnEventConditions(task, eventCondition.getConditions());
-                            }
-                        });
-
-                        SimpleCondition simpleCondition = condition.getSimpleCondition();
-                        if(simpleCondition != null) {
-                            simpleCondition.setTask(task);
-                        }
-
-                        if(condition.getConditionType().equals(ConditionType.OR) || condition.getConditionType().equals(ConditionType.AND)) {
-                            setTaskOnConditions(task, condition.getConditions());
-                        }
-
-                        if(task.isResetExecutionsAfterRestart()) {
-                            task.setTimesExecuted(0);
-                            task.setLastExecuted(new Date());
-                            task.storeInstance();
                         }
 
                         tasks.add(task);
@@ -184,7 +208,8 @@ public class Files {
     }
 
     @Nullable
-    public static <T> Class<? extends T> findClass(@NotNull final File file, @NotNull final Class<T> clazz) throws IOException, ClassNotFoundException {
+    public static <T> Class<? extends T> findClass(@NotNull final File file, @NotNull final Class<T> clazz) throws
+            IOException, ClassNotFoundException {
         if(!file.exists()) {
             return null;
         }
