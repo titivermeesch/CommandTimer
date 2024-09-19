@@ -4,10 +4,10 @@ import io.sentry.ITransaction;
 import io.sentry.Sentry;
 import me.playbosswar.com.CommandTimerPlugin;
 import me.playbosswar.com.enums.CommandExecutionMode;
-import me.playbosswar.com.utils.TaskTimeUtils;
-import me.playbosswar.com.utils.Tools;
 import me.playbosswar.com.utils.Messages;
+import me.playbosswar.com.utils.TaskTimeUtils;
 import me.playbosswar.com.utils.TaskUtils;
+import me.playbosswar.com.utils.Tools;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 
@@ -148,27 +148,24 @@ public class TaskRunner implements Runnable {
             final int[] accumulatedDelaySeconds = {0};
             task.getCommands().forEach(command -> {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(CommandTimerPlugin.getPlugin(),
-                        () -> tasksManager.addTaskCommandExecution(command), 20L * accumulatedDelaySeconds[0]);
+                        () -> tasksManager.processCommandExecution(command), 20L * accumulatedDelaySeconds[0]);
                 accumulatedDelaySeconds[0] += command.getDelay().toSeconds();
             });
-            task.setLastExecuted(new Date());
-            task.setTimesExecuted(task.getTimesExecuted() + 1);
-            task.storeInstance();
             return;
         }
 
         // If it remains -1, that means that all commands should be executed
         int selectedCommandIndex = tasksManager.getNextTaskCommandIndex(task);
-        task.setLastExecuted(new Date());
-        task.setTimesExecuted(task.getTimesExecuted() + 1);
 
         if(selectedCommandIndex == -1) {
             task.setLastExecutedCommandIndex(0);
-            task.getCommands().forEach(tasksManager::addTaskCommandExecution);
+            Bukkit.getScheduler().runTask(CommandTimerPlugin.getPlugin(),
+                    () -> task.getCommands().forEach(tasksManager::processCommandExecution));
         } else {
             TaskCommand taskCommand = task.getCommands().get(selectedCommandIndex);
             task.setLastExecutedCommandIndex(task.getCommands().indexOf(taskCommand));
-            tasksManager.addTaskCommandExecution(taskCommand);
+            Bukkit.getScheduler().runTask(CommandTimerPlugin.getPlugin(),
+                    () -> tasksManager.processCommandExecution(taskCommand));
         }
 
         task.storeInstance();

@@ -131,7 +131,7 @@ public class MainCommand implements CommandExecutor {
                     final int[] accumulatedDelaySeconds = {0};
                     task.getCommands().forEach(command -> {
                         Bukkit.getScheduler().scheduleSyncDelayedTask(CommandTimerPlugin.getPlugin(),
-                                () -> tasksManager.addTaskCommandExecution(command), 20L * accumulatedDelaySeconds[0]);
+                                () -> tasksManager.processCommandExecution(command), 20L * accumulatedDelaySeconds[0]);
                         accumulatedDelaySeconds[0] += command.getDelay().toSeconds();
                     });
                     Messages.sendMessage(sender, languageManager.get(LanguageKey.TASK_EXECUTION_ONGOING));
@@ -140,9 +140,11 @@ public class MainCommand implements CommandExecutor {
 
                 int selectedCommandIndex = tasksManager.getNextTaskCommandIndex(task);
                 if(selectedCommandIndex == -1) {
-                    task.getCommands().forEach(tasksManager::addTaskCommandExecution);
+                    Bukkit.getScheduler().runTask(CommandTimerPlugin.getPlugin(), () ->
+                        task.getCommands().forEach(tasksManager::processCommandExecution));
                 } else {
-                    tasksManager.addTaskCommandExecution(task.getCommands().get(selectedCommandIndex));
+                    Bukkit.getScheduler().runTask(CommandTimerPlugin.getPlugin(), () ->
+                        tasksManager.processCommandExecution(task.getCommands().get(selectedCommandIndex)));
                 }
 
                 Messages.sendMessage(sender, languageManager.get(LanguageKey.TASK_EXECUTED));

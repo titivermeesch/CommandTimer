@@ -1,7 +1,6 @@
 package me.playbosswar.com.tasks;
 
 import me.playbosswar.com.CommandTimerPlugin;
-import me.playbosswar.com.conditionsengine.validations.Condition;
 import me.playbosswar.com.enums.CommandExecutionMode;
 import me.playbosswar.com.enums.Gender;
 import me.playbosswar.com.hooks.PAPIHook;
@@ -14,7 +13,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandException;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -26,7 +24,6 @@ import java.util.stream.Collectors;
 public class TasksManager {
     private static final String CONDITION_NO_MATCH = "Conditions did not match";
     private List<Task> loadedTasks = new ArrayList<>();
-    private final List<TaskCommand> scheduledExecutions = new ArrayList<>();
     private Thread runnerThread;
     public boolean stopRunner = false;
     public int executionsSinceLastSync = 0;
@@ -34,7 +31,6 @@ public class TasksManager {
     public TasksManager() {
         loadedTasks.addAll(Files.deserializeJsonFilesIntoCommandTimers());
         startRunner();
-        startCommandExecutor();
     }
 
     public Task createTask() {
@@ -80,7 +76,7 @@ public class TasksManager {
         this.runnerThread = thread;
     }
 
-    private void runConsolePerUserCommand(TaskCommand taskCommand, List<UUID> scopedPlayers) throws CommandException {
+    private boolean runConsolePerUserCommand(TaskCommand taskCommand, List<UUID> scopedPlayers) throws CommandException {
         String command = taskCommand.getCommand();
 
         Collection<Player> affectedPlayers = (Collection<Player>) Bukkit.getOnlinePlayers();
@@ -91,6 +87,7 @@ public class TasksManager {
 
         boolean delayedExecutions = taskCommand.getInterval().toSeconds() > 0;
         int i = 0;
+        boolean willExecute = false;
         for(Player p : affectedPlayers) {
             if(taskCommand.getTask().hasCondition()) {
                 boolean valid = TaskValidationHelpers.processCondition(taskCommand.getTask().getCondition(), p);
@@ -98,6 +95,7 @@ public class TasksManager {
                     Messages.sendDebugConsole(CONDITION_NO_MATCH);
                     continue;
                 }
+                willExecute = true;
             }
 
             if(delayedExecutions) {
@@ -111,9 +109,11 @@ public class TasksManager {
             }
             i++;
         }
+
+        return willExecute;
     }
 
-    private void runConsolePerUserOfflineCommand(TaskCommand taskCommand) throws CommandException {
+    private boolean runConsolePerUserOfflineCommand(TaskCommand taskCommand) throws CommandException {
         String command = taskCommand.getCommand();
         boolean delayedExecutions = taskCommand.getInterval().toSeconds() > 0;
 
@@ -131,27 +131,30 @@ public class TasksManager {
             }
             i++;
         }
+
+        return true;
     }
 
-    private void runConsolePerUserCommand(TaskCommand taskCommand) throws CommandException {
-        runConsolePerUserCommand(taskCommand, new ArrayList<>());
+    private boolean runConsolePerUserCommand(TaskCommand taskCommand) throws CommandException {
+        return runConsolePerUserCommand(taskCommand, new ArrayList<>());
     }
 
-    private void runConsoleCommand(TaskCommand taskCommand) throws CommandException {
+    private boolean runConsoleCommand(TaskCommand taskCommand) throws CommandException {
         if(taskCommand.getTask().hasCondition()) {
             boolean valid = TaskValidationHelpers.processCondition(taskCommand.getTask().getCondition(), null);
             if(!valid) {
                 Messages.sendDebugConsole(CONDITION_NO_MATCH);
-                return;
+                return false;
             }
         }
 
         String command = taskCommand.getCommand();
         Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command, null));
         executionsSinceLastSync++;
+        return true;
     }
 
-    private void runPlayerCommand(TaskCommand taskCommand, List<UUID> scopedPlayers) {
+    private boolean runPlayerCommand(TaskCommand taskCommand, List<UUID> scopedPlayers) {
         String command = taskCommand.getCommand();
 
         Collection<Player> affectedPlayers = (Collection<Player>) Bukkit.getOnlinePlayers();
@@ -162,6 +165,7 @@ public class TasksManager {
 
         boolean delayedExecution = taskCommand.getInterval().toSeconds() > 0;
         int i = 0;
+        boolean willExecute = false;
         for(Player p : affectedPlayers) {
             if(taskCommand.getTask().hasCondition()) {
                 boolean valid = TaskValidationHelpers.processCondition(taskCommand.getTask().getCondition(), p);
@@ -169,6 +173,7 @@ public class TasksManager {
                     Messages.sendDebugConsole(CONDITION_NO_MATCH);
                     continue;
                 }
+                willExecute = true;
             }
 
             if(delayedExecution) {
@@ -179,6 +184,8 @@ public class TasksManager {
             }
             i++;
         }
+
+        return willExecute;
     }
 
     private void runForPlayer(Player p, String command) {
@@ -193,11 +200,11 @@ public class TasksManager {
         executionsSinceLastSync++;
     }
 
-    private void runPlayerCommand(TaskCommand taskCommand) {
-        runPlayerCommand(taskCommand, new ArrayList<>());
+    private boolean runPlayerCommand(TaskCommand taskCommand) {
+        return runPlayerCommand(taskCommand, new ArrayList<>());
     }
 
-    private void runOperatorCommand(TaskCommand taskCommand, List<UUID> scopedPlayers) {
+    private boolean runOperatorCommand(TaskCommand taskCommand, List<UUID> scopedPlayers) {
         String command = taskCommand.getCommand();
 
         Collection<Player> affectedPlayers = (Collection<Player>) Bukkit.getOnlinePlayers();
@@ -208,6 +215,7 @@ public class TasksManager {
 
         boolean delayedExecutions = taskCommand.getInterval().toSeconds() > 0;
         int i = 0;
+        boolean willExecute = false;
         for(Player p : affectedPlayers) {
             boolean wasAlreadyOp = p.isOp();
 
@@ -223,6 +231,7 @@ public class TasksManager {
                         }
                         continue;
                     }
+                    willExecute = true;
                 }
 
                 if(delayedExecutions) {
@@ -242,53 +251,40 @@ public class TasksManager {
             }
             i++;
         }
+
+        return willExecute;
     }
 
-    private void runOperatorCommand(TaskCommand taskCommand) {
-        runOperatorCommand(taskCommand, new ArrayList<>());
-    }
-
-    public void addTaskCommandExecution(TaskCommand taskCommand) {
-        scheduledExecutions.add(taskCommand);
+    private boolean runOperatorCommand(TaskCommand taskCommand) {
+        return runOperatorCommand(taskCommand, new ArrayList<>());
     }
 
     public void processCommandExecution(TaskCommand taskCommand) {
-        if(!taskCommand.getTask().isActive()) {
+        Task task = taskCommand.getTask();
+        if(!task.isActive()) {
             return;
         }
 
         Gender gender = taskCommand.getGender();
 
+        boolean executed = false;
         if(gender.equals(Gender.CONSOLE)) {
-            runConsoleCommand(taskCommand);
+            executed = runConsoleCommand(taskCommand);
         } else if(gender.equals(Gender.PLAYER)) {
-            runPlayerCommand(taskCommand);
+            executed = runPlayerCommand(taskCommand);
         } else if(gender.equals(Gender.OPERATOR)) {
-            runOperatorCommand(taskCommand);
+            executed = runOperatorCommand(taskCommand);
         } else if(gender.equals(Gender.CONSOLE_PER_USER)) {
-            runConsolePerUserCommand(taskCommand);
+            executed = runConsolePerUserCommand(taskCommand);
         } else if(gender.equals(Gender.CONSOLE_PER_USER_OFFLINE)) {
-            runConsolePerUserOfflineCommand(taskCommand);
+            executed = runConsolePerUserOfflineCommand(taskCommand);
         }
-    }
 
-    // Executes scheduled commands
-    private void startCommandExecutor() {
-        BukkitRunnable runnable = new BukkitRunnable() {
-
-            @Override
-            public void run() {
-                final List<TaskCommand> tasksToRemove = new ArrayList<>(scheduledExecutions);
-
-                tasksToRemove.forEach(taskCommand -> {
-                    processCommandExecution(taskCommand);
-                    scheduledExecutions.remove(taskCommand);
-                });
-
-            }
-        };
-
-        runnable.runTaskTimer(CommandTimerPlugin.getPlugin(), 20L, 20L);
+        if(executed) {
+            task.setLastExecuted(new Date());
+            task.setTimesExecuted(taskCommand.getTask().getTimesExecuted() + 1);
+            task.storeInstance();
+        }
     }
 
     public int getNextTaskCommandIndex(Task task) {
