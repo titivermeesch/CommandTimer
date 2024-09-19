@@ -101,6 +101,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           path: artifact
+          merge-multiple: true
       - run: ls -ls
       - run: ls -ls artifact
       - run: echo "PLUGIN_VERSION=$(./scripts/get-version.sh)" >> $GITHUB_ENV
