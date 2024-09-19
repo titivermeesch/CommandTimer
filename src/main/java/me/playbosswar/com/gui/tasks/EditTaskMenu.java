@@ -6,12 +6,12 @@ import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
 import me.playbosswar.com.CommandTimerPlugin;
+import me.playbosswar.com.gui.conditions.ConditionMenu;
 import me.playbosswar.com.gui.events.MainEventsMenu;
 import me.playbosswar.com.gui.tasks.commands.AllCommandsMenu;
 import me.playbosswar.com.gui.tasks.general.GeneralLimitsMenu;
 import me.playbosswar.com.gui.tasks.general.TextInputConversationPrompt;
 import me.playbosswar.com.gui.tasks.scheduler.MainScheduleMenu;
-import me.playbosswar.com.gui.conditions.ConditionMenu;
 import me.playbosswar.com.language.LanguageKey;
 import me.playbosswar.com.language.LanguageManager;
 import me.playbosswar.com.tasks.Task;
@@ -44,6 +44,7 @@ public class EditTaskMenu implements InventoryProvider {
                 .withModality(true)
                 .withFirstPrompt(new TextInputConversationPrompt(LanguageKey.NEW_TASK_INPUT, text -> {
                     task.setName(text);
+                    task.storeInstance();
                     new EditTaskMenu(task).INVENTORY.open(player);
                 }));
 
@@ -85,6 +86,7 @@ public class EditTaskMenu implements InventoryProvider {
                 conditionLore);
         ClickableItem clickableCondition = ClickableItem.of(conditionItem,
                 e -> new ConditionMenu(
+                        task,
                         task.getCondition(),
                         conditionItemCallback
                 ).INVENTORY.open(player));

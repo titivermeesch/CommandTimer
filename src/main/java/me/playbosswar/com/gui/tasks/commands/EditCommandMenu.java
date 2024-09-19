@@ -12,6 +12,7 @@ import me.playbosswar.com.gui.tasks.general.TextInputConversationPrompt;
 import me.playbosswar.com.gui.tasks.scheduler.EditIntervalMenu;
 import me.playbosswar.com.language.LanguageKey;
 import me.playbosswar.com.language.LanguageManager;
+import me.playbosswar.com.tasks.Task;
 import me.playbosswar.com.tasks.TaskCommand;
 import me.playbosswar.com.utils.Items;
 import org.bukkit.conversations.ConversationFactory;
@@ -21,9 +22,11 @@ import org.bukkit.inventory.ItemStack;
 public class EditCommandMenu implements InventoryProvider {
     public SmartInventory INVENTORY;
     private final LanguageManager languageManager = CommandTimerPlugin.getLanguageManager();
+    private final Task task;
     private final TaskCommand taskCommand;
 
-    public EditCommandMenu(TaskCommand taskCommand) {
+    public EditCommandMenu(Task task, TaskCommand taskCommand) {
+        this.task = task;
         this.taskCommand = taskCommand;
         INVENTORY = SmartInventory.builder()
                 .id("edit-command")
@@ -48,7 +51,8 @@ public class EditCommandMenu implements InventoryProvider {
                 .withModality(true)
                 .withFirstPrompt(new TextInputConversationPrompt(LanguageKey.ENTER_COMMAND_INPUT, text -> {
                     taskCommand.setCommand(text);
-                    new EditCommandMenu(taskCommand).INVENTORY.open(player);
+                    task.storeInstance();
+                    new EditCommandMenu(task, taskCommand).INVENTORY.open(player);
                 }));
 
         ItemStack editCommandItem = Items.generateItem(LanguageKey.CHANGE_COMMAND, XMaterial.PAPER, editCommandLore);
@@ -63,6 +67,7 @@ public class EditCommandMenu implements InventoryProvider {
                 languageManager.getList(LanguageKey.GENDER_SELECTOR_LORE, taskCommand.getGender().toString()).toArray(new String[]{}));
         ClickableItem clickableGenderItem = ClickableItem.of(genderItem, e -> {
             taskCommand.toggleGender();
+            task.storeInstance();
             this.INVENTORY.open(player);
         });
         contents.set(1, 2, clickableGenderItem);
@@ -71,17 +76,17 @@ public class EditCommandMenu implements InventoryProvider {
             ItemStack intervalItem = Items.generateItem(LanguageKey.TASK_INTERVAL_ITEM_TITLE, XMaterial.CLOCK,
                     languageManager.getList(LanguageKey.COMMAND_INTERVAL_LORE, taskCommand.getInterval().toString()).toArray(new String[]{}));
             ClickableItem clickableIntervalItem = ClickableItem.of(intervalItem,
-                    e -> new EditIntervalMenu(taskCommand.getInterval(),
-                            ev -> new EditCommandMenu(taskCommand).INVENTORY.open(player)).INVENTORY.open(player));
+                    e -> new EditIntervalMenu(task, taskCommand.getInterval(),
+                            ev -> new EditCommandMenu(task, taskCommand).INVENTORY.open(player)).INVENTORY.open(player));
             contents.set(1, 3, clickableIntervalItem);
         }
 
-        if(taskCommand.getTask().getCommandExecutionMode().equals(CommandExecutionMode.ORDERED)) {
+        if(task.getCommandExecutionMode().equals(CommandExecutionMode.ORDERED)) {
             ItemStack delayItem = Items.generateItem(LanguageKey.COMMAND_DELAY_TITLE, XMaterial.CLOCK,
                     languageManager.getList(LanguageKey.COMMAND_DELAY_LORE, taskCommand.getDelay().toString()).toArray(new String[]{}));
             ClickableItem clickableDelayItem = ClickableItem.of(delayItem,
-                    e -> new EditIntervalMenu(taskCommand.getDelay(),
-                            ev -> new EditCommandMenu(taskCommand).INVENTORY.open(player)).INVENTORY.open(player));
+                    e -> new EditIntervalMenu(task, taskCommand.getDelay(),
+                            ev -> new EditCommandMenu(task, taskCommand).INVENTORY.open(player)).INVENTORY.open(player));
 
             // Calculate position for item
             if(!taskCommand.getGender().equals(Gender.CONSOLE)) {
@@ -92,7 +97,7 @@ public class EditCommandMenu implements InventoryProvider {
         }
 
         contents.set(2, 8, ClickableItem.of(Items.getBackItem(),
-                e -> new AllCommandsMenu(taskCommand.getTask()).INVENTORY.open(player)));
+                e -> new AllCommandsMenu(task).INVENTORY.open(player)));
     }
 
     @Override

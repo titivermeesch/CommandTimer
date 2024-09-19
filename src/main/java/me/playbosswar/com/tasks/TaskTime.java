@@ -4,14 +4,12 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 public class TaskTime {
-    private transient Task task;
     private LocalTime time1;
     private LocalTime time2;
     private boolean isMinecraftTime;
     private String world;
 
-    public TaskTime(Task task, LocalTime time1, boolean isMinecraftTime) {
-        this.task = task;
+    public TaskTime(LocalTime time1, boolean isMinecraftTime) {
         this.time1 = time1;
         this.isMinecraftTime = isMinecraftTime;
     }
@@ -22,7 +20,6 @@ public class TaskTime {
 
     public void setTime1(LocalTime time1) {
         this.time1 = time1;
-        task.storeInstance();
     }
 
     public LocalTime getTime2() {
@@ -33,7 +30,6 @@ public class TaskTime {
 
     public void setTime2(LocalTime time2) {
         this.time2 = time2;
-        task.storeInstance();
     }
 
     public boolean isMinecraftTime() {
@@ -46,7 +42,6 @@ public class TaskTime {
         }
 
         isMinecraftTime = minecraftTime;
-        task.storeInstance();
     }
 
     public void toggleMinecraftTime() {
@@ -55,15 +50,6 @@ public class TaskTime {
         }
 
         isMinecraftTime = !isMinecraftTime;
-        task.storeInstance();
-    }
-
-    public Task getTask() {
-        return task;
-    }
-
-    public void setTask(Task task) {
-        this.task = task;
     }
 
     public String toString() {
@@ -83,6 +69,5 @@ public class TaskTime {
 
     public void setWorld(String world) {
         this.world = world;
-        task.storeInstance();
     }
 }

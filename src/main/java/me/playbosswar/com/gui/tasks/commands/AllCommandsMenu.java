@@ -54,10 +54,10 @@ public class AllCommandsMenu implements InventoryProvider {
         String[] addItemLore = languageManager.getList(LanguageKey.ADD_COMMAND_LORE).toArray(new String[]{});
         ItemStack addItem = Items.generateItem(LanguageKey.ADD_COMMAND, XMaterial.ANVIL, addItemLore);
         ClickableItem clickableAddItem = ClickableItem.of(addItem, e -> {
-            TaskCommand taskCommand = new TaskCommand(task, "say This is my command",
+            TaskCommand taskCommand = new TaskCommand("say This is my command",
                     Gender.CONSOLE);
             task.addCommand(taskCommand);
-            new EditCommandMenu(taskCommand).INVENTORY.open(player);
+            new EditCommandMenu(task, taskCommand).INVENTORY.open(player);
         });
         contents.set(0, 0, clickableAddItem);
 
@@ -88,7 +88,7 @@ public class AllCommandsMenu implements InventoryProvider {
                 return;
             }
 
-            new EditIntervalMenu(task.getCommandExecutionInterval(),
+            new EditIntervalMenu(task, task.getCommandExecutionInterval(),
                     e2 -> new AllCommandsMenu(task).INVENTORY.open(player)).INVENTORY.open(player);
         });
         contents.set(0, 8, clickableSelectModeItem);
@@ -131,7 +131,7 @@ public class AllCommandsMenu implements InventoryProvider {
 
             items[i] = ClickableItem.of(item, e -> {
                 if(e.getClick().equals(ClickType.LEFT)) {
-                    new EditCommandMenu(taskCommand).INVENTORY.open(p);
+                    new EditCommandMenu(task, taskCommand).INVENTORY.open(p);
                     return;
                 }
 

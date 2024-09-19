@@ -11,7 +11,6 @@ import me.playbosswar.com.api.events.EventCondition;
 import me.playbosswar.com.api.events.EventExtension;
 import me.playbosswar.com.conditionsengine.validations.ConditionType;
 import me.playbosswar.com.gui.MenuUtils;
-import me.playbosswar.com.gui.conditions.ConditionsMenu;
 import me.playbosswar.com.language.LanguageKey;
 import me.playbosswar.com.language.LanguageManager;
 import me.playbosswar.com.tasks.Task;
@@ -56,6 +55,7 @@ public class ConfigureEventMenu implements InventoryProvider {
         // 1. Item for condition type (SIMPLE, AND, OR, NOT)
         ClickableItem conditionTypeItem = MenuUtils.getConditionTypeItem(condition, type -> {
             condition.setConditionType(type);
+            task.storeInstance();
             new ConfigureEventMenu(task, extension, eventExtension, condition, internalCallback).INVENTORY.open(player);
         });
         contents.set(1, 1, conditionTypeItem);
@@ -86,7 +86,8 @@ public class ConfigureEventMenu implements InventoryProvider {
                 languageManager.getList(LanguageKey.CONDITION_TYPE_LORE).toArray(new String[0]);
         ItemStack conditionsItem = Items.generateItem(LanguageKey.CONDITION_PARTS_TITLE,
                 XMaterial.CRAFTING_TABLE, conditionPartsLore);
-        ClickableItem clickableConditions = ClickableItem.of(conditionsItem, e -> new EventConditionsMenu(condition,
+        ClickableItem clickableConditions = ClickableItem.of(conditionsItem, e -> new EventConditionsMenu(task,
+                condition,
                 extension, eventExtension,
                 internalCallback).INVENTORY.open(player));
         contents.set(1, 2, clickableConditions);

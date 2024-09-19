@@ -66,7 +66,7 @@ public class AllTasksMenu implements InventoryProvider {
 
         for(int i = 0; i < items.length; i++) {
             Task task = tasks.get(i);
-            String[] lore = new String[]{"",
+            String[] lore = new String[]{"§7" + task.getId().toString(), "",
                     languageManager.get(LanguageKey.STATUS, (task.isActive() ?
                             languageManager.get(LanguageKey.STATUS_ACTIVE) :
                             languageManager.get(LanguageKey.STATUS_NOT_ACTIVE))),

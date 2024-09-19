@@ -47,9 +47,10 @@ public class EditTimesMenu implements InventoryProvider {
         String[] addItemLore = languageManager.getList(LanguageKey.ADD_SPECIFIC_TIME_LORE).toArray(new String[]{});
         ItemStack addItem = Items.generateItem(LanguageKey.ADD_SPECIFIC_TIME_TITLE, XMaterial.ANVIL, addItemLore);
         ClickableItem clickableAddItem = ClickableItem.of(addItem, e -> {
-            TaskTime taskTime = new TaskTime(task, LocalTime.parse("14:00:00"), false);
+            TaskTime taskTime = new TaskTime(LocalTime.parse("14:00:00"), false);
             task.addTime(taskTime);
-            new EditSpecificTimeMenu(taskTime).INVENTORY.open(player);
+            task.storeInstance();
+            new EditSpecificTimeMenu(task, taskTime).INVENTORY.open(player);
         });
         contents.set(0, 0, clickableAddItem);
 
@@ -82,12 +83,13 @@ public class EditTimesMenu implements InventoryProvider {
             ItemStack item = Items.generateItem("§b" + taskTime, XMaterial.CLOCK, lore);
             items[i] = ClickableItem.of(item, e -> {
                 if(e.getClick().equals(ClickType.LEFT)) {
-                    new EditSpecificTimeMenu(taskTime).INVENTORY.open(p);
+                    new EditSpecificTimeMenu(task, taskTime).INVENTORY.open(p);
                     return;
                 }
 
                 if(e.getClick().equals(ClickType.RIGHT)) {
                     task.removeTime(taskTime);
+                    task.storeInstance();
                     this.INVENTORY.open(p);
                 }
             });

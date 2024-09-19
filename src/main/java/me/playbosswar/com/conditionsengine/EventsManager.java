@@ -1,10 +1,10 @@
 package me.playbosswar.com.conditionsengine;
 
 import me.playbosswar.com.api.ConditionExtension;
+import me.playbosswar.com.api.NeededValue;
 import me.playbosswar.com.api.events.EventCondition;
 import me.playbosswar.com.api.events.EventConfiguration;
 import me.playbosswar.com.api.events.EventExtension;
-import me.playbosswar.com.api.NeededValue;
 import me.playbosswar.com.api.events.EventSimpleCondition;
 import me.playbosswar.com.conditionsengine.conditions.ConditionHelpers;
 import me.playbosswar.com.conditionsengine.validations.ConditionType;
@@ -17,10 +17,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class EventsManager {
@@ -44,7 +41,7 @@ public class EventsManager {
                                 e.getConditionGroup().equals(extension.getConditionGroupName()) &&
                                         e.getEvent().equals(ev.getEventName()))).collect(Collectors.toList());
 
-        List<EventConfiguration> configurations = new ArrayList<>();
+        HashMap<Task, List<EventConfiguration>> events = new HashMap<>();
         for(Task t : tasks) {
             for(EventConfiguration e : t.getEvents()) {
                 if(!e.isActive()) {
@@ -63,17 +60,20 @@ public class EventsManager {
                     continue;
                 }
 
-                configurations.add(e);
+                events.putIfAbsent(t, new ArrayList<>());
+                events.get(t).add(e);
             }
         }
 
-        List<Task> tasksToExecute = configurations
-                .stream()
-                .filter(c -> processConfiguration(c.getCondition(), values))
-                .map(EventConfiguration::getTask)
-                .collect(Collectors.toList());
+        events.forEach((task, configurations) -> {
+            boolean hasMatchingConfiguration = configurations
+                    .stream()
+                    .anyMatch(c -> processConfiguration(c.getCondition(), values));
 
-        tasksToExecute.forEach(task -> {
+            if(!hasMatchingConfiguration) {
+                return;
+            }
+
             Player p = null;
             UUID uuid = findPotentialPlayer(values);
             if(uuid != null) {
@@ -83,7 +83,7 @@ public class EventsManager {
             boolean valid = TaskValidationHelpers.processCondition(task.getCondition(), p);
 
             if(valid) {
-                task.getCommands().forEach(tasksManager::processCommandExecution);
+                task.getCommands().forEach(command -> tasksManager.processCommandExecution(task, command));
             } else {
                 Messages.sendDebugConsole("EVENT ENGINE: Processed event but conditions did not match");
             }

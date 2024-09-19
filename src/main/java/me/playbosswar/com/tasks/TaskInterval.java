@@ -1,14 +1,12 @@
 package me.playbosswar.com.tasks;
 
 public class TaskInterval {
-    private transient Task task;
     private int days;
     private int hours;
     private int minutes;
     private int seconds;
 
-    public TaskInterval(Task task, int days, int hours, int minutes, int seconds) {
-        this.task = task;
+    public TaskInterval(int days, int hours, int minutes, int seconds) {
         this.days = days;
         this.hours = hours;
         this.minutes = minutes;
@@ -21,12 +19,10 @@ public class TaskInterval {
 
     public void setDays(int days) {
         this.days = days;
-        task.storeInstance();
     }
 
     public void incrementDays() {
         days += 1;
-        task.storeInstance();
     }
 
     public void decrementDays() {
@@ -35,7 +31,6 @@ public class TaskInterval {
         }
 
         days -= 1;
-        task.storeInstance();
     }
 
     public int getHours() {
@@ -44,12 +39,10 @@ public class TaskInterval {
 
     public void setHours(int hours) {
         this.hours = hours;
-        task.storeInstance();
     }
 
     public void incrementHours() {
         this.hours += 1;
-        task.storeInstance();
     }
 
     public void decrementHours() {
@@ -58,7 +51,6 @@ public class TaskInterval {
         }
 
         hours -= 1;
-        task.storeInstance();
     }
 
     public int getMinutes() {
@@ -67,12 +59,10 @@ public class TaskInterval {
 
     public void setMinutes(int minutes) {
         this.minutes = minutes;
-        task.storeInstance();
     }
 
     public void incrementMinutes() {
         this.minutes += 1;
-        task.storeInstance();
     }
 
     public void decrementMinutes() {
@@ -81,7 +71,6 @@ public class TaskInterval {
         }
 
         minutes -= 1;
-        task.storeInstance();
     }
 
     public int getSeconds() {
@@ -90,12 +79,10 @@ public class TaskInterval {
 
     public void setSeconds(int seconds) {
         this.seconds = seconds;
-        task.storeInstance();
     }
 
     public void incrementSeconds() {
         this.seconds += 1;
-        task.storeInstance();
     }
 
     public void decrementSeconds() {
@@ -104,15 +91,6 @@ public class TaskInterval {
         }
 
         seconds -= 1;
-        task.storeInstance();
-    }
-
-    public Task getTask() {
-        return task;
-    }
-
-    public void setTask(Task task) {
-        this.task = task;
     }
 
     public int toSeconds() {
