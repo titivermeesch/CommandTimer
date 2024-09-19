@@ -41,6 +41,7 @@ jobs:
       - run: gradle :shadowJar -b java8-build.gradle
       - uses: actions/upload-artifact@v4
         with:
+          name: commandtimer-java8
           path: build/libs/commandtimer-java8.jar
       - name: Publish package
         run: gradle publish -b java8-build.gradle
@@ -61,6 +62,7 @@ jobs:
       - run: gradle :shadowJar -b java17-build.gradle
       - uses: actions/upload-artifact@v4
         with:
+            name: commandtimer-java17
           path: build/libs/commandtimer-java17.jar
       - name: Publish package
         continue-on-error: true
@@ -81,6 +83,7 @@ jobs:
       - run: gradle :shadowJar
       - uses: actions/upload-artifact@v4
         with:
+          name: commandtimer-java21
           path: build/libs/commandtimer-java21.jar
       - name: Publish package
         run: gradle publish
