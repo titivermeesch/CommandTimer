@@ -1,8 +1,7 @@
 package me.playbosswar.com.tasks;
 
 import me.playbosswar.com.CommandTimerPlugin;
-
-import java.util.Date;
+import org.bukkit.Bukkit;
 
 public class CommandIntervalExecutorRunnable implements Runnable {
     private final Task task;
@@ -20,10 +19,8 @@ public class CommandIntervalExecutorRunnable implements Runnable {
             return;
         }
 
-        tasksManager.addTaskCommandExecution(task.getCommands().get(commandIndex));
-        task.setLastExecuted(new Date());
-        task.setTimesExecuted(task.getTimesExecuted() + 1);
-        task.storeInstance();
+        Bukkit.getScheduler().runTask(CommandTimerPlugin.getInstance(),
+                () -> tasksManager.processCommandExecution(task.getCommands().get(commandIndex)));
         commandIndex++;
 
         if(commandIndex == task.getCommands().size()) {
