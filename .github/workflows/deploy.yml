@@ -102,8 +102,6 @@ jobs:
         with:
           path: artifact
           merge-multiple: true
-      - run: ls -ls
-      - run: ls -ls artifact
       - run: echo "PLUGIN_VERSION=$(./scripts/get-version.sh)" >> $GITHUB_ENV
       - run: gh release create ${{ env.PLUGIN_VERSION }} -t ${{ env.PLUGIN_VERSION }} artifact/*.jar
     env:
