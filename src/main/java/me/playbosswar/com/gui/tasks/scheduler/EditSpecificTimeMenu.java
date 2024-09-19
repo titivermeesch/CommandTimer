@@ -9,6 +9,7 @@ import me.playbosswar.com.CommandTimerPlugin;
 import me.playbosswar.com.gui.worlds.WorldSelector;
 import me.playbosswar.com.language.LanguageKey;
 import me.playbosswar.com.language.LanguageManager;
+import me.playbosswar.com.tasks.Task;
 import me.playbosswar.com.tasks.TaskTime;
 import me.playbosswar.com.utils.Callback;
 import me.playbosswar.com.utils.Items;
@@ -21,9 +22,11 @@ import java.util.List;
 public class EditSpecificTimeMenu implements InventoryProvider {
     public final SmartInventory INVENTORY;
     private final LanguageManager languageManager = CommandTimerPlugin.getLanguageManager();
+    private final Task task;
     private final TaskTime taskTime;
 
-    public EditSpecificTimeMenu(TaskTime taskTime) {
+    public EditSpecificTimeMenu(Task task, TaskTime taskTime) {
+        this.task = task;
         this.taskTime = taskTime;
         INVENTORY = SmartInventory.builder()
                 .id("task-times-specific")
@@ -47,7 +50,7 @@ public class EditSpecificTimeMenu implements InventoryProvider {
         };
         ItemStack time1Item = Items.generateItem(LanguageKey.TIME_ONE_TITLE, XMaterial.CLOCK, time1Lore);
         ClickableItem clickableTime1Item = ClickableItem.of(time1Item,
-                e -> new EditHourMenu(taskTime, false).INVENTORY.open(player));
+                e -> new EditHourMenu(task, taskTime, false).INVENTORY.open(player));
         contents.set(1, 1, clickableTime1Item);
 
         List<String> time2Lore = languageManager.getList(LanguageKey.TIME_TWO_LORE, (taskTime.getTime2() == null ?
@@ -60,11 +63,12 @@ public class EditSpecificTimeMenu implements InventoryProvider {
                 time2Lore.toArray(new String[]{}));
         ClickableItem clickableTime2Item = ClickableItem.of(time2Item, e -> {
             if(e.isLeftClick()) {
-                new EditHourMenu(taskTime, true).INVENTORY.open(player);
+                new EditHourMenu(task, taskTime, true).INVENTORY.open(player);
             }
 
             if(e.isRightClick()) {
                 taskTime.setTime2(null);
+                task.storeInstance();
                 this.INVENTORY.open(player);
             }
         });
@@ -75,6 +79,7 @@ public class EditSpecificTimeMenu implements InventoryProvider {
                 taskTime.isMinecraftTime());
         contents.set(1, 3, ClickableItem.of(minecraftTimeItem, e -> {
             taskTime.toggleMinecraftTime();
+            task.storeInstance();
             this.INVENTORY.open(player);
         }));
 
@@ -85,7 +90,8 @@ public class EditSpecificTimeMenu implements InventoryProvider {
             ItemStack worldItem = Items.generateItem(LanguageKey.USED_MINECRAFT_WORLD, XMaterial.MAP, worldLore);
             Callback<List<String>> worldCallback = worlds -> {
                 taskTime.setWorld(worlds.get(0));
-                new EditSpecificTimeMenu(taskTime).INVENTORY.open(player);
+                task.storeInstance();
+                new EditSpecificTimeMenu(task, taskTime).INVENTORY.open(player);
             };
 
             ArrayList<String> worlds = new ArrayList<>();
@@ -95,7 +101,7 @@ public class EditSpecificTimeMenu implements InventoryProvider {
         }
 
         contents.set(2, 8, ClickableItem.of(Items.getBackItem(),
-                e -> new EditTimesMenu(taskTime.getTask()).INVENTORY.open(player)));
+                e -> new EditTimesMenu(task).INVENTORY.open(player)));
     }
 
     @Override

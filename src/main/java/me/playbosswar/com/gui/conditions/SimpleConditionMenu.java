@@ -17,6 +17,7 @@ import me.playbosswar.com.gui.HorizontalIteratorWithBorder;
 import me.playbosswar.com.gui.MenuUtils;
 import me.playbosswar.com.language.LanguageKey;
 import me.playbosswar.com.language.LanguageManager;
+import me.playbosswar.com.tasks.Task;
 import me.playbosswar.com.utils.Callback;
 import me.playbosswar.com.utils.Items;
 import org.bukkit.enchantments.Enchantment;
@@ -32,12 +33,14 @@ import java.util.List;
 public class SimpleConditionMenu implements InventoryProvider {
     public SmartInventory INVENTORY;
     private final LanguageManager languageManager = CommandTimerPlugin.getLanguageManager();
+    private final Task task;
     private final SimpleCondition simpleCondition;
     private final Callback<?> onClose;
     private String selectedConditionGroup;
     private String ruleName;
 
-    public SimpleConditionMenu(SimpleCondition simpleCondition, Callback<?> onClose) {
+    public SimpleConditionMenu(Task task, SimpleCondition simpleCondition, Callback<?> onClose) {
+        this.task = task;
         this.simpleCondition = simpleCondition;
         this.onClose = onClose;
         this.selectedConditionGroup = simpleCondition.getConditionGroup();
@@ -63,6 +66,7 @@ public class SimpleConditionMenu implements InventoryProvider {
 
         simpleCondition.setConditionGroup(newGroup);
         this.selectedConditionGroup = newGroup;
+        task.storeInstance();
     }
 
     private void changeSelectedRule(String rule) {
@@ -76,7 +80,7 @@ public class SimpleConditionMenu implements InventoryProvider {
 
         if(conditionRule.getNeededValues() == null) {
             simpleCondition.setConditionParamFields(null);
-            simpleCondition.getTask().storeInstance();
+            task.storeInstance();
             return;
         }
 
@@ -90,7 +94,7 @@ public class SimpleConditionMenu implements InventoryProvider {
         }
 
         simpleCondition.setConditionParamFields(conditionParamFields);
-        simpleCondition.getTask().storeInstance();
+        task.storeInstance();
     }
 
     @Override

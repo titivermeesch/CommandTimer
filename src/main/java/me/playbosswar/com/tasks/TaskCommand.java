@@ -7,14 +7,12 @@ public class TaskCommand {
     private Gender gender;
     private TaskInterval interval;
     private TaskInterval delay;
-    private transient Task task;
 
-    public TaskCommand(Task task, String command, Gender gender) {
-        this.task = task;
+    public TaskCommand(String command, Gender gender) {
         this.command = command;
         this.gender = gender;
-        this.interval = new TaskInterval(task, 0, 0, 0, 0);
-        this.delay = new TaskInterval(task, 0, 0, 0, 0);
+        this.interval = new TaskInterval(0, 0, 0, 0);
+        this.delay = new TaskInterval(0, 0, 0, 0);
     }
 
     public String getCommand() {
@@ -23,7 +21,6 @@ public class TaskCommand {
 
     public void setCommand(String command) {
         this.command = command;
-        task.storeInstance();
     }
 
     public Gender getGender() {
@@ -32,7 +29,6 @@ public class TaskCommand {
 
     public void setGender(Gender gender) {
         this.gender = gender;
-        task.storeInstance();
     }
 
     public void toggleGender() {
@@ -59,14 +55,6 @@ public class TaskCommand {
         if(gender.equals(Gender.CONSOLE_PER_USER_OFFLINE)) {
             setGender(Gender.OPERATOR);
         }
-    }
-
-    public void setTask(Task task) {
-        this.task = task;
-    }
-
-    public Task getTask() {
-        return task;
     }
 
     public TaskInterval getInterval() {

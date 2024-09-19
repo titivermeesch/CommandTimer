@@ -115,7 +115,7 @@ public class PAPIPlaceholders extends PlaceholderExpansion {
         // TODO: Take into account the days
         // TODO: Take into account the hour ranges
         if(!task.getTimes().isEmpty()) {
-            Date date = TaskTimeUtils.getSoonestTaskTime(task.getTimes());
+            Date date = TaskTimeUtils.getSoonestTaskTime(task, task.getTimes());
 
             if(date == null || !task.isActive()) {
                 return -1;
