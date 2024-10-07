@@ -82,9 +82,10 @@ public class ConfigureEventValuesMenu implements InventoryProvider {
                                         .withFirstPrompt(new TextInputConversationPrompt(data -> {
                                             double text = Double.parseDouble(data);
                                             EventSimpleCondition<Double> simpleCondition =
-                                                    new EventSimpleCondition<>(task, v.getName(), text,
+                                                    new EventSimpleCondition<>(v.getName(), text,
                                                             ConditionCompare.EQUAL);
                                             condition.setSimpleCondition(simpleCondition);
+                                            task.storeInstance();
                                             new ConfigureEventValuesMenu(task, extension, eventExtension, condition, callback).INVENTORY.open(player);
                                         }));
                         conversationFactory.buildConversation(player).begin();
@@ -99,9 +100,10 @@ public class ConfigureEventValuesMenu implements InventoryProvider {
                                         .withFirstPrompt(new TextInputConversationPrompt(data -> {
                                             int text = Integer.parseInt(data);
                                             EventSimpleCondition<Integer> simpleCondition =
-                                                    new EventSimpleCondition<>(task, v.getName(), text,
+                                                    new EventSimpleCondition<>(v.getName(), text,
                                                             ConditionCompare.EQUAL);
                                             condition.setSimpleCondition(simpleCondition);
+                                            task.storeInstance();
                                             new ConfigureEventValuesMenu(task, extension, eventExtension, condition, callback).INVENTORY.open(player);
                                         }));
                         conversationFactory.buildConversation(player).begin();
@@ -115,9 +117,10 @@ public class ConfigureEventValuesMenu implements InventoryProvider {
                                         .withModality(true)
                                         .withFirstPrompt(new TextInputConversationPrompt(text -> {
                                             EventSimpleCondition<String> simpleCondition =
-                                                    new EventSimpleCondition<>(task, v.getName(), text,
+                                                    new EventSimpleCondition<>(v.getName(), text,
                                                             ConditionCompare.EQUAL);
                                             condition.setSimpleCondition(simpleCondition);
+                                            task.storeInstance();
                                             new ConfigureEventValuesMenu(task, extension, eventExtension, condition, callback).INVENTORY.open(player);
                                         }));
                         conversationFactory.buildConversation(player).begin();
@@ -127,9 +130,10 @@ public class ConfigureEventValuesMenu implements InventoryProvider {
                     if(v.getType() == World.class) {
                         Callback<List<String>> worldCallback = worlds -> {
                             EventSimpleCondition<String> simpleCondition =
-                                    new EventSimpleCondition<>(task, v.getName(), worlds.get(0),
+                                    new EventSimpleCondition<>(v.getName(), worlds.get(0),
                                             ConditionCompare.EQUAL);
                             condition.setSimpleCondition(simpleCondition);
+                            task.storeInstance();
                             new ConfigureEventValuesMenu(task, extension, eventExtension, condition, callback).INVENTORY.open(player);
 
                         };

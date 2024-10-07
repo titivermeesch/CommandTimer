@@ -24,8 +24,8 @@ public class TaskTimeUtilsTest {
         days.add(DayOfWeek.MONDAY);
         task.setDays(days);
 
-        taskTimes.add(new TaskTime(task, LocalTime.of(14, 0, 0, 0), false));
+        taskTimes.add(new TaskTime(LocalTime.of(14, 0, 0, 0), false));
 
-        Date soonestDate = TaskTimeUtils.getSoonestTaskTime(taskTimes);
+        Date soonestDate = TaskTimeUtils.getSoonestTaskTime(task, taskTimes);
     }
 }

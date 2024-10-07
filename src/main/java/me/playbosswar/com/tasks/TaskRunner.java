@@ -148,7 +148,7 @@ public class TaskRunner implements Runnable {
             final int[] accumulatedDelaySeconds = {0};
             task.getCommands().forEach(command -> {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(CommandTimerPlugin.getPlugin(),
-                        () -> tasksManager.processCommandExecution(command), 20L * accumulatedDelaySeconds[0]);
+                        () -> tasksManager.processCommandExecution(task, command), 20L * accumulatedDelaySeconds[0]);
                 accumulatedDelaySeconds[0] += command.getDelay().toSeconds();
             });
             return;
@@ -160,12 +160,12 @@ public class TaskRunner implements Runnable {
         if(selectedCommandIndex == -1) {
             task.setLastExecutedCommandIndex(0);
             Bukkit.getScheduler().runTask(CommandTimerPlugin.getPlugin(),
-                    () -> task.getCommands().forEach(tasksManager::processCommandExecution));
+                    () -> task.getCommands().forEach(command -> tasksManager.processCommandExecution(task, command)));
         } else {
             TaskCommand taskCommand = task.getCommands().get(selectedCommandIndex);
             task.setLastExecutedCommandIndex(task.getCommands().indexOf(taskCommand));
             Bukkit.getScheduler().runTask(CommandTimerPlugin.getPlugin(),
-                    () -> tasksManager.processCommandExecution(taskCommand));
+                    () -> tasksManager.processCommandExecution(task, taskCommand));
         }
 
         task.storeInstance();

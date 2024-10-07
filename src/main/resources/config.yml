@@ -5,3 +5,6 @@ timezoneOverwrite: false
 timezoneOverwriteValue: 'GMT'
 language: 'en'
 disablePapiPlaceholderWarnings: false
+database:
+  enabled: false
+  url: ''

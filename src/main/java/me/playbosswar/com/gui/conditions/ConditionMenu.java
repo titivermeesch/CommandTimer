@@ -18,6 +18,7 @@ import me.playbosswar.com.gui.conditions.inputs.ConditionCompareItem;
 import me.playbosswar.com.gui.tasks.general.TextInputConversationPrompt;
 import me.playbosswar.com.language.LanguageKey;
 import me.playbosswar.com.language.LanguageManager;
+import me.playbosswar.com.tasks.Task;
 import me.playbosswar.com.utils.Callback;
 import me.playbosswar.com.utils.Items;
 import org.bukkit.conversations.ConversationFactory;
@@ -32,11 +33,13 @@ import java.util.stream.Collectors;
 
 public class ConditionMenu implements InventoryProvider {
     public SmartInventory INVENTORY;
+    private final Task task;
     private final Condition condition;
     private final Callback<?> onClose;
     private final LanguageManager languageManager = CommandTimerPlugin.getLanguageManager();
 
-    public ConditionMenu(Condition condition, Callback<?> onClose) {
+    public ConditionMenu(Task task, Condition condition, Callback<?> onClose) {
+        this.task = task;
         this.condition = condition;
         this.onClose = onClose;
         INVENTORY = SmartInventory.builder()
@@ -56,6 +59,7 @@ public class ConditionMenu implements InventoryProvider {
 
         ClickableItem conditionTypeItem = MenuUtils.getConditionTypeItem(condition, type -> {
             condition.setConditionType(type);
+            task.storeInstance();
             this.INVENTORY.open(player);
         });
         contents.set(1, 1, conditionTypeItem);
@@ -67,7 +71,7 @@ public class ConditionMenu implements InventoryProvider {
                     languageManager.getList(LanguageKey.CONDITION_TYPE_LORE).toArray(new String[0]);
             ItemStack conditionsItem = Items.generateItem(LanguageKey.CONDITION_PARTS_TITLE,
                     XMaterial.CRAFTING_TABLE, conditionPartsLore);
-            ClickableItem clickableConditions = ClickableItem.of(conditionsItem, e -> new ConditionsMenu(condition,
+            ClickableItem clickableConditions = ClickableItem.of(conditionsItem, e -> new ConditionsMenu(task, condition,
                     internalCallback).INVENTORY.open(player));
             contents.set(1, 2, clickableConditions);
         } else {
@@ -89,7 +93,7 @@ public class ConditionMenu implements InventoryProvider {
                     XMaterial.CRAFTING_TABLE,
                     simpleConditionLore.toArray(new String[0]));
             ClickableItem clickableSimpleCondition = ClickableItem.of(simpleConditionItem,
-                    e -> new SimpleConditionMenu(simpleCondition, internalCallback).INVENTORY.open(player));
+                    e -> new SimpleConditionMenu(task, simpleCondition, internalCallback).INVENTORY.open(player));
             contents.set(1, 2, clickableSimpleCondition);
 
             ArrayList<ConditionParamField<?>> conditionParamFields = simpleCondition.getConditionParamFields();
@@ -120,7 +124,7 @@ public class ConditionMenu implements InventoryProvider {
                         ClickableItem clickableConditionCompare = ConditionCompareItem.get(conditionCompareParamField
                                 , conditionCompare -> {
                                     conditionCompareParamField.setValue(conditionCompare);
-                                    condition.getTask().storeInstance();
+                                    task.storeInstance();
                                     this.INVENTORY.open(player);
                                 });
                         contents.set(1, i, clickableConditionCompare);
@@ -147,8 +151,8 @@ public class ConditionMenu implements InventoryProvider {
                                             .withFirstPrompt(new TextInputConversationPrompt(data -> {
                                                 double text = Double.parseDouble(data);
                                                 ((ConditionParamField<Double>) conditionParamField).setValue(text);
-                                                condition.getTask().storeInstance();
-                                                new ConditionMenu(condition, onClose).INVENTORY.open(player);
+                                                task.storeInstance();
+                                                new ConditionMenu(task, condition, onClose).INVENTORY.open(player);
                                             }));
                             conversationFactory.buildConversation(player).begin();
                             player.closeInventory();
@@ -162,8 +166,8 @@ public class ConditionMenu implements InventoryProvider {
                                             .withFirstPrompt(new TextInputConversationPrompt(data -> {
                                                 int text = Integer.parseInt(data);
                                                 ((ConditionParamField<Integer>) conditionParamField).setValue(text);
-                                                condition.getTask().storeInstance();
-                                                new ConditionMenu(condition, onClose).INVENTORY.open(player);
+                                                task.storeInstance();
+                                                new ConditionMenu(task, condition, onClose).INVENTORY.open(player);
                                             }));
                             conversationFactory.buildConversation(player).begin();
                             player.closeInventory();
@@ -176,8 +180,8 @@ public class ConditionMenu implements InventoryProvider {
                                             .withModality(true)
                                             .withFirstPrompt(new TextInputConversationPrompt(text -> {
                                                 ((ConditionParamField<String>) conditionParamField).setValue(text);
-                                                condition.getTask().storeInstance();
-                                                new ConditionMenu(condition, onClose).INVENTORY.open(player);
+                                                task.storeInstance();
+                                                new ConditionMenu(task, condition, onClose).INVENTORY.open(player);
                                             }));
                             conversationFactory.buildConversation(player).begin();
                             player.closeInventory();

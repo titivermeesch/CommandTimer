@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 public class TaskTimeUtils {
     @Nullable
-    public static Date getSoonestTaskTime(List<TaskTime> taskTimes) {
+    public static Date getSoonestTaskTime(Task task, List<TaskTime> taskTimes) {
         List<Date> dates = new ArrayList<>();
 
         taskTimes.forEach(taskTime -> {
@@ -24,7 +24,7 @@ public class TaskTimeUtils {
                 if(i != 0) {
                     cal.add(Calendar.DAY_OF_YEAR, 1);
                 }
-                taskTime.getTask().getDays().forEach(day -> {
+                task.getDays().forEach(day -> {
                     if(cal.get(Calendar.DAY_OF_WEEK) != transformDow(day)) {
                         return;
                     }

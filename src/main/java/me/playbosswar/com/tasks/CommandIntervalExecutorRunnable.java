@@ -20,7 +20,7 @@ public class CommandIntervalExecutorRunnable implements Runnable {
         }
 
         Bukkit.getScheduler().runTask(CommandTimerPlugin.getInstance(),
-                () -> tasksManager.processCommandExecution(task.getCommands().get(commandIndex)));
+                () -> tasksManager.processCommandExecution(task, task.getCommands().get(commandIndex)));
         commandIndex++;
 
         if(commandIndex == task.getCommands().size()) {

@@ -9,6 +9,7 @@ import me.playbosswar.com.permissions.PermissionUtils;
 import me.playbosswar.com.tasks.CommandIntervalExecutorRunnable;
 import me.playbosswar.com.tasks.Task;
 import me.playbosswar.com.tasks.TasksManager;
+import me.playbosswar.com.utils.Files;
 import me.playbosswar.com.utils.Messages;
 import me.playbosswar.com.utils.Tools;
 import org.bukkit.Bukkit;
@@ -18,7 +19,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Date;
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.sql.SQLException;
+import java.util.List;
 
 public class MainCommand implements CommandExecutor {
     private final LanguageManager languageManager = CommandTimerPlugin.getLanguageManager();
@@ -45,6 +49,35 @@ public class MainCommand implements CommandExecutor {
         if(args.length == 1) {
             if(args[0].equalsIgnoreCase("help")) {
                 Messages.sendHelpMessage(sender);
+                return true;
+            }
+
+            if(args[0].equalsIgnoreCase("migrateToDatabase")) {
+                if(!sender.hasPermission("commandtimer.manage")) {
+                    Messages.sendNoPermission(sender);
+                    return true;
+                }
+
+                if(!CommandTimerPlugin.getPlugin().getConfig().getBoolean("database.enabled")) {
+                    Messages.sendMessage(sender, "Please enable the database in the config file");
+                    return true;
+                }
+
+                Messages.sendMessage(sender, "Migrating files to database");
+                List<Task> tasks = Files.deserializeJsonFilesIntoCommandTimers();
+                try {
+                    CommandTimerPlugin.getTaskDao().create(tasks);
+                } catch(SQLException e) {
+                    throw new RuntimeException(e);
+                }
+                tasks.forEach(t -> {
+                    try {
+                        java.nio.file.Files.delete(Paths.get(Files.getTaskFile(t.getId())));
+                    } catch(IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+                Messages.sendMessage(sender, "Migration completed successfully");
                 return true;
             }
 
@@ -131,7 +164,8 @@ public class MainCommand implements CommandExecutor {
                     final int[] accumulatedDelaySeconds = {0};
                     task.getCommands().forEach(command -> {
                         Bukkit.getScheduler().scheduleSyncDelayedTask(CommandTimerPlugin.getPlugin(),
-                                () -> tasksManager.processCommandExecution(command), 20L * accumulatedDelaySeconds[0]);
+                                () -> tasksManager.processCommandExecution(task, command),
+                                20L * accumulatedDelaySeconds[0]);
                         accumulatedDelaySeconds[0] += command.getDelay().toSeconds();
                     });
                     Messages.sendMessage(sender, languageManager.get(LanguageKey.TASK_EXECUTION_ONGOING));
@@ -141,10 +175,10 @@ public class MainCommand implements CommandExecutor {
                 int selectedCommandIndex = tasksManager.getNextTaskCommandIndex(task);
                 if(selectedCommandIndex == -1) {
                     Bukkit.getScheduler().runTask(CommandTimerPlugin.getPlugin(), () ->
-                        task.getCommands().forEach(tasksManager::processCommandExecution));
+                            task.getCommands().forEach(command -> tasksManager.processCommandExecution(task, command)));
                 } else {
                     Bukkit.getScheduler().runTask(CommandTimerPlugin.getPlugin(), () ->
-                        tasksManager.processCommandExecution(task.getCommands().get(selectedCommandIndex)));
+                            tasksManager.processCommandExecution(task, task.getCommands().get(selectedCommandIndex)));
                 }
 
                 Messages.sendMessage(sender, languageManager.get(LanguageKey.TASK_EXECUTED));
