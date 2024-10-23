@@ -83,7 +83,7 @@ public class Tools {
         Duration duration = Duration.standardSeconds(seconds);
 
         int days = (int) duration.getStandardDays();
-        int hours = (int) (duration.getStandardHours() % 48);
+        int hours = (int) (duration.getStandardHours() % 24);
         int minutes = (int) (duration.getStandardMinutes() % 60);
         int remainingSeconds = (int) (duration.getStandardSeconds() % 60);
 

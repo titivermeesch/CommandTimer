@@ -70,4 +70,10 @@ public class ToolsTest {
         String result = Tools.getTimeString(172871, "DD:HH:mm:ss");
         assertEquals("02:00:01:11", result);
     }
+
+    @Test
+    public void shouldReturnCorrectTime12() {
+        String result = Tools.getTimeString(86400, "DD:HH:mm:ss");
+        assertEquals("01:00:00:00", result);
+    }
 }

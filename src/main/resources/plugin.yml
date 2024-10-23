@@ -1,13 +1,13 @@
 main: me.playbosswar.com.CommandTimerPlugin
 name: "CommandTimer"
-version: "8.9.0"
+version: "8.9.1"
 description: "Schedule commands like you want"
 author: PlayBossWar
 api-version: 1.13
-softdepend: [ PlaceholderAPI ]
+softdepend: [PlaceholderAPI]
 
 commands:
   commandtimer:
     usage: /<command>
-    aliases: [ cmt ]
+    aliases: [cmt]
     description: List all commands
