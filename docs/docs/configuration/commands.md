@@ -42,6 +42,7 @@ Genders define for whom the command will be executed.
   the [conditions engine](conditions.md) to check if the player has the permission before executing it.
 - `CONSOLE_PER_USER_OFFLINE`: Same as `CONSOLE_PER_USER` but also executed for all offline players that every joined. *
   *Please note that the conditions engine is currently not compatible with this gender**
+- `CONSOLE_PROXY`: Execute commands on your proxy. You need the [CommandTimer Proxy Extension](https://www.spigotmc.org/resources/commandtimer-proxy-extension.120439/) for this. Depending on which version of the extension you use the commands may only be executed when a player is connected to the proxy network
 
 ## Command iteration interval
 

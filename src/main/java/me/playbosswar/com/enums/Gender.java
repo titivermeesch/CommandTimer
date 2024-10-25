@@ -21,5 +21,9 @@ public enum Gender {
     /**
      * Commands are executed for each player that ever joined
      */
-    CONSOLE_PER_USER_OFFLINE;
+    CONSOLE_PER_USER_OFFLINE,
+    /**
+     * Commands are executed in the linked proxy server
+     */
+    CONSOLE_PROXY,
 }

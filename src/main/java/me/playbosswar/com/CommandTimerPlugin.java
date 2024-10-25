@@ -59,7 +59,6 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
             options.setTracesSampleRate(0.3);
             options.setRelease(getDescription().getVersion());
         });
-
         Sentry.configureScope(scope -> {
             scope.setExtra("bukkit_version", getServer().getBukkitVersion());
             scope.setExtra("server_name", getServer().getName());
@@ -97,6 +96,7 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
         conditionEngineManager = new ConditionEngineManager();
         eventsManager = new EventsManager(tasksManager);
         inventoryManager.init();
+        getServer().getMessenger().registerOutgoingPluginChannel(plugin, "commandtimer:main");
         loadMetrics();
 
         if(getConfig().getBoolean("timeonload")) {

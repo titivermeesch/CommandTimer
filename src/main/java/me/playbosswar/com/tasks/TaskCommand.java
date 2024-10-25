@@ -53,6 +53,11 @@ public class TaskCommand {
         }
 
         if(gender.equals(Gender.CONSOLE_PER_USER_OFFLINE)) {
+            setGender(Gender.CONSOLE_PROXY);
+            return;
+        }
+
+        if(gender.equals(Gender.CONSOLE_PROXY)) {
             setGender(Gender.OPERATOR);
         }
     }
