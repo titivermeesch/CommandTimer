@@ -1,22 +1,36 @@
 package me.playbosswar.com.tasks;
 
-import me.playbosswar.com.CommandTimerPlugin;
-import me.playbosswar.com.enums.CommandExecutionMode;
-import me.playbosswar.com.enums.Gender;
-import me.playbosswar.com.hooks.PAPIHook;
-import me.playbosswar.com.utils.*;
-import org.apache.commons.lang.RandomStringUtils;
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+
+import org.apache.commons.lang3.RandomStringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandException;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
-import java.nio.file.Paths;
-import java.sql.SQLException;
-import java.util.*;
-import java.util.stream.Collectors;
+import me.playbosswar.com.CommandTimerPlugin;
+import me.playbosswar.com.enums.CommandExecutionMode;
+import me.playbosswar.com.enums.Gender;
+import me.playbosswar.com.hooks.PAPIHook;
+import me.playbosswar.com.utils.DatabaseUtils;
+import me.playbosswar.com.utils.Files;
+import me.playbosswar.com.utils.Messages;
+import me.playbosswar.com.utils.StringEnhancer;
+import me.playbosswar.com.utils.Tools;
 
 
 public class TasksManager {
@@ -288,6 +302,30 @@ public class TasksManager {
         return runOperatorCommand(task, taskCommand, new ArrayList<>());
     }
 
+    private boolean runConsoleProxyCommand(Task task, TaskCommand taskCommand) {
+        if(task.hasCondition()) {
+            boolean valid = TaskValidationHelpers.processCondition(task.getCondition(), null);
+            if(!valid) {
+                Messages.sendDebugConsole(CONDITION_NO_MATCH);
+                return false;
+            }
+        }
+
+        String command = taskCommand.getCommand();
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        DataOutputStream out = new DataOutputStream(b);
+        try {
+            out.writeUTF("executeConsoleCommand");
+            out.writeUTF(command);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Bukkit.getServer().sendPluginMessage(CommandTimerPlugin.getPlugin(), "commandtimer:main", b.toByteArray()); 
+        executionsSinceLastSync++;
+        return true;
+    }
+
     public void processCommandExecution(Task task, TaskCommand taskCommand) {
         if(!task.isActive()) {
             return;
@@ -306,6 +344,8 @@ public class TasksManager {
             executed = runConsolePerUserCommand(task, taskCommand);
         } else if(gender.equals(Gender.CONSOLE_PER_USER_OFFLINE)) {
             executed = runConsolePerUserOfflineCommand(taskCommand);
+        } else if(gender.equals(Gender.CONSOLE_PROXY)) {
+            executed = runConsoleProxyCommand(task, taskCommand); 
         }
 
         if(executed) {
