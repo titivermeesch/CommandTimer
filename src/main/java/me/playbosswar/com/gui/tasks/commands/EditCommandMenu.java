@@ -41,7 +41,7 @@ public class EditCommandMenu implements InventoryProvider {
     public void init(Player player, InventoryContents contents) {
         contents.fillBorders(ClickableItem.empty(XMaterial.BLUE_STAINED_GLASS_PANE.parseItem()));
 
-        String[] editCommandLore = new String[]{"",
+        String[] editCommandLore = new String[] { "",
                 languageManager.get(LanguageKey.EDIT_COMMAND_DESCRIPTION),
                 "",
                 languageManager.get(LanguageKey.GUI_CURRENT, taskCommand.getCommand())
@@ -62,9 +62,9 @@ public class EditCommandMenu implements InventoryProvider {
         });
         contents.set(1, 1, clickableCommandItem);
 
-
         ItemStack genderItem = Items.generateItem(LanguageKey.GENDER_ITEM, XMaterial.CHAINMAIL_HELMET,
-                languageManager.getList(LanguageKey.GENDER_SELECTOR_LORE, taskCommand.getGender().toString()).toArray(new String[]{}));
+                languageManager.getList(LanguageKey.GENDER_SELECTOR_LORE, taskCommand.getGender().toString())
+                        .toArray(new String[] {}));
         ClickableItem clickableGenderItem = ClickableItem.of(genderItem, e -> {
             taskCommand.toggleGender();
             task.storeInstance();
@@ -72,27 +72,49 @@ public class EditCommandMenu implements InventoryProvider {
         });
         contents.set(1, 2, clickableGenderItem);
 
-        if(!taskCommand.getGender().equals(Gender.CONSOLE)) {
+        ItemStack descriptionItem = Items.generateItem(LanguageKey.DESCRIPTION_ITEM, XMaterial.BOOK,
+                languageManager.getList(LanguageKey.DESCRIPTION_LORE, taskCommand.getDescription())
+                        .toArray(new String[] {}));
+
+        ConversationFactory descriptionConversationHistory = new ConversationFactory(CommandTimerPlugin.getPlugin())
+                .withModality(true)
+                .withFirstPrompt(new TextInputConversationPrompt(LanguageKey.EDIT_COMMAND_DESCRIPTION, text -> {
+                    taskCommand.setDescription(text);
+                    task.storeInstance();
+                    new EditCommandMenu(task, taskCommand).INVENTORY.open(player);
+                }));
+
+        ClickableItem clickableDescriptionItem = ClickableItem.of(descriptionItem, e -> {
+            descriptionConversationHistory.buildConversation(player).begin();
+            player.closeInventory();
+        });
+        contents.set(1, 3, clickableDescriptionItem);
+
+        if (!taskCommand.getGender().equals(Gender.CONSOLE)) {
             ItemStack intervalItem = Items.generateItem(LanguageKey.TASK_INTERVAL_ITEM_TITLE, XMaterial.CLOCK,
-                    languageManager.getList(LanguageKey.COMMAND_INTERVAL_LORE, taskCommand.getInterval().toString()).toArray(new String[]{}));
+                    languageManager.getList(LanguageKey.COMMAND_INTERVAL_LORE, taskCommand.getInterval().toString())
+                            .toArray(new String[] {}));
             ClickableItem clickableIntervalItem = ClickableItem.of(intervalItem,
                     e -> new EditIntervalMenu(task, taskCommand.getInterval(),
-                            ev -> new EditCommandMenu(task, taskCommand).INVENTORY.open(player)).INVENTORY.open(player));
-            contents.set(1, 3, clickableIntervalItem);
+                            ev -> new EditCommandMenu(task, taskCommand).INVENTORY.open(player)).INVENTORY
+                            .open(player));
+            contents.set(1, 4, clickableIntervalItem);
         }
 
-        if(task.getCommandExecutionMode().equals(CommandExecutionMode.ORDERED)) {
+        if (task.getCommandExecutionMode().equals(CommandExecutionMode.ORDERED)) {
             ItemStack delayItem = Items.generateItem(LanguageKey.COMMAND_DELAY_TITLE, XMaterial.CLOCK,
-                    languageManager.getList(LanguageKey.COMMAND_DELAY_LORE, taskCommand.getDelay().toString()).toArray(new String[]{}));
+                    languageManager.getList(LanguageKey.COMMAND_DELAY_LORE, taskCommand.getDelay().toString())
+                            .toArray(new String[] {}));
             ClickableItem clickableDelayItem = ClickableItem.of(delayItem,
                     e -> new EditIntervalMenu(task, taskCommand.getDelay(),
-                            ev -> new EditCommandMenu(task, taskCommand).INVENTORY.open(player)).INVENTORY.open(player));
+                            ev -> new EditCommandMenu(task, taskCommand).INVENTORY.open(player)).INVENTORY
+                            .open(player));
 
             // Calculate position for item
-            if(!taskCommand.getGender().equals(Gender.CONSOLE)) {
-                contents.set(1, 4, clickableDelayItem);
+            if (!taskCommand.getGender().equals(Gender.CONSOLE)) {
+                contents.set(1, 5, clickableDelayItem);
             } else {
-                contents.set(1, 3, clickableDelayItem);
+                contents.set(1, 4, clickableDelayItem);
             }
         }
 

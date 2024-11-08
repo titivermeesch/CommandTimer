@@ -59,6 +59,10 @@ public enum LanguageKey {
     TASK_COMMANDS_GUI_TITLE,
     EDIT_COMMAND_GUI_TITLE,
     EDIT_COMMAND_DESCRIPTION,
+    ITEM_DESCRIPTION_LORE,
+    DESCRIPTION_ITEM,
+    DESCRIPTION_LORE,
+    DESCRIPTION_CONVERSATION_INPUT,
     ENTER_COMMAND_INPUT,
     OPEN_COMMANDS_SETTINGS,
     OPEN_COMMANDS_SETTINGS_LORE,
@@ -151,6 +155,7 @@ public enum LanguageKey {
     MINECRAFT_TIME;
 
     public static LanguageKey getByTag(String tag) {
-        return Arrays.stream(values()).filter(value -> value.toString().equals(tag.toUpperCase())).findFirst().orElse(null);
+        return Arrays.stream(values()).filter(value -> value.toString().equals(tag.toUpperCase())).findFirst()
+                .orElse(null);
     }
 }

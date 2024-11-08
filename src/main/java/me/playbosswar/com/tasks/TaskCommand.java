@@ -7,6 +7,7 @@ public class TaskCommand {
     private Gender gender;
     private TaskInterval interval;
     private TaskInterval delay;
+    private String description = "";
 
     public TaskCommand(String command, Gender gender) {
         this.command = command;
@@ -32,32 +33,32 @@ public class TaskCommand {
     }
 
     public void toggleGender() {
-        if(gender.equals(Gender.OPERATOR)) {
+        if (gender.equals(Gender.OPERATOR)) {
             setGender(Gender.PLAYER);
             return;
         }
 
-        if(gender.equals(Gender.PLAYER)) {
+        if (gender.equals(Gender.PLAYER)) {
             setGender(Gender.CONSOLE);
             return;
         }
 
-        if(gender.equals(Gender.CONSOLE)) {
+        if (gender.equals(Gender.CONSOLE)) {
             setGender(Gender.CONSOLE_PER_USER);
             return;
         }
 
-        if(gender.equals(Gender.CONSOLE_PER_USER)) {
+        if (gender.equals(Gender.CONSOLE_PER_USER)) {
             setGender(Gender.CONSOLE_PER_USER_OFFLINE);
             return;
         }
 
-        if(gender.equals(Gender.CONSOLE_PER_USER_OFFLINE)) {
+        if (gender.equals(Gender.CONSOLE_PER_USER_OFFLINE)) {
             setGender(Gender.CONSOLE_PROXY);
             return;
         }
 
-        if(gender.equals(Gender.CONSOLE_PROXY)) {
+        if (gender.equals(Gender.CONSOLE_PROXY)) {
             setGender(Gender.OPERATOR);
         }
     }
@@ -76,5 +77,13 @@ public class TaskCommand {
 
     public void setDelay(TaskInterval delay) {
         this.delay = delay;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

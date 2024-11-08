@@ -144,5 +144,9 @@
   "back_label": "&bBack",
   "next_label": "&bNext",
   "time": "&7Time: &e$1",
-  "plugin_reloaded": "&aCommandTimer has been reloaded"
+  "plugin_reloaded": "&aCommandTimer has been reloaded",
+  "description_item": "&bDescription",
+  "item_description_lore": "&7Description: &e$1",
+  "description_lore": "\n&7Set the description for this command\n\n&7Current description: &e$1",
+  "description_conversation_input": "Enter your description:"
 }
