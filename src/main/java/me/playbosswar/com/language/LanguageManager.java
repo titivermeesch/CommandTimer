@@ -8,6 +8,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -15,7 +16,8 @@ import java.util.*;
 import java.util.logging.Level;
 
 /**
- * Take note that this in the only class where we cannot use our integrated logging system since LanguageManager may
+ * Take note that this in the only class where we cannot use our integrated
+ * logging system since LanguageManager may
  * not be fully loaded yet
  */
 public class LanguageManager {
@@ -34,7 +36,7 @@ public class LanguageManager {
         try {
             validateConfiguration();
             loadLanguage();
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -43,10 +45,11 @@ public class LanguageManager {
         boolean fileSaveRequired = false;
         JSONObject selectedLanguageObject = getLanguageObject(selectedLanguage);
         JSONObject defaultLanguageObject = getLanguageObject("default");
-        for(LanguageKey languageKey : LanguageKey.values()) {
-            if(selectedLanguageObject.get(languageKey.toString().toLowerCase()) == null) {
+        for (LanguageKey languageKey : LanguageKey.values()) {
+            if (selectedLanguageObject.get(languageKey.toString().toLowerCase()) == null) {
                 Bukkit.getLogger().log(Level.WARNING,
-                        "Translation file " + selectedLanguage + " is missing the key " + languageKey.toString().toLowerCase() + ", adding default value");
+                        "Translation file " + selectedLanguage + " is missing the key "
+                                + languageKey.toString().toLowerCase() + ", adding default value");
                 selectedLanguageObject.put(
                         languageKey.toString().toLowerCase(),
                         defaultLanguageObject.get(languageKey.toString().toLowerCase()));
@@ -54,13 +57,13 @@ public class LanguageManager {
             }
         }
 
-        if(fileSaveRequired) {
+        if (fileSaveRequired) {
             try {
                 String filePath = getLanguageFilePath(selectedLanguage);
                 FileWriter jsonFile = new FileWriter(filePath);
                 jsonFile.write(selectedLanguageObject.toJSONString());
                 jsonFile.flush();
-            } catch(IOException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
@@ -72,10 +75,11 @@ public class LanguageManager {
 
         Arrays.stream(LanguageKey.values()).forEach(languageKey -> {
             boolean fileHasKey = obj.containsKey(languageKey.toString().toLowerCase());
-            if(!fileHasKey) {
+            if (!fileHasKey) {
                 Bukkit.getPluginManager().disablePlugin(CommandTimerPlugin.getPlugin());
                 throw new RuntimeException(
-                        "Could not find translation for " + languageKey.toString().toLowerCase() + " for language " + selectedLanguage);
+                        "Could not find translation for " + languageKey.toString().toLowerCase() + " for language "
+                                + selectedLanguage);
             }
 
             translations.put(languageKey, (String) obj.get(languageKey.toString().toLowerCase()));
@@ -94,7 +98,7 @@ public class LanguageManager {
 
     public String get(LanguageKey key) {
         String text = translations.get(key);
-        if(text == null) {
+        if (text == null) {
             Bukkit.getLogger().log(Level.WARNING, "could not load key " + key.name());
             return "";
         }
@@ -104,7 +108,7 @@ public class LanguageManager {
     public String get(LanguageKey key, String... replacers) {
         String translation = Messages.colorize(translations.get(key));
 
-        for(int i = 1; i <= replacers.length; i++) {
+        for (int i = 1; i <= replacers.length; i++) {
             String placeholder = "$" + i;
             translation = translation.replace(placeholder, replacers[i - 1]);
         }

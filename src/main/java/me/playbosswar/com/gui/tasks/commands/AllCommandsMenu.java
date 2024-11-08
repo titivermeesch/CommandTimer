@@ -51,7 +51,7 @@ public class AllCommandsMenu implements InventoryProvider {
 
         contents.set(5, 8, ClickableItem.of(Items.getBackItem(), e -> new EditTaskMenu(task).INVENTORY.open(player)));
 
-        String[] addItemLore = languageManager.getList(LanguageKey.ADD_COMMAND_LORE).toArray(new String[]{});
+        String[] addItemLore = languageManager.getList(LanguageKey.ADD_COMMAND_LORE).toArray(new String[] {});
         ItemStack addItem = Items.generateItem(LanguageKey.ADD_COMMAND, XMaterial.ANVIL, addItemLore);
         ClickableItem clickableAddItem = ClickableItem.of(addItem, e -> {
             TaskCommand taskCommand = new TaskCommand("say This is my command",
@@ -64,25 +64,26 @@ public class AllCommandsMenu implements InventoryProvider {
         List<String> selectModeLore = languageManager.getList(LanguageKey.GENDER_LORE);
         selectModeLore.add("");
         selectModeLore.add(languageManager.get(LanguageKey.GUI_CURRENT, task.getCommandExecutionMode().toString()));
-        if(task.getCommandExecutionMode().equals(CommandExecutionMode.INTERVAL)) {
+        if (task.getCommandExecutionMode().equals(CommandExecutionMode.INTERVAL)) {
             selectModeLore.add(
                     languageManager.get(LanguageKey.CURRENT_INTERVAL,
-                            task.getCommandExecutionMode().equals(CommandExecutionMode.INTERVAL) ?
-                                    task.getCommandExecutionInterval().toString() : ""));
+                            task.getCommandExecutionMode().equals(CommandExecutionMode.INTERVAL)
+                                    ? task.getCommandExecutionInterval().toString()
+                                    : ""));
         }
 
         selectModeLore.add("");
         selectModeLore.add(languageManager.get(LanguageKey.LEFT_CLICK_SWITCH));
-        selectModeLore.add(task.getCommandExecutionMode().equals(CommandExecutionMode.INTERVAL) ?
-                languageManager.get(LanguageKey.RIGHT_CLICK_CHANGE_INTERVAL) : "");
-
+        selectModeLore.add(task.getCommandExecutionMode().equals(CommandExecutionMode.INTERVAL)
+                ? languageManager.get(LanguageKey.RIGHT_CLICK_CHANGE_INTERVAL)
+                : "");
 
         ItemStack selectModeItem = Items.generateItem(LanguageKey.EXECUTION_MODE, XMaterial.DIAMOND_SHOVEL,
-                selectModeLore.toArray(new String[]{}));
+                selectModeLore.toArray(new String[] {}));
         ItemMeta selectedModeItemMeta = selectModeItem.getItemMeta();
         selectedModeItemMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         ClickableItem clickableSelectModeItem = ClickableItem.of(selectModeItem, e -> {
-            if(e.getClick().equals(ClickType.LEFT)) {
+            if (e.getClick().equals(ClickType.LEFT)) {
                 task.switchCommandExecutionMode();
                 this.INVENTORY.open(player);
                 return;
@@ -97,7 +98,7 @@ public class AllCommandsMenu implements InventoryProvider {
         commandSettingsLore.add("");
         commandSettingsLore.add(languageManager.get(LanguageKey.LEFT_CLICK_EDIT));
         ItemStack commandSettingsItem = Items.generateItem(LanguageKey.OPEN_COMMANDS_SETTINGS, XMaterial.REPEATER,
-                commandSettingsLore.toArray(new String[]{}));
+                commandSettingsLore.toArray(new String[] {}));
         ClickableItem clickableCommandSettingsItem = ClickableItem.of(commandSettingsItem,
                 e -> new CommandSettingsMenu(task).INVENTORY.open(player));
         contents.set(5, 0, clickableCommandSettingsItem);
@@ -111,18 +112,19 @@ public class AllCommandsMenu implements InventoryProvider {
     private ClickableItem[] getAllCommands(Player p) {
         List<TaskCommand> commands = task.getCommands();
 
-        if(commands == null) {
+        if (commands == null) {
             return new ClickableItem[0];
         }
 
         ClickableItem[] items = new ClickableItem[commands.size()];
 
-        for(int i = 0; i < items.length; i++) {
+        for (int i = 0; i < items.length; i++) {
             TaskCommand taskCommand = commands.get(i);
             String command = taskCommand.getCommand();
-            String[] lore = new String[]{
+            String[] lore = new String[] {
                     "",
                     languageManager.get(LanguageKey.GENDER, taskCommand.getGender().toString()),
+                    languageManager.get(LanguageKey.ITEM_DESCRIPTION_LORE, taskCommand.getDescription()),
                     "",
                     languageManager.get(LanguageKey.LEFT_CLICK_EDIT),
                     languageManager.get(LanguageKey.RIGHT_CLICK_DELETE)
@@ -130,12 +132,12 @@ public class AllCommandsMenu implements InventoryProvider {
             ItemStack item = Items.generateItem("§b" + command, XMaterial.COMMAND_BLOCK_MINECART, lore);
 
             items[i] = ClickableItem.of(item, e -> {
-                if(e.getClick().equals(ClickType.LEFT)) {
+                if (e.getClick().equals(ClickType.LEFT)) {
                     new EditCommandMenu(task, taskCommand).INVENTORY.open(p);
                     return;
                 }
 
-                if(e.getClick().equals(ClickType.RIGHT)) {
+                if (e.getClick().equals(ClickType.RIGHT)) {
                     task.removeCommand(taskCommand);
                     this.INVENTORY.open(p);
                 }
