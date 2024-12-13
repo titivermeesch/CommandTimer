@@ -1,16 +1,15 @@
 plugins {
     id 'java'
-    id 'io.github.goooler.shadow' version '8.1.8'
+    id 'com.github.johnrengelman.shadow' version '7.0.0'
     id 'maven-publish'
 }
 
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
+    toolchain.languageVersion.set(JavaLanguageVersion.of(8))
 }
 
-
 group = 'me.playbosswar.com'
-version = '8.11.1'
+version = '8.11.2'
 description = 'CommandTimer'
 
 repositories {
@@ -27,6 +26,7 @@ repositories {
     maven {
         url = 'https://repo.codemc.io/repository/maven-snapshots/'
     }
+
     maven {
         url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
     }
@@ -38,13 +38,17 @@ shadowJar {
         include(dependency('com.github.cryptomorin:XSeries:8.6.2'))
         include(dependency('joda-time:joda-time:2.10.13'))
         include(dependency('org.jeasy:easy-rules-core:4.1.0'))
-        include(dependency('org.apache.commons:commons-text:1.10.0'))
+        include(dependency('org.apache.commons:commons-text:1.9'))
         include(dependency('io.sentry:sentry:7.0.0'))
         include(dependency('com.j256.ormlite:ormlite-jdbc:6.1'))
     }
     // Needed in case the server software already packs sentry
     relocate 'io.sentry', 'me.playbosswar.com.commandtimer.sentry'
-    archiveFileName = "commandtimer-java21.jar"
+    archiveFileName = "commandtimer-java8.jar"
+}
+
+compileJava {
+    options.encoding = "UTF-8"
 }
 
 dependencies {
@@ -53,22 +57,21 @@ dependencies {
     implementation 'joda-time:joda-time:2.10.13'
     implementation 'org.jeasy:easy-rules-core:4.1.0'
     implementation 'com.googlecode.json-simple:json-simple:1.1.1'
-    implementation 'org.apache.commons:commons-text:1.10.0'
+    implementation 'org.apache.commons:commons-text:1.9'
     implementation 'io.sentry:sentry:7.0.0'
     implementation 'com.j256.ormlite:ormlite-jdbc:6.1'
-    implementation 'org.apache.commons:commons-pool2:2.12.0'
-    implementation 'org.apache.commons:commons-lang3:3.17.0'
-    compileOnly 'org.spigotmc:spigot-api:1.21-R0.1-SNAPSHOT'
+    compileOnly 'org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT'
     compileOnly 'me.clip:placeholderapi:2.11.6'
-    compileOnly 'org.jetbrains:annotations:23.1.0'
+    compileOnly 'org.jetbrains:annotations:23.0.0'
 }
 
 publishing {
     publications {
         maven(MavenPublication) {
             groupId = 'me.playbosswar.com'
-            artifactId = 'commandtimer-java21'
-            version = '8.11.1'
+            artifactId = 'commandtimer-java8'
+            version = '8.11.2'
+
             from components.java
         }
     }
