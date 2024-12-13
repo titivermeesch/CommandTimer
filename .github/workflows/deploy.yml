@@ -36,19 +36,19 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-java@v3
         with:
-          distribution: 'adopt'
-          java-version: '8'
-      - run: gradle :shadowJar -b java8-build.gradle
+          distribution: "adopt"
+          java-version: "8"
+      - run: gradle :shadowJar
       - uses: actions/upload-artifact@v4
         with:
           name: commandtimer-java8
           path: build/libs/commandtimer-java8.jar
       - name: Publish package
-        run: gradle publish -b java8-build.gradle
+        run: gradle publish -b build.gradle
         continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  Build-Deploy-Java-17:
+  Build-Java-17:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -57,19 +57,10 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-java@v3
         with:
-          distribution: 'adopt'
-          java-version: '17'
+          distribution: "adopt"
+          java-version: "17"
       - run: gradle :shadowJar -b java17-build.gradle
-      - uses: actions/upload-artifact@v4
-        with:
-          name: commandtimer-java17
-          path: build/libs/commandtimer-java17.jar
-      - name: Publish package
-        continue-on-error: true
-        run: gradle publish -b java17-build.gradle
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  Build-Deploy-Java-21:
+  Build-Java-21:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -78,23 +69,14 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-java@v3
         with:
-          distribution: 'adopt'
-          java-version: '21'
-      - run: gradle :shadowJar
-      - uses: actions/upload-artifact@v4
-        with:
-          name: commandtimer-java21
-          path: build/libs/commandtimer-java21.jar
-      - name: Publish package
-        run: gradle publish
-        continue-on-error: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          distribution: "adopt"
+          java-version: "21"
+      - run: gradle :shadowJar -b java21-build.gradle
   Release:
     needs:
       - Build-Deploy-Java-8
-      - Build-Deploy-Java-17
-      - Build-Deploy-Java-21
+      - Build-Java-17
+      - Build-Java-21
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
