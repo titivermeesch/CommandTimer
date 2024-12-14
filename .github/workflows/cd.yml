@@ -44,7 +44,7 @@ jobs:
           name: commandtimer-java8
           path: build/libs/commandtimer-java8.jar
       - name: Publish package
-        run: gradle publish -b build.gradle
+        run: gradle publishMavenPublicationToGitHubPackagesRepository
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   Build-Java-17:
