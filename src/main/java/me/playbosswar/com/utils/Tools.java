@@ -6,6 +6,7 @@ import org.joda.time.Period;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
 
+import java.text.ParseException;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -43,7 +44,7 @@ public class Tools {
      * Get world time
      */
     public static String calculateWorldTime(World w) {
-        if(w == null) {
+        if (w == null) {
             return "00:00";
         }
 
@@ -51,10 +52,10 @@ public class Tools {
         long hours = gameTime / 1000 + 6;
         long minutes = (gameTime % 1000) * 60 / 1000;
 
-        if(hours == 0) {
+        if (hours == 0) {
             hours = 12;
         }
-        if(hours >= 24) {
+        if (hours >= 24) {
             hours -= 24;
         }
 
@@ -62,7 +63,7 @@ public class Tools {
         mm = mm.substring(mm.length() - 2);
 
         String realHours = String.valueOf(hours);
-        if(hours < 10) {
+        if (hours < 10) {
             realHours = "0" + realHours;
         }
 
@@ -76,7 +77,7 @@ public class Tools {
 
     public static String getTimeString(int seconds, String format) {
         // If we don't have days, we don't need to handle it ourselves
-        if(!format.contains("DD")) {
+        if (!format.contains("DD")) {
             return getTimeStringLegacy(seconds, format);
         }
 
@@ -95,7 +96,7 @@ public class Tools {
     }
 
     private static String getTenthNumeric(long val) {
-        if(val < 9) {
+        if (val < 9) {
             return "0" + val;
         }
 
@@ -108,10 +109,23 @@ public class Tools {
         long minute = TimeUnit.SECONDS.toMinutes(seconds) - (TimeUnit.SECONDS.toHours(seconds) * 60);
         long second = TimeUnit.SECONDS.toSeconds(seconds) - (TimeUnit.SECONDS.toMinutes(seconds) * 60);
 
-        if(day > 0) {
-            return getTenthNumeric(day) + ":" + getTenthNumeric(hours) + ":" + getTenthNumeric(minute) + ":" + getTenthNumeric(second);
+        if (day > 0) {
+            return getTenthNumeric(day) + ":" + getTenthNumeric(hours) + ":" + getTenthNumeric(minute) + ":"
+                    + getTenthNumeric(second);
         }
 
         return getTenthNumeric(hours) + ":" + getTenthNumeric(minute) + ":" + getTenthNumeric(second);
+    }
+
+    public static int parseTimeString(String timeString) {
+        PeriodFormatter formatter = new PeriodFormatterBuilder()
+                .appendDays().appendSuffix("d")
+                .appendHours().appendSuffix("h")
+                .appendMinutes().appendSuffix("m")
+                .appendSeconds().appendSuffix("s")
+                .toFormatter();
+
+        Period period = formatter.parsePeriod(timeString);
+        return period.toStandardSeconds().getSeconds();
     }
 }

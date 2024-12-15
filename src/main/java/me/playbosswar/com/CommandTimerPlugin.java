@@ -16,6 +16,7 @@ import me.playbosswar.com.events.JoinEvents;
 import me.playbosswar.com.hooks.HooksManager;
 import me.playbosswar.com.hooks.Metrics;
 import me.playbosswar.com.language.LanguageManager;
+import me.playbosswar.com.queue.CommandsQueueManager;
 import me.playbosswar.com.tasks.Task;
 import me.playbosswar.com.tasks.TasksManager;
 import me.playbosswar.com.tasks.persistors.*;
@@ -44,6 +45,7 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
     private static TasksManager tasksManager;
     private static ConditionEngineManager conditionEngineManager;
     private static EventsManager eventsManager;
+    private static CommandsQueueManager commandsQueueManager;
     public static Metrics metrics;
     public static Updater updater;
     public static LanguageManager languageManager;
@@ -73,7 +75,7 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(new JoinEvents(), this);
 
         Files.migrateFileNamesToFileUuids();
-        if(getConfig().getBoolean("database.enabled")) {
+        if (getConfig().getBoolean("database.enabled")) {
             try {
                 Class.forName("com.mysql.jdbc.Driver");
                 ConnectionSource connectionSource = new JdbcConnectionSource(getConfig().getString("database.url"));
@@ -83,7 +85,7 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
                         DaysPersistor.getSingleton());
                 taskDao = DaoManager.createDao(connectionSource, Task.class);
                 TableUtils.createTableIfNotExists(connectionSource, Task.class);
-            } catch(SQLException | ClassNotFoundException e) {
+            } catch (SQLException | ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
         }
@@ -95,14 +97,16 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
         inventoryManager = new InventoryManager(this);
         conditionEngineManager = new ConditionEngineManager();
         eventsManager = new EventsManager(tasksManager);
+        commandsQueueManager = new CommandsQueueManager(this, tasksManager);
         inventoryManager.init();
         getServer().getMessenger().registerOutgoingPluginChannel(plugin, "commandtimer:main");
         loadMetrics();
 
-        if(getConfig().getBoolean("timeonload")) {
+        if (getConfig().getBoolean("timeonload")) {
             Tools.printDate();
         }
-        Messages.sendConsole("&e" + getDescription().getVersion() + "&a loaded " + getTasksManager().getLoadedTasks().size() + " tasks!");
+        Messages.sendConsole("&e" + getDescription().getVersion() + "&a loaded "
+                + getTasksManager().getLoadedTasks().size() + " tasks!");
         transaction.finish();
     }
 
@@ -146,15 +150,16 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
         File existingConfigFile = new File(this.getDataFolder(), "config.yml");
         FileConfiguration existingFileConfiguration = YamlConfiguration.loadConfiguration(existingConfigFile);
 
-        for(String section : getConfig().getConfigurationSection("").getKeys(true)) {
-            if(existingFileConfiguration.get(section) != null) continue;
+        for (String section : getConfig().getConfigurationSection("").getKeys(true)) {
+            if (existingFileConfiguration.get(section) != null)
+                continue;
 
             existingFileConfiguration.set(section, getConfig().get(section));
         }
 
         try {
             existingFileConfiguration.save(existingConfigFile);
-        } catch(IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -205,6 +210,10 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
 
     public static LanguageManager getLanguageManager() {
         return languageManager;
+    }
+
+    public static CommandsQueueManager getCommandsQueueManager() {
+        return commandsQueueManager;
     }
 
     public static Dao<Task, Integer> getTaskDao() {

@@ -2,12 +2,17 @@ package me.playbosswar.com.commands;
 
 import me.playbosswar.com.CommandTimerPlugin;
 import me.playbosswar.com.enums.CommandExecutionMode;
+import me.playbosswar.com.enums.Gender;
 import me.playbosswar.com.gui.MainMenu;
 import me.playbosswar.com.language.LanguageKey;
 import me.playbosswar.com.language.LanguageManager;
 import me.playbosswar.com.permissions.PermissionUtils;
+import me.playbosswar.com.queue.CommandsQueueManager;
+import me.playbosswar.com.queue.QueuedCommand;
 import me.playbosswar.com.tasks.CommandIntervalExecutorRunnable;
 import me.playbosswar.com.tasks.Task;
+import me.playbosswar.com.tasks.TaskCommand;
+import me.playbosswar.com.tasks.TaskInterval;
 import me.playbosswar.com.tasks.TasksManager;
 import me.playbosswar.com.utils.Files;
 import me.playbosswar.com.utils.Messages;
@@ -22,6 +27,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
 
 public class MainCommand implements CommandExecutor {
@@ -29,15 +35,15 @@ public class MainCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String s, String[] args) {
-        if(!PermissionUtils.playerHasSomeAccess(sender)) {
+        if (!PermissionUtils.playerHasSomeAccess(sender)) {
             Messages.sendNoPermission(sender);
             return true;
         }
 
         TasksManager tasksManager = CommandTimerPlugin.getInstance().getTasksManager();
 
-        if(args.length == 0 && sender instanceof Player) {
-            if(!sender.hasPermission("commandtimer.manage")) {
+        if (args.length == 0 && sender instanceof Player) {
+            if (!sender.hasPermission("commandtimer.manage")) {
                 Messages.sendNoPermission(sender);
                 return true;
             }
@@ -46,19 +52,19 @@ public class MainCommand implements CommandExecutor {
             return true;
         }
 
-        if(args.length == 1) {
-            if(args[0].equalsIgnoreCase("help")) {
+        if (args.length == 1) {
+            if (args[0].equalsIgnoreCase("help")) {
                 Messages.sendHelpMessage(sender);
                 return true;
             }
 
-            if(args[0].equalsIgnoreCase("migrateToDatabase")) {
-                if(!sender.hasPermission("commandtimer.manage")) {
+            if (args[0].equalsIgnoreCase("migrateToDatabase")) {
+                if (!sender.hasPermission("commandtimer.manage")) {
                     Messages.sendNoPermission(sender);
                     return true;
                 }
 
-                if(!CommandTimerPlugin.getPlugin().getConfig().getBoolean("database.enabled")) {
+                if (!CommandTimerPlugin.getPlugin().getConfig().getBoolean("database.enabled")) {
                     Messages.sendMessage(sender, "Please enable the database in the config file");
                     return true;
                 }
@@ -67,13 +73,13 @@ public class MainCommand implements CommandExecutor {
                 List<Task> tasks = Files.deserializeJsonFilesIntoCommandTimers();
                 try {
                     CommandTimerPlugin.getTaskDao().create(tasks);
-                } catch(SQLException e) {
+                } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }
                 tasks.forEach(t -> {
                     try {
                         java.nio.file.Files.delete(Paths.get(Files.getTaskFile(t.getId())));
-                    } catch(IOException e) {
+                    } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
                 });
@@ -81,8 +87,8 @@ public class MainCommand implements CommandExecutor {
                 return true;
             }
 
-            if(args[0].equalsIgnoreCase("time")) {
-                if(!(sender instanceof Player)) {
+            if (args[0].equalsIgnoreCase("time")) {
+                if (!(sender instanceof Player)) {
                     Messages.sendNeedToBePlayer(sender);
                     return true;
                 }
@@ -93,8 +99,8 @@ public class MainCommand implements CommandExecutor {
                 return true;
             }
 
-            if(args[0].equalsIgnoreCase("reload")) {
-                if(!sender.hasPermission("commandtimer.manage")) {
+            if (args[0].equalsIgnoreCase("reload")) {
+                if (!sender.hasPermission("commandtimer.manage")) {
                     Messages.sendNoPermission(sender);
                     return true;
                 }
@@ -111,18 +117,18 @@ public class MainCommand implements CommandExecutor {
             }
         }
 
-        if(args.length == 2) {
+        if (args.length == 2) {
             String action = args[0];
             String taskName = args[1];
 
             Task task = tasksManager.getTaskByName(taskName);
-            if(task == null) {
+            if (task == null) {
                 Messages.sendMessage(sender, languageManager.get(LanguageKey.NO_TASK));
                 return true;
             }
 
-            if(action.equalsIgnoreCase("activate")) {
-                if(!sender.hasPermission("commandtimer.activate") && !sender.hasPermission("commandtimer.toggle")) {
+            if (action.equalsIgnoreCase("activate")) {
+                if (!sender.hasPermission("commandtimer.activate") && !sender.hasPermission("commandtimer.toggle")) {
                     Messages.sendNoPermission(sender);
                     return true;
                 }
@@ -132,8 +138,8 @@ public class MainCommand implements CommandExecutor {
                 return true;
             }
 
-            if(action.equalsIgnoreCase("deactivate")) {
-                if(!sender.hasPermission("commandtimer.deactivate") && !sender.hasPermission("commandtimer.toggle")) {
+            if (action.equalsIgnoreCase("deactivate")) {
+                if (!sender.hasPermission("commandtimer.deactivate") && !sender.hasPermission("commandtimer.toggle")) {
                     Messages.sendNoPermission(sender);
                     return true;
                 }
@@ -143,13 +149,13 @@ public class MainCommand implements CommandExecutor {
                 return true;
             }
 
-            if(action.equalsIgnoreCase("execute")) {
-                if(!sender.hasPermission("commandtimer.execute")) {
+            if (action.equalsIgnoreCase("execute")) {
+                if (!sender.hasPermission("commandtimer.execute")) {
                     Messages.sendNoPermission(sender);
                     return true;
                 }
 
-                if(task.getCommandExecutionMode().equals(CommandExecutionMode.INTERVAL)) {
+                if (task.getCommandExecutionMode().equals(CommandExecutionMode.INTERVAL)) {
                     Bukkit.getScheduler().runTaskTimer(
                             CommandTimerPlugin.getPlugin(),
                             new CommandIntervalExecutorRunnable(task),
@@ -160,8 +166,8 @@ public class MainCommand implements CommandExecutor {
                     return true;
                 }
 
-                if(task.getCommandExecutionMode().equals(CommandExecutionMode.ORDERED)) {
-                    final int[] accumulatedDelaySeconds = {0};
+                if (task.getCommandExecutionMode().equals(CommandExecutionMode.ORDERED)) {
+                    final int[] accumulatedDelaySeconds = { 0 };
                     task.getCommands().forEach(command -> {
                         Bukkit.getScheduler().scheduleSyncDelayedTask(CommandTimerPlugin.getPlugin(),
                                 () -> tasksManager.processCommandExecution(task, command),
@@ -173,18 +179,34 @@ public class MainCommand implements CommandExecutor {
                 }
 
                 int selectedCommandIndex = tasksManager.getNextTaskCommandIndex(task);
-                if(selectedCommandIndex == -1) {
-                    Bukkit.getScheduler().runTask(CommandTimerPlugin.getPlugin(), () ->
-                            task.getCommands().forEach(command -> tasksManager.processCommandExecution(task, command)));
+                if (selectedCommandIndex == -1) {
+                    Bukkit.getScheduler().runTask(CommandTimerPlugin.getPlugin(), () -> task.getCommands()
+                            .forEach(command -> tasksManager.processCommandExecution(task, command)));
                 } else {
-                    Bukkit.getScheduler().runTask(CommandTimerPlugin.getPlugin(), () ->
-                            tasksManager.processCommandExecution(task, task.getCommands().get(selectedCommandIndex)));
+                    Bukkit.getScheduler().runTask(CommandTimerPlugin.getPlugin(), () -> tasksManager
+                            .processCommandExecution(task, task.getCommands().get(selectedCommandIndex)));
                 }
 
                 Messages.sendMessage(sender, languageManager.get(LanguageKey.TASK_EXECUTED));
                 return true;
             }
         }
+
+        if (args[0].equalsIgnoreCase("queue")) {
+            CommandsQueueManager commandsQueueManager = CommandTimerPlugin.getCommandsQueueManager();
+            int delayInSeconds = Tools.parseTimeString(args[1]);
+            String gender = args[2];
+            Gender parsedGender = Gender.valueOf(gender.toUpperCase());
+            String command = String.join(" ", Arrays.asList(args).subList(3, args.length));
+
+            commandsQueueManager.addCommand(new QueuedCommand(new TaskCommand(command, parsedGender),
+                    new TaskInterval(0, 0, 0, delayInSeconds)));
+
+            Messages.sendMessage(sender, "Command queued");
+        }
+
+        // Command structure
+        // /cmt queue <delay> <gender> <command>
 
         Messages.sendHelpMessage(sender);
         return true;
