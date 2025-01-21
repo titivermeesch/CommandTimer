@@ -1,7 +1,6 @@
 package me.playbosswar.com.tasks;
 
 import me.playbosswar.com.CommandTimerPlugin;
-import org.bukkit.Bukkit;
 
 public class CommandIntervalExecutorRunnable implements Runnable {
     private final Task task;
