@@ -1,7 +1,6 @@
 package me.playbosswar.com.tasks;
 
 import me.playbosswar.com.CommandTimerPlugin;
-import org.bukkit.Bukkit;
 
 public class CommandIntervalExecutorRunnable implements Runnable {
     private final Task task;
@@ -19,11 +18,10 @@ public class CommandIntervalExecutorRunnable implements Runnable {
             return;
         }
 
-        Bukkit.getScheduler().runTask(CommandTimerPlugin.getInstance(),
-                () -> tasksManager.processCommandExecution(task, task.getCommands().get(commandIndex)));
-        commandIndex++;
+        tasksManager.processCommandExecution(task, task.getCommands().get(commandIndex)); // no need to run in scheduler, we are already on the main thread
+        commandIndex++; // fix commandIndex incrementation
 
-        if(commandIndex == task.getCommands().size()) {
+        if(commandIndex >= task.getCommands().size()) {
             cancelled = true;
         }
     }
