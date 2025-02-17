@@ -19,7 +19,7 @@ repositories {
         url = 'https://repo1.maven.org/maven2'
     }
     maven {
-        url = 'https://papermc.io/repo/repository/maven-public/'
+        url = 'https://repo.papermc.io/repository/maven-public/'
     }
     maven {
         url = 'https://repo.extendedclip.com/content/repositories/placeholderapi/'
