@@ -4,6 +4,7 @@ import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.playbosswar.com.CommandTimerPlugin;
 import me.playbosswar.com.utils.Tools;
 import me.playbosswar.com.tasks.Task;
+import me.playbosswar.com.tasks.TaskTime;
 import me.playbosswar.com.utils.Messages;
 import me.playbosswar.com.utils.TaskTimeUtils;
 import org.bukkit.entity.Player;
@@ -13,6 +14,7 @@ import org.joda.time.Duration;
 import org.joda.time.Interval;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class PAPIPlaceholders extends PlaceholderExpansion {
     private final Plugin plugin;
@@ -112,23 +114,71 @@ public class PAPIPlaceholders extends PlaceholderExpansion {
 
     // Get time in seconds before next task execution
     private long getNextExecution(Task task) {
+        long now = new Date().getTime();
         // TODO: Take into account the days
-        // TODO: Take into account the hour ranges
-        if(!task.getTimes().isEmpty()) {
+        if (!task.getTimes().isEmpty()) {
+            List<TaskTime> rangeTimes = task.getTimes().stream().filter(t -> t.getTime2() != null)
+                    .collect(Collectors.toList());
+
+            // If there are no range times, use the single times with the standard
+            // calculation
             Date date = TaskTimeUtils.getSoonestTaskTime(task, task.getTimes());
+            if (rangeTimes.isEmpty()) {
+                if (date == null || !task.isActive()) {
+                    return -1;
+                }
 
-            if(date == null || !task.isActive()) {
-                return -1;
+                return (date.getTime() - now) / 1000;
+            } else {
+                Calendar cal = Calendar.getInstance();
+                cal.setTimeInMillis(now);
+                int currentSeconds = cal.get(Calendar.HOUR_OF_DAY) * 3600 +
+                        cal.get(Calendar.MINUTE) * 60 +
+                        cal.get(Calendar.SECOND);
+
+                List<TaskTime> applicableTimes = new ArrayList<>();
+                for (TaskTime rangeTime : rangeTimes) {
+                    int startSeconds = rangeTime.getTime1().getHour() * 3600 +
+                            rangeTime.getTime1().getMinute() * 60 +
+                            rangeTime.getTime1().getSecond();
+                    int endSeconds = rangeTime.getTime2().getHour() * 3600 +
+                            rangeTime.getTime2().getMinute() * 60 +
+                            rangeTime.getTime2().getSecond();
+
+                    // Handle range spanning to next day
+                    if (endSeconds < startSeconds) {
+                        if (currentSeconds >= startSeconds || currentSeconds <= endSeconds) {
+                            applicableTimes.add(rangeTime);
+                        }
+                    } else if (currentSeconds >= startSeconds && currentSeconds <= endSeconds) {
+                        applicableTimes.add(rangeTime);
+                    }
+                }
+
+                if (applicableTimes.isEmpty()) {
+                    if (date == null || !task.isActive()) {
+                        return -1;
+                    }
+
+                    return (date.getTime() - now) / 1000;
+                }
+
+                Interval interval = new Interval(task.getLastExecuted().getTime(), now);
+                Duration period = interval.toDuration();
+                long timeLeft = task.getInterval().toSeconds() - period.getStandardSeconds();
+                if ((timeLeft < 0 || !task.isActive())) {
+                    return -1;
+                }
+
+                return timeLeft;
             }
-
-            return (date.getTime() - new Date().getTime()) / 1000;
         }
 
-        Interval interval = new Interval(task.getLastExecuted().getTime(), new Date().getTime());
+        Interval interval = new Interval(task.getLastExecuted().getTime(), now);
         Duration period = interval.toDuration();
         long timeLeft = task.getInterval().toSeconds() - period.getStandardSeconds();
 
-        if((timeLeft < 0 || !task.isActive())) {
+        if ((timeLeft < 0 || !task.isActive())) {
             return -1;
         }
 
