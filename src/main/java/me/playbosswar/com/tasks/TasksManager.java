@@ -378,7 +378,7 @@ public class TasksManager {
         tasksToStore.forEach(Task::storeInstance);
         stopRunner = true;
         if(runnerThread != null && runnerThread.isAlive()) {
-            runnerThread.stop();
+            runnerThread.interrupt();
         }
     }
 }
