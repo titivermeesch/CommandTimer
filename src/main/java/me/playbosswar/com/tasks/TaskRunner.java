@@ -13,7 +13,6 @@ import org.bukkit.World;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.List;
 import java.util.TimerTask;
 
@@ -138,7 +137,7 @@ public class TaskRunner implements Runnable {
 
         CommandExecutionMode executionMode = task.getCommandExecutionMode();
         if(executionMode.equals(CommandExecutionMode.INTERVAL)) {
-            Bukkit.getScheduler().runTaskTimer(CommandTimerPlugin.getPlugin(),
+            CommandTimerPlugin.getScheduler().runTaskTimer(
                     new CommandIntervalExecutorRunnable(task), 0, task.getCommandExecutionInterval().toSeconds() * 20L);
             return;
         }
@@ -147,7 +146,7 @@ public class TaskRunner implements Runnable {
         if(executionMode.equals(CommandExecutionMode.ORDERED) && hasDelayedCommands) {
             final int[] accumulatedDelaySeconds = {0};
             task.getCommands().forEach(command -> {
-                Bukkit.getScheduler().scheduleSyncDelayedTask(CommandTimerPlugin.getPlugin(),
+                CommandTimerPlugin.getScheduler().runTaskLater(
                         () -> tasksManager.processCommandExecution(task, command), 20L * accumulatedDelaySeconds[0]);
                 accumulatedDelaySeconds[0] += command.getDelay().toSeconds();
             });
@@ -159,12 +158,12 @@ public class TaskRunner implements Runnable {
 
         if(selectedCommandIndex == -1) {
             task.setLastExecutedCommandIndex(0);
-            Bukkit.getScheduler().runTask(CommandTimerPlugin.getPlugin(),
+            CommandTimerPlugin.getScheduler().runTask(
                     () -> task.getCommands().forEach(command -> tasksManager.processCommandExecution(task, command)));
         } else {
             TaskCommand taskCommand = task.getCommands().get(selectedCommandIndex);
             task.setLastExecutedCommandIndex(task.getCommands().indexOf(taskCommand));
-            Bukkit.getScheduler().runTask(CommandTimerPlugin.getPlugin(),
+            CommandTimerPlugin.getScheduler().runTask(
                     () -> tasksManager.processCommandExecution(task, taskCommand));
         }
 
@@ -173,7 +172,7 @@ public class TaskRunner implements Runnable {
 
     @Override
     public void run() {
-        Bukkit.getScheduler().runTaskTimer(CommandTimerPlugin.getPlugin(), new TimerTask() {
+        CommandTimerPlugin.getScheduler().runTaskTimer(new TimerTask() {
             @Override
             public void run() {
                 if(tasksManager.stopRunner) {

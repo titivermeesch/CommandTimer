@@ -16,6 +16,9 @@ import me.playbosswar.com.events.JoinEvents;
 import me.playbosswar.com.hooks.HooksManager;
 import me.playbosswar.com.hooks.Metrics;
 import me.playbosswar.com.language.LanguageManager;
+import me.playbosswar.com.scheduler.BukkitSchedulerAdapter;
+import me.playbosswar.com.scheduler.FoliaSchedulerAdapter;
+import me.playbosswar.com.scheduler.SchedulerAdapter;
 import me.playbosswar.com.tasks.Task;
 import me.playbosswar.com.tasks.TasksManager;
 import me.playbosswar.com.tasks.persistors.*;
@@ -48,11 +51,18 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
     public static Updater updater;
     public static LanguageManager languageManager;
     public static Dao<Task, Integer> taskDao;
+    public static SchedulerAdapter schedulerAdapter;
 
     @Override
     public void onEnable() {
         plugin = this;
         instance = this;
+
+        if(FoliaSchedulerAdapter.isSupported()) {
+            schedulerAdapter = new FoliaSchedulerAdapter(this);
+        } else {
+            schedulerAdapter = new BukkitSchedulerAdapter(this);
+        }
 
         Sentry.init(options -> {
             options.setDsn("https://45383fac83f64e65a45d83c3059eb934@o1414814.ingest.sentry.io/6755132");
@@ -209,5 +219,9 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
 
     public static Dao<Task, Integer> getTaskDao() {
         return taskDao;
+    }
+
+    public static SchedulerAdapter getScheduler() {
+        return schedulerAdapter;
     }
 }

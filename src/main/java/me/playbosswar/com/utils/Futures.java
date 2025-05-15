@@ -12,6 +12,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
+import me.playbosswar.com.CommandTimerPlugin;
+
 public final class Futures {
     private Futures() {}
 
@@ -23,7 +25,7 @@ public final class Futures {
             if (Bukkit.isPrimaryThread()) {
                 consumer.accept(value, exception);
             } else {
-                Bukkit.getScheduler().runTask(plugin, () -> consumer.accept(value, exception));
+                CommandTimerPlugin.getScheduler().runTask(() -> consumer.accept(value, exception));
             }
         });
     }

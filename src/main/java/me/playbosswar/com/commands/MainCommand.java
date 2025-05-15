@@ -12,7 +12,6 @@ import me.playbosswar.com.tasks.TasksManager;
 import me.playbosswar.com.utils.Files;
 import me.playbosswar.com.utils.Messages;
 import me.playbosswar.com.utils.Tools;
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -150,8 +149,7 @@ public class MainCommand implements CommandExecutor {
                 }
 
                 if(task.getCommandExecutionMode().equals(CommandExecutionMode.INTERVAL)) {
-                    Bukkit.getScheduler().runTaskTimer(
-                            CommandTimerPlugin.getPlugin(),
+                    CommandTimerPlugin.getScheduler().runTaskTimer(
                             new CommandIntervalExecutorRunnable(task),
                             0,
                             task.getCommandExecutionInterval().toSeconds() * 20L);
@@ -163,7 +161,7 @@ public class MainCommand implements CommandExecutor {
                 if(task.getCommandExecutionMode().equals(CommandExecutionMode.ORDERED)) {
                     final int[] accumulatedDelaySeconds = {0};
                     task.getCommands().forEach(command -> {
-                        Bukkit.getScheduler().scheduleSyncDelayedTask(CommandTimerPlugin.getPlugin(),
+                        CommandTimerPlugin.getScheduler().runTaskLater(
                                 () -> tasksManager.processCommandExecution(task, command),
                                 20L * accumulatedDelaySeconds[0]);
                         accumulatedDelaySeconds[0] += command.getDelay().toSeconds();
@@ -174,10 +172,10 @@ public class MainCommand implements CommandExecutor {
 
                 int selectedCommandIndex = tasksManager.getNextTaskCommandIndex(task);
                 if(selectedCommandIndex == -1) {
-                    Bukkit.getScheduler().runTask(CommandTimerPlugin.getPlugin(), () ->
+                    CommandTimerPlugin.getScheduler().runTask(() ->
                             task.getCommands().forEach(command -> tasksManager.processCommandExecution(task, command)));
                 } else {
-                    Bukkit.getScheduler().runTask(CommandTimerPlugin.getPlugin(), () ->
+                    CommandTimerPlugin.getScheduler().runTask(() ->
                             tasksManager.processCommandExecution(task, task.getCommands().get(selectedCommandIndex)));
                 }
 
