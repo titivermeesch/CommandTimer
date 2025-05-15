@@ -138,8 +138,8 @@ public class TasksManager {
                     Messages.sendDebugConsole(CONDITION_NO_MATCH);
                     continue;
                 }
-                willExecute = true;
             }
+            willExecute = true;
 
             if(delayedExecutions) {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(CommandTimerPlugin.getPlugin(), () -> {
@@ -216,9 +216,9 @@ public class TasksManager {
                     Messages.sendDebugConsole(CONDITION_NO_MATCH);
                     continue;
                 }
-                willExecute = true;
             }
 
+            willExecute = true;
             if(delayedExecution) {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(CommandTimerPlugin.getPlugin(), () -> runForPlayer(p,
                         command), 20L * i * taskCommand.getInterval().toSeconds());
@@ -274,8 +274,8 @@ public class TasksManager {
                         }
                         continue;
                     }
-                    willExecute = true;
                 }
+                willExecute = true;
 
                 if(delayedExecutions) {
                     Bukkit.getScheduler().scheduleSyncDelayedTask(CommandTimerPlugin.getPlugin(), () -> {
