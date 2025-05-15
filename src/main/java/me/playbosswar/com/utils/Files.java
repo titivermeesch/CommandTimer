@@ -13,6 +13,8 @@ import org.jetbrains.annotations.Nullable;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import com.google.gson.JsonParseException;
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -191,8 +193,10 @@ public class Files {
                         }
 
                         tasks.add(task);
+                    } catch (JsonParseException e) {
+                        Bukkit.getLogger().log(Level.SEVERE, "Failed to process " + file.getName() + " because of " + e.getMessage());
                     } catch(ParseException e) {
-                        Bukkit.getLogger().log(Level.SEVERE, "Failed to process " + file.getName());
+                        Bukkit.getLogger().log(Level.SEVERE, "Failed to process " + file.getName() + " because of " + e.getMessage());
                     }
 
                 }
