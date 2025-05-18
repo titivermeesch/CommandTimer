@@ -145,7 +145,7 @@ public class TasksManager {
                 CommandTimerPlugin.getScheduler().runTaskLater(() -> {
                     Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command, p));
                     executionsSinceLastSync++;
-                }, 20L * i * taskCommand.getInterval().toSeconds());
+                }, (20L * i * taskCommand.getInterval().toSeconds()) + 1);
             } else {
                 Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command, p));
                 executionsSinceLastSync++;
@@ -167,7 +167,7 @@ public class TasksManager {
                 CommandTimerPlugin.getScheduler().runTaskLater(() -> {
                     Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command, p));
                     executionsSinceLastSync++;
-                }, 20L * i * taskCommand.getInterval().toSeconds());
+                }, (20L * i * taskCommand.getInterval().toSeconds()) + 1);
             } else {
                 Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command, p));
                 executionsSinceLastSync++;
@@ -221,7 +221,7 @@ public class TasksManager {
             willExecute = true;
             if(delayedExecution) {
                 CommandTimerPlugin.getScheduler().runTaskLater(() -> runForPlayer(p,
-                        command), 20L * i * taskCommand.getInterval().toSeconds());
+                        command), (20L * i * taskCommand.getInterval().toSeconds()) + 1);
             } else {
                 runForPlayer(p, command);
             }
@@ -281,7 +281,7 @@ public class TasksManager {
                     CommandTimerPlugin.getScheduler().runTaskLater(() -> {
                         p.performCommand(PAPIHook.parsePAPI(command, p));
                         executionsSinceLastSync++;
-                    }, 20L * i * taskCommand.getInterval().toSeconds());
+                    }, (20L * i * taskCommand.getInterval().toSeconds()) + 1);
                 } else {
                     p.performCommand(PAPIHook.parsePAPI(command, p));
                     executionsSinceLastSync++;

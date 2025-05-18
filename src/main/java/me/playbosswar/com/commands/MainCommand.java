@@ -151,7 +151,7 @@ public class MainCommand implements CommandExecutor {
                 if(task.getCommandExecutionMode().equals(CommandExecutionMode.INTERVAL)) {
                     CommandTimerPlugin.getScheduler().runTaskTimer(
                             new CommandIntervalExecutorRunnable(task),
-                            0,
+                            1,
                             task.getCommandExecutionInterval().toSeconds() * 20L);
 
                     Messages.sendMessage(sender, languageManager.get(LanguageKey.TASK_EXECUTION_ONGOING));
@@ -163,7 +163,7 @@ public class MainCommand implements CommandExecutor {
                     task.getCommands().forEach(command -> {
                         CommandTimerPlugin.getScheduler().runTaskLater(
                                 () -> tasksManager.processCommandExecution(task, command),
-                                20L * accumulatedDelaySeconds[0]);
+                                (20L * accumulatedDelaySeconds[0]) + 1);
                         accumulatedDelaySeconds[0] += command.getDelay().toSeconds();
                     });
                     Messages.sendMessage(sender, languageManager.get(LanguageKey.TASK_EXECUTION_ONGOING));
