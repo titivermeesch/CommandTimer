@@ -18,21 +18,24 @@ import org.jetbrains.annotations.Nullable;
 
 public class FoliaSchedulerAdapter implements SchedulerAdapter {
     private static final boolean SUPPORTED;
+    private static final boolean HAS_IS_CANCELLED;
 
     private static @Nullable MethodHandle ASYNC_SCHEDULER_RUN;
     private static @Nullable MethodHandle ASYNC_SCHEDULER_RUN_DELAYED;
     private static @Nullable MethodHandle ASYNC_SCHEDULER_RUN_RATE;
-
+    private static @Nullable MethodHandle SCHEDULED_TASK_IS_CANCELLED;
     private static @Nullable MethodHandle SCHEDULED_TASK_CANCEL;
 
     static {
         boolean supporting = true;
+        boolean hasMethod = false;
         try {
             Lookup lookup = MethodHandles.publicLookup();
             Class<?> scheduledTaskType = Class.forName("io.papermc.paper.threadedregions.scheduler.ScheduledTask");
             SCHEDULED_TASK_CANCEL = lookup.findVirtual(scheduledTaskType, "cancel", MethodType.methodType(
                     Class.forName("io.papermc.paper.threadedregions.scheduler.ScheduledTask$CancelledState")
             ));
+            SCHEDULED_TASK_IS_CANCELLED = lookup.findVirtual(scheduledTaskType, "isCancelled", MethodType.methodType(boolean.class));
 
             Class<?> asyncSchedulerType = Class.forName("io.papermc.paper.threadedregions.scheduler.GlobalRegionScheduler");
 
@@ -48,12 +51,19 @@ public class FoliaSchedulerAdapter implements SchedulerAdapter {
             ASYNC_SCHEDULER_RUN_RATE = lookup.findVirtual(asyncSchedulerType, "runAtFixedRate", MethodType.methodType(
                     scheduledTaskType, Plugin.class, Consumer.class, long.class, long.class
             )).bindTo(asyncScheduler);
+
+            try {
+                BukkitTask.class.getMethod("isCancelled");
+                hasMethod = true;
+            } catch (NoSuchMethodException ignored) {
+            }
         } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException e) {
             supporting = false;
         } catch (Throwable throwable) {
             Logger.getLogger(FoliaSchedulerAdapter.class.getName()).log(Level.WARNING, "Error in Folia scheduler adapter initialization", throwable);
         }
         SUPPORTED = supporting;
+        HAS_IS_CANCELLED = hasMethod;
     }
 
     private final Plugin plugin;
@@ -119,6 +129,18 @@ public class FoliaSchedulerAdapter implements SchedulerAdapter {
 
         @Override
         public boolean isSync() {
+            return false;
+        }
+
+        public boolean isCancelled() {
+            if (!HAS_IS_CANCELLED) {
+                return false;
+            }
+            try {
+                return (boolean) Objects.requireNonNull(SCHEDULED_TASK_IS_CANCELLED).invoke(task);
+            } catch (Throwable e) {
+                plugin.getLogger().log(Level.SEVERE, "Error in task cancellation check by the Folia scheduler adapter", e);
+            }
             return false;
         }
 
