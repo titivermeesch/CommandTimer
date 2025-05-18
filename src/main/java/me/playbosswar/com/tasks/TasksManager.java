@@ -142,10 +142,10 @@ public class TasksManager {
             willExecute = true;
 
             if(delayedExecutions) {
-                Bukkit.getScheduler().scheduleSyncDelayedTask(CommandTimerPlugin.getPlugin(), () -> {
+                CommandTimerPlugin.getScheduler().runTaskLater(() -> {
                     Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command, p));
                     executionsSinceLastSync++;
-                }, 20L * i * taskCommand.getInterval().toSeconds());
+                }, (20L * i * taskCommand.getInterval().toSeconds()) + 1);
             } else {
                 Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command, p));
                 executionsSinceLastSync++;
@@ -164,10 +164,10 @@ public class TasksManager {
         // TODO: Caching could be used heres, Bukkit.getOfflinePlayers() is pretty expensive
         for(OfflinePlayer p : Bukkit.getOfflinePlayers()) {
             if(delayedExecutions) {
-                Bukkit.getScheduler().scheduleSyncDelayedTask(CommandTimerPlugin.getPlugin(), () -> {
+                CommandTimerPlugin.getScheduler().runTaskLater(() -> {
                     Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command, p));
                     executionsSinceLastSync++;
-                }, 20L * i * taskCommand.getInterval().toSeconds());
+                }, (20L * i * taskCommand.getInterval().toSeconds()) + 1);
             } else {
                 Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command, p));
                 executionsSinceLastSync++;
@@ -220,8 +220,8 @@ public class TasksManager {
 
             willExecute = true;
             if(delayedExecution) {
-                Bukkit.getScheduler().scheduleSyncDelayedTask(CommandTimerPlugin.getPlugin(), () -> runForPlayer(p,
-                        command), 20L * i * taskCommand.getInterval().toSeconds());
+                CommandTimerPlugin.getScheduler().runTaskLater(() -> runForPlayer(p,
+                        command), (20L * i * taskCommand.getInterval().toSeconds()) + 1);
             } else {
                 runForPlayer(p, command);
             }
@@ -278,10 +278,10 @@ public class TasksManager {
                 willExecute = true;
 
                 if(delayedExecutions) {
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(CommandTimerPlugin.getPlugin(), () -> {
+                    CommandTimerPlugin.getScheduler().runTaskLater(() -> {
                         p.performCommand(PAPIHook.parsePAPI(command, p));
                         executionsSinceLastSync++;
-                    }, 20L * i * taskCommand.getInterval().toSeconds());
+                    }, (20L * i * taskCommand.getInterval().toSeconds()) + 1);
                 } else {
                     p.performCommand(PAPIHook.parsePAPI(command, p));
                     executionsSinceLastSync++;
