@@ -95,6 +95,14 @@ public class PAPIPlaceholders extends PlaceholderExpansion {
             return getNextExecutionText(task, fallbackMessage, true);
         }
 
+        if(placeholder.getPlaceholderType().equalsIgnoreCase("lastExecution")) {
+            return getLastExecutionText(task, fallbackMessage, false);
+        }
+
+        if(placeholder.getPlaceholderType().equalsIgnoreCase("lastExecutionFormat")) {
+            return getLastExecutionText(task, fallbackMessage, true);
+        }
+
         return getNextExecutionText(task, fallbackMessage, true, placeholder.getPlaceholderType());
     }
 
@@ -185,6 +193,17 @@ public class PAPIPlaceholders extends PlaceholderExpansion {
         return timeLeft;
     }
 
+    private long getLastExecution(Task task) {
+        if (task.getLastExecuted() == null || !task.isActive()) {
+            return -1;
+        }
+
+        long now = new Date().getTime();
+        Interval interval = new Interval(task.getLastExecuted().getTime(), now);
+        Duration period = interval.toDuration();
+        return period.getStandardSeconds();
+    }
+
     private String getNextExecutionText(Task task, String fallbackMessage, boolean format, String timeFormat) {
         long seconds = getNextExecution(task);
 
@@ -199,8 +218,26 @@ public class PAPIPlaceholders extends PlaceholderExpansion {
         return seconds + "";
     }
 
+    private String getLastExecutionText(Task task, String fallbackMessage, boolean format, String timeFormat) {
+        long seconds = getLastExecution(task);
+
+        if(seconds == -1) {
+            return fallbackMessage != null ? fallbackMessage : "";
+        }
+
+        if(format) {
+            return Tools.getTimeString((int) seconds, timeFormat);
+        }
+
+        return seconds + "";
+    }
+
     private String getNextExecutionText(Task task, String fallbackMessage, boolean format) {
         return getNextExecutionText(task, fallbackMessage, format, "HH:mm:ss");
+    }
+
+    private String getLastExecutionText(Task task, String fallbackMessage, boolean format) {
+        return getLastExecutionText(task, fallbackMessage, format, "HH:mm:ss");
     }
 
     // Get first task that will execute
