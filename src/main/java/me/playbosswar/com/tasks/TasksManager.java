@@ -14,8 +14,8 @@ import java.util.stream.Collectors;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
+import java.util.Random;
 
-import org.apache.commons.lang3.RandomStringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandException;
@@ -35,6 +35,8 @@ import me.playbosswar.com.utils.Tools;
 
 public class TasksManager {
     private static final String CONDITION_NO_MATCH = "Conditions did not match";
+    private static final Random RANDOM = new Random();
+    private static final String ALPHA_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     private List<Task> loadedTasks = new ArrayList<>();
     private Thread runnerThread;
     public boolean stopRunner = false;
@@ -67,11 +69,19 @@ public class TasksManager {
     }
 
     public Task createTask() {
-        String name = "Task_" + RandomStringUtils.randomAlphabetic(4);
+        String name = "Task_" + generateRandomAlphabetic(4);
         Task task = new Task(name);
         loadedTasks.add(task);
 
         return task;
+    }
+
+    private static String generateRandomAlphabetic(int length) {
+        StringBuilder sb = new StringBuilder(length);
+        for (int i = 0; i < length; i++) {
+            sb.append(ALPHA_CHARS.charAt(RANDOM.nextInt(ALPHA_CHARS.length())));
+        }
+        return sb.toString();
     }
 
     @Nullable
