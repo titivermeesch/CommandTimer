@@ -38,13 +38,13 @@ jobs:
         with:
           distribution: "adopt"
           java-version: "8"
-      - run: gradle :shadowJar
+      - run: ./gradlew :shadowJar
       - uses: actions/upload-artifact@v4
         with:
           name: commandtimer-java8
           path: build/libs/commandtimer-java8.jar
       - name: Publish package
-        run: gradle publishMavenPublicationToGitHubPackagesRepository
+        run: ./gradlew publishMavenPublicationToGitHubPackagesRepository
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   Build-Java-17:
@@ -58,7 +58,7 @@ jobs:
         with:
           distribution: "adopt"
           java-version: "17"
-      - run: gradle :shadowJar -b java17-build.gradle
+      - run: ./gradlew :shadowJar -b java17-build.gradle
   Build-Java-21:
     runs-on: ubuntu-latest
     permissions:
@@ -70,7 +70,7 @@ jobs:
         with:
           distribution: "adopt"
           java-version: "21"
-      - run: gradle :shadowJar -b java21-build.gradle
+      - run: ./gradlew :shadowJar -b java21-build.gradle
   Release:
     needs:
       - Build-Deploy-Java-8
