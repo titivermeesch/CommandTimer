@@ -36,6 +36,8 @@
   "configure_condition": "&bConfigure condition",
   "add_condition": "&bAdd condition",
   "text_input_default": "Enter your value:",
+  "text_input_cancel_hint": "Type 'cancel' or 'exit' to cancel",
+  "text_input_cancelled": "Text input cancelled",
   "type": "&7Type: &e$1",
   "current_configuration": "&bCurrent configuration:",
   "author": "&7Author: &e$1",

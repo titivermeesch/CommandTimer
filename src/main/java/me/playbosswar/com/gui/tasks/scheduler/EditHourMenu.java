@@ -65,6 +65,7 @@ public class EditHourMenu implements InventoryProvider {
                         languageManager.get(LanguageKey.HOURS_LABEL, String.valueOf(usedTime.getHour())),
                         XMaterial.CLOCK,
                         clockLore),
+                LanguageKey.TEXT_INPUT_DEFAULT,
                 data -> {
                     int hours = Integer.parseInt(data);
                     setTime(task, finalUsedTime.withHour(hours));
@@ -87,6 +88,7 @@ public class EditHourMenu implements InventoryProvider {
                         languageManager.get(LanguageKey.MINUTES_LABEL, String.valueOf(usedTime.getMinute())),
                         XMaterial.CLOCK,
                         clockLore),
+                LanguageKey.TEXT_INPUT_DEFAULT,
                 data -> {
                     int minutes = Integer.parseInt(data);
                     setTime(task, finalUsedTime.withMinute(minutes));
@@ -108,6 +110,7 @@ public class EditHourMenu implements InventoryProvider {
                 Items.generateItem(languageManager.get(LanguageKey.SECONDS_LABEL, String.valueOf(usedTime.getSecond())),
                         XMaterial.CLOCK,
                         clockLore),
+                LanguageKey.TEXT_INPUT_DEFAULT,
                 data -> {
                     int seconds = Integer.parseInt(data);
                     setTime(task, finalUsedTime.withSecond(seconds));

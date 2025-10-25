@@ -52,6 +52,7 @@ public class EditIntervalMenu implements InventoryProvider {
                 Items.generateItem(languageManager.get(LanguageKey.DAYS_LABEL, String.valueOf(interval.getDays())),
                         XMaterial.CLOCK,
                         clockLore),
+                LanguageKey.TEXT_INPUT_DEFAULT,
                 data -> {
                     int days = Integer.parseInt(data);
                     interval.setDays(days);
@@ -76,6 +77,7 @@ public class EditIntervalMenu implements InventoryProvider {
                 Items.generateItem(languageManager.get(LanguageKey.HOURS_LABEL, String.valueOf(interval.getHours())),
                         XMaterial.CLOCK,
                         clockLore),
+                LanguageKey.TEXT_INPUT_DEFAULT,
                 data -> {
                     int hours = Integer.parseInt(data);
                     interval.setHours(hours);
@@ -101,6 +103,7 @@ public class EditIntervalMenu implements InventoryProvider {
                                 String.valueOf(interval.getMinutes())),
                         XMaterial.CLOCK,
                         clockLore),
+                LanguageKey.TEXT_INPUT_DEFAULT,
                 data -> {
                     int minutes = Integer.parseInt(data);
                     interval.setMinutes(minutes);
@@ -126,6 +129,7 @@ public class EditIntervalMenu implements InventoryProvider {
                                 String.valueOf(interval.getSeconds())),
                         XMaterial.CLOCK,
                         clockLore),
+                LanguageKey.TEXT_INPUT_DEFAULT,
                 data -> {
                     int seconds = Integer.parseInt(data);
                     interval.setSeconds(seconds);

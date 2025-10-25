@@ -13,7 +13,7 @@ import me.playbosswar.com.api.events.EventExtension;
 import me.playbosswar.com.api.events.EventSimpleCondition;
 import me.playbosswar.com.conditionsengine.ConditionCompare;
 import me.playbosswar.com.gui.HorizontalIteratorWithBorder;
-import me.playbosswar.com.gui.tasks.general.TextInputConversationPrompt;
+import me.playbosswar.com.gui.TextInputManager;
 import me.playbosswar.com.gui.tasks.scheduler.EditSpecificTimeMenu;
 import me.playbosswar.com.gui.worlds.WorldSelector;
 import me.playbosswar.com.language.LanguageKey;
@@ -23,7 +23,6 @@ import me.playbosswar.com.utils.ArrayUtils;
 import me.playbosswar.com.utils.Callback;
 import me.playbosswar.com.utils.Items;
 import org.bukkit.World;
-import org.bukkit.conversations.ConversationFactory;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -76,55 +75,43 @@ public class ConfigureEventValuesMenu implements InventoryProvider {
             return ClickableItem.of(item, e -> {
                 if(e.isLeftClick()) {
                     if(v.getType() == Double.class) {
-                        ConversationFactory conversationFactory =
-                                new ConversationFactory(CommandTimerPlugin.getPlugin())
-                                        .withModality(true)
-                                        .withFirstPrompt(new TextInputConversationPrompt(data -> {
-                                            double text = Double.parseDouble(data);
-                                            EventSimpleCondition<Double> simpleCondition =
-                                                    new EventSimpleCondition<>(v.getName(), text,
-                                                            ConditionCompare.EQUAL);
-                                            condition.setSimpleCondition(simpleCondition);
-                                            task.storeInstance();
-                                            new ConfigureEventValuesMenu(task, extension, eventExtension, condition, callback).INVENTORY.open(player);
-                                        }));
-                        conversationFactory.buildConversation(player).begin();
                         player.closeInventory();
+                        TextInputManager.getInstance().startTextInput(player, LanguageKey.TEXT_INPUT_DEFAULT, data -> {
+                            double text = Double.parseDouble(data);
+                            EventSimpleCondition<Double> simpleCondition =
+                                    new EventSimpleCondition<>(v.getName(), text,
+                                            ConditionCompare.EQUAL);
+                            condition.setSimpleCondition(simpleCondition);
+                            task.storeInstance();
+                            new ConfigureEventValuesMenu(task, extension, eventExtension, condition, callback).INVENTORY.open(player);
+                        });
                         return;
                     }
 
                     if(v.getType() == Integer.class) {
-                        ConversationFactory conversationFactory =
-                                new ConversationFactory(CommandTimerPlugin.getPlugin())
-                                        .withModality(true)
-                                        .withFirstPrompt(new TextInputConversationPrompt(data -> {
-                                            int text = Integer.parseInt(data);
-                                            EventSimpleCondition<Integer> simpleCondition =
-                                                    new EventSimpleCondition<>(v.getName(), text,
-                                                            ConditionCompare.EQUAL);
-                                            condition.setSimpleCondition(simpleCondition);
-                                            task.storeInstance();
-                                            new ConfigureEventValuesMenu(task, extension, eventExtension, condition, callback).INVENTORY.open(player);
-                                        }));
-                        conversationFactory.buildConversation(player).begin();
                         player.closeInventory();
+                        TextInputManager.getInstance().startTextInput(player, LanguageKey.TEXT_INPUT_DEFAULT, data -> {
+                            int text = Integer.parseInt(data);
+                            EventSimpleCondition<Integer> simpleCondition =
+                                    new EventSimpleCondition<>(v.getName(), text,
+                                            ConditionCompare.EQUAL);
+                            condition.setSimpleCondition(simpleCondition);
+                            task.storeInstance();
+                            new ConfigureEventValuesMenu(task, extension, eventExtension, condition, callback).INVENTORY.open(player);
+                        });
                         return;
                     }
 
                     if(v.getType() == String.class) {
-                        ConversationFactory conversationFactory =
-                                new ConversationFactory(CommandTimerPlugin.getPlugin())
-                                        .withModality(true)
-                                        .withFirstPrompt(new TextInputConversationPrompt(text -> {
-                                            EventSimpleCondition<String> simpleCondition =
-                                                    new EventSimpleCondition<>(v.getName(), text,
-                                                            ConditionCompare.EQUAL);
-                                            condition.setSimpleCondition(simpleCondition);
-                                            task.storeInstance();
-                                            new ConfigureEventValuesMenu(task, extension, eventExtension, condition, callback).INVENTORY.open(player);
-                                        }));
-                        conversationFactory.buildConversation(player).begin();
                         player.closeInventory();
+                        TextInputManager.getInstance().startTextInput(player, LanguageKey.TEXT_INPUT_DEFAULT, text -> {
+                            EventSimpleCondition<String> simpleCondition =
+                                    new EventSimpleCondition<>(v.getName(), text,
+                                            ConditionCompare.EQUAL);
+                            condition.setSimpleCondition(simpleCondition);
+                            task.storeInstance();
+                            new ConfigureEventValuesMenu(task, extension, eventExtension, condition, callback).INVENTORY.open(player);
+                        });
                     }
 
                     if(v.getType() == World.class) {
