@@ -15,13 +15,12 @@ import me.playbosswar.com.conditionsengine.validations.ConditionType;
 import me.playbosswar.com.conditionsengine.validations.SimpleCondition;
 import me.playbosswar.com.gui.MenuUtils;
 import me.playbosswar.com.gui.conditions.inputs.ConditionCompareItem;
-import me.playbosswar.com.gui.tasks.general.TextInputConversationPrompt;
+import me.playbosswar.com.gui.TextInputManager;
 import me.playbosswar.com.language.LanguageKey;
 import me.playbosswar.com.language.LanguageManager;
 import me.playbosswar.com.tasks.Task;
 import me.playbosswar.com.utils.Callback;
 import me.playbosswar.com.utils.Items;
-import org.bukkit.conversations.ConversationFactory;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -145,46 +144,34 @@ public class ConditionMenu implements InventoryProvider {
                                     lore);
                     ClickableItem clickableItem = ClickableItem.of(item, e -> {
                         if(neededValue.getType() == Double.class) {
-                            ConversationFactory conversationFactory =
-                                    new ConversationFactory(CommandTimerPlugin.getPlugin())
-                                            .withModality(true)
-                                            .withFirstPrompt(new TextInputConversationPrompt(data -> {
-                                                double text = Double.parseDouble(data);
-                                                ((ConditionParamField<Double>) conditionParamField).setValue(text);
-                                                task.storeInstance();
-                                                new ConditionMenu(task, condition, onClose).INVENTORY.open(player);
-                                            }));
-                            conversationFactory.buildConversation(player).begin();
                             player.closeInventory();
+                            TextInputManager.getInstance().startTextInput(player, LanguageKey.TEXT_INPUT_DEFAULT, data -> {
+                                double text = Double.parseDouble(data);
+                                ((ConditionParamField<Double>) conditionParamField).setValue(text);
+                                task.storeInstance();
+                                new ConditionMenu(task, condition, onClose).INVENTORY.open(player);
+                            });
                             return;
                         }
 
                         if(neededValue.getType() == Integer.class) {
-                            ConversationFactory conversationFactory =
-                                    new ConversationFactory(CommandTimerPlugin.getPlugin())
-                                            .withModality(true)
-                                            .withFirstPrompt(new TextInputConversationPrompt(data -> {
-                                                int text = Integer.parseInt(data);
-                                                ((ConditionParamField<Integer>) conditionParamField).setValue(text);
-                                                task.storeInstance();
-                                                new ConditionMenu(task, condition, onClose).INVENTORY.open(player);
-                                            }));
-                            conversationFactory.buildConversation(player).begin();
                             player.closeInventory();
+                            TextInputManager.getInstance().startTextInput(player, LanguageKey.TEXT_INPUT_DEFAULT, data -> {
+                                int text = Integer.parseInt(data);
+                                ((ConditionParamField<Integer>) conditionParamField).setValue(text);
+                                task.storeInstance();
+                                new ConditionMenu(task, condition, onClose).INVENTORY.open(player);
+                            });
                             return;
                         }
 
                         if(neededValue.getType() == String.class) {
-                            ConversationFactory conversationFactory =
-                                    new ConversationFactory(CommandTimerPlugin.getPlugin())
-                                            .withModality(true)
-                                            .withFirstPrompt(new TextInputConversationPrompt(text -> {
-                                                ((ConditionParamField<String>) conditionParamField).setValue(text);
-                                                task.storeInstance();
-                                                new ConditionMenu(task, condition, onClose).INVENTORY.open(player);
-                                            }));
-                            conversationFactory.buildConversation(player).begin();
                             player.closeInventory();
+                            TextInputManager.getInstance().startTextInput(player, LanguageKey.TEXT_INPUT_DEFAULT, text -> {
+                                ((ConditionParamField<String>) conditionParamField).setValue(text);
+                                task.storeInstance();
+                                new ConditionMenu(task, condition, onClose).INVENTORY.open(player);
+                            });
                         }
                     });
 

@@ -8,14 +8,13 @@ import fr.minuskube.inv.content.InventoryProvider;
 import me.playbosswar.com.CommandTimerPlugin;
 import me.playbosswar.com.enums.CommandExecutionMode;
 import me.playbosswar.com.enums.Gender;
-import me.playbosswar.com.gui.tasks.general.TextInputConversationPrompt;
+import me.playbosswar.com.gui.TextInputManager;
 import me.playbosswar.com.gui.tasks.scheduler.EditIntervalMenu;
 import me.playbosswar.com.language.LanguageKey;
 import me.playbosswar.com.language.LanguageManager;
 import me.playbosswar.com.tasks.Task;
 import me.playbosswar.com.tasks.TaskCommand;
 import me.playbosswar.com.utils.Items;
-import org.bukkit.conversations.ConversationFactory;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -47,18 +46,14 @@ public class EditCommandMenu implements InventoryProvider {
                 languageManager.get(LanguageKey.GUI_CURRENT, taskCommand.getCommand())
         };
 
-        ConversationFactory conversationFactory = new ConversationFactory(CommandTimerPlugin.getPlugin())
-                .withModality(true)
-                .withFirstPrompt(new TextInputConversationPrompt(LanguageKey.ENTER_COMMAND_INPUT, text -> {
-                    taskCommand.setCommand(text);
-                    task.storeInstance();
-                    new EditCommandMenu(task, taskCommand).INVENTORY.open(player);
-                }));
-
         ItemStack editCommandItem = Items.generateItem(LanguageKey.CHANGE_COMMAND, XMaterial.PAPER, editCommandLore);
         ClickableItem clickableCommandItem = ClickableItem.of(editCommandItem, e -> {
-            conversationFactory.buildConversation(player).begin();
             player.closeInventory();
+            TextInputManager.getInstance().startTextInput(player, LanguageKey.ENTER_COMMAND_INPUT, text -> {
+                taskCommand.setCommand(text);
+                task.storeInstance();
+                new EditCommandMenu(task, taskCommand).INVENTORY.open(player);
+            });
         });
         contents.set(1, 1, clickableCommandItem);
 
@@ -76,17 +71,13 @@ public class EditCommandMenu implements InventoryProvider {
                 languageManager.getList(LanguageKey.DESCRIPTION_LORE, taskCommand.getDescription())
                         .toArray(new String[] {}));
 
-        ConversationFactory descriptionConversationHistory = new ConversationFactory(CommandTimerPlugin.getPlugin())
-                .withModality(true)
-                .withFirstPrompt(new TextInputConversationPrompt(LanguageKey.EDIT_COMMAND_DESCRIPTION, text -> {
-                    taskCommand.setDescription(text);
-                    task.storeInstance();
-                    new EditCommandMenu(task, taskCommand).INVENTORY.open(player);
-                }));
-
         ClickableItem clickableDescriptionItem = ClickableItem.of(descriptionItem, e -> {
-            descriptionConversationHistory.buildConversation(player).begin();
             player.closeInventory();
+            TextInputManager.getInstance().startTextInput(player, LanguageKey.EDIT_COMMAND_DESCRIPTION, text -> {
+                taskCommand.setDescription(text);
+                task.storeInstance();
+                new EditCommandMenu(task, taskCommand).INVENTORY.open(player);
+            });
         });
         contents.set(1, 3, clickableDescriptionItem);
 

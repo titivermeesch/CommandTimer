@@ -10,14 +10,13 @@ import me.playbosswar.com.gui.conditions.ConditionMenu;
 import me.playbosswar.com.gui.events.MainEventsMenu;
 import me.playbosswar.com.gui.tasks.commands.AllCommandsMenu;
 import me.playbosswar.com.gui.tasks.general.GeneralLimitsMenu;
-import me.playbosswar.com.gui.tasks.general.TextInputConversationPrompt;
+import me.playbosswar.com.gui.TextInputManager;
 import me.playbosswar.com.gui.tasks.scheduler.MainScheduleMenu;
 import me.playbosswar.com.language.LanguageKey;
 import me.playbosswar.com.language.LanguageManager;
 import me.playbosswar.com.tasks.Task;
 import me.playbosswar.com.utils.Callback;
 import me.playbosswar.com.utils.Items;
-import org.bukkit.conversations.ConversationFactory;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -40,19 +39,15 @@ public class EditTaskMenu implements InventoryProvider {
     public void init(Player player, InventoryContents contents) {
         contents.fillBorders(ClickableItem.empty(XMaterial.BLUE_STAINED_GLASS_PANE.parseItem()));
 
-        ConversationFactory conversationFactory = new ConversationFactory(CommandTimerPlugin.getPlugin())
-                .withModality(true)
-                .withFirstPrompt(new TextInputConversationPrompt(LanguageKey.NEW_TASK_INPUT, text -> {
-                    task.setName(text);
-                    task.storeInstance();
-                    new EditTaskMenu(task).INVENTORY.open(player);
-                }));
-
         String[] nameLore = languageManager.getList(LanguageKey.CHANGE_TASK_DISPLAY_NAME_LORE).toArray(new String[]{});
         ItemStack nameItem = Items.generateItem(LanguageKey.CHANGE_TASK_DISPLAY_NAME_TITLE, XMaterial.PAPER, nameLore);
         ClickableItem clickableNameItem = ClickableItem.of(nameItem, e -> {
             player.closeInventory();
-            conversationFactory.buildConversation(player).begin();
+            TextInputManager.getInstance().startTextInput(player, LanguageKey.NEW_TASK_INPUT, text -> {
+                task.setName(text);
+                task.storeInstance();
+                new EditTaskMenu(task).INVENTORY.open(player);
+            });
         });
         contents.set(1, 1, clickableNameItem);
 
