@@ -13,6 +13,7 @@ import me.playbosswar.com.tasks.TaskValidationHelpers;
 import me.playbosswar.com.tasks.TasksManager;
 import me.playbosswar.com.utils.Messages;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
@@ -74,10 +75,10 @@ public class EventsManager {
                 return;
             }
 
-            Player p = null;
+            OfflinePlayer p = null;
             UUID uuid = findPotentialPlayer(values);
             if(uuid != null) {
-                p = Bukkit.getPlayer(uuid);
+                p = Bukkit.getOfflinePlayer(uuid);
             }
 
             boolean valid = TaskValidationHelpers.processCondition(task.getCondition(), p);
@@ -135,6 +136,13 @@ public class EventsManager {
             World expected = Bukkit.getWorld(simpleCondition.getValue().toString());
 
             return value.getName().equals(expected.getName());
+        }
+
+        if(receivedValue.getType() == Boolean.class) {
+            Boolean value = (Boolean) receivedValue.getDefaultValue();
+            Boolean expected = (Boolean) simpleCondition.getValue();
+
+            return value.equals(expected);
         }
 
         return false;

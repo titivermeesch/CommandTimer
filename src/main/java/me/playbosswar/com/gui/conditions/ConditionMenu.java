@@ -173,6 +173,13 @@ public class ConditionMenu implements InventoryProvider {
                                 new ConditionMenu(task, condition, onClose).INVENTORY.open(player);
                             });
                         }
+
+                        if(neededValue.getType() == Boolean.class) {
+                            ((ConditionParamField<Boolean>) conditionParamField).setValue(!((ConditionParamField<Boolean>) conditionParamField).getValue());
+                            task.storeInstance();
+                            new ConditionMenu(task, condition, onClose).INVENTORY.open(player);
+                        }
+
                     });
 
                     contents.set(1, i, clickableItem);
