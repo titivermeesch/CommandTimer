@@ -10,6 +10,7 @@ import me.playbosswar.com.conditionsengine.validations.Condition;
 import me.playbosswar.com.conditionsengine.validations.ConditionType;
 import me.playbosswar.com.conditionsengine.validations.SimpleCondition;
 import me.playbosswar.com.utils.Messages;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.jeasy.rules.api.Facts;
@@ -19,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 public class TaskValidationHelpers {
-    public static boolean processCondition(Condition topCondition, @Nullable Player p) {
+    public static boolean processCondition(Condition topCondition, @Nullable OfflinePlayer p) {
         ConditionType conditionType = topCondition.getConditionType();
         if(conditionType.equals(ConditionType.SIMPLE)) {
             return checkSimpleCondition(topCondition.getSimpleCondition(), p);
@@ -41,7 +42,7 @@ public class TaskValidationHelpers {
         return false;
     }
 
-    private static boolean checkSimpleCondition(SimpleCondition simpleCondition, @Nullable Player p) {
+    private static boolean checkSimpleCondition(SimpleCondition simpleCondition, @Nullable OfflinePlayer p) {
         final ConditionEngineManager conditionEngineManager =
                 CommandTimerPlugin.getInstance().getConditionEngineManager();
         ConditionRule rule = conditionEngineManager.getRule(simpleCondition.getConditionGroup(),
@@ -90,6 +91,16 @@ public class TaskValidationHelpers {
                 if(neededValue.getType() == World.class) {
                     facts.put(conditionParamField.getName(), (World) conditionParamField.getValue());
                 }
+
+                if(neededValue.getType() == Boolean.class) {
+                    facts.put(conditionParamField.getName(), (Boolean) conditionParamField.getValue());
+                }
+            }
+        }
+
+        for (NeededValue<?> neededValue : neededValues) {
+            if (facts.get(neededValue.getName()) == null) {
+                facts.put(neededValue.getName(), neededValue.getDefaultValue());
             }
         }
 

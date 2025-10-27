@@ -101,7 +101,7 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
         updater = new Updater(this);
         metrics = new Metrics(CommandTimerPlugin.getPlugin(), 9657);
         hooksManager = new HooksManager();
-        tasksManager = new TasksManager();
+        tasksManager = new TasksManager(this);
         inventoryManager = new InventoryManager(this);
         conditionEngineManager = new ConditionEngineManager();
         eventsManager = new EventsManager(tasksManager);
@@ -142,7 +142,7 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
     }
 
     public void registerCommands() {
-        getCommand("commandtimer").setExecutor(new MainCommand());
+        getCommand("commandtimer").setExecutor(new MainCommand(this));
     }
 
     public void loadConfig() {

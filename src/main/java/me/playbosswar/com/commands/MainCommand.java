@@ -16,6 +16,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -24,7 +25,12 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class MainCommand implements CommandExecutor {
+    private final Plugin plugin;
     private final LanguageManager languageManager = CommandTimerPlugin.getLanguageManager();
+
+    public MainCommand(Plugin plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String s, String[] args) {
@@ -103,7 +109,7 @@ public class MainCommand implements CommandExecutor {
                 pl.getTasksManager().disable();
                 pl.saveDefaultConfig();
 
-                pl.setTasksManager(new TasksManager());
+                pl.setTasksManager(new TasksManager(plugin));
 
                 Messages.sendMessage(sender, CommandTimerPlugin.getLanguageManager().get(LanguageKey.PLUGIN_RELOADED));
                 return true;
