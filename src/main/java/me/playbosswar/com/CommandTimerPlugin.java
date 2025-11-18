@@ -58,10 +58,15 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
         plugin = this;
         instance = this;
 
+        this.loadConfig();
+        languageManager = new LanguageManager(this, getConfig().getString("language"));
+
         if(FoliaSchedulerAdapter.isSupported()) {
             schedulerAdapter = new FoliaSchedulerAdapter(this);
+            Messages.sendConsole("&eUsing Folia scheduler adapter");
         } else {
-            schedulerAdapter = new BukkitSchedulerAdapter(this);
+            schedulerAdapter = new BukkitSchedulerAdapter(this);    
+            Messages.sendConsole("&eUsing Bukkit scheduler adapter");
         }
 
         Sentry.init(options -> {
@@ -76,8 +81,6 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
 
         ITransaction transaction = Sentry.startTransaction("server_startup", "initiation");
 
-        this.loadConfig();
-        languageManager = new LanguageManager(this, getConfig().getString("language"));
         this.registerCommands();
 
         Bukkit.getPluginManager().registerEvents(new JoinEvents(), this);

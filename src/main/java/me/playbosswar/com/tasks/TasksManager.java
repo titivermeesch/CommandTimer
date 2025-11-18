@@ -35,7 +35,6 @@ import me.playbosswar.com.utils.Tools;
 
 
 public class TasksManager {
-    private final Plugin plugin;
     private static final String CONDITION_NO_MATCH = "Conditions did not match";
     private static final Random RANDOM = new Random();
     private static final String ALPHA_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
@@ -45,7 +44,6 @@ public class TasksManager {
     public int executionsSinceLastSync = 0;
 
     public TasksManager(Plugin plugin) {
-        this.plugin = plugin;
         if (plugin.getConfig().getBoolean("database.enabled")) {
             try {
                 Messages.sendConsole("Loading all tasks from database");
@@ -160,7 +158,7 @@ public class TasksManager {
                     executionsSinceLastSync++;
                 }, (20L * i * taskCommand.getInterval().toSeconds()) + 1);
             } else {
-                Bukkit.getScheduler().runTask(plugin, () -> Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command, p)));
+                CommandTimerPlugin.getScheduler().runTask(() -> Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command, p)));
                 executionsSinceLastSync++;
             }
             i++;
@@ -185,11 +183,11 @@ public class TasksManager {
             }
             if (delayedExecutions) {
                 CommandTimerPlugin.getScheduler().runTaskLater(() -> {
-                    Bukkit.getScheduler().runTask(plugin, () -> Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command, p)));
+                    CommandTimerPlugin.getScheduler().runTask(() -> Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command, p)));
                     executionsSinceLastSync++;
                 }, (20L * i * taskCommand.getInterval().toSeconds()) + 1);
             } else {
-                Bukkit.getScheduler().runTask(plugin, () -> Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command, p)));
+                CommandTimerPlugin.getScheduler().runTask(() -> Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command, p)));
                 executionsSinceLastSync++;
             }
             i++;
@@ -212,7 +210,7 @@ public class TasksManager {
         }
 
         String command = taskCommand.getCommand();
-        Bukkit.getScheduler().runTask(plugin, () -> Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command, null)));
+        CommandTimerPlugin.getScheduler().runTask(() -> Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command, null)));
         executionsSinceLastSync++;
         return true;
     }
@@ -253,7 +251,7 @@ public class TasksManager {
 
     private void runForPlayer(Player p, String command) {
         String parsedCommand = PAPIHook.parsePAPI(command, p);
-        Bukkit.getScheduler().runTask(plugin, () -> {
+        CommandTimerPlugin.getScheduler().runTask(() -> {
             boolean executed = p.performCommand(parsedCommand);
 
             if (!executed) {
@@ -305,7 +303,7 @@ public class TasksManager {
                         executionsSinceLastSync++;
                     }, (20L * i * taskCommand.getInterval().toSeconds()) + 1);
                 } else {
-                    Bukkit.getScheduler().runTask(plugin, () -> p.performCommand(PAPIHook.parsePAPI(command, p)));
+                    CommandTimerPlugin.getScheduler().runTask(() -> p.performCommand(PAPIHook.parsePAPI(command, p)));
                     executionsSinceLastSync++;
                 }
 
@@ -353,7 +351,7 @@ public class TasksManager {
             return;
         }
 
-        Bukkit.getScheduler().runTaskAsynchronously(CommandTimerPlugin.getPlugin(), () -> {
+        CommandTimerPlugin.getScheduler().runTaskAsynchronously(() -> {
             Gender gender = taskCommand.getGender();
 
             boolean executed = false;

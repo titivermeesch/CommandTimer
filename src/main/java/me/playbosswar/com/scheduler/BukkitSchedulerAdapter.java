@@ -25,4 +25,9 @@ public class BukkitSchedulerAdapter implements SchedulerAdapter {
     public BukkitTask runTaskLater(Runnable runnable, long delay) {
         return Bukkit.getScheduler().runTaskLater(plugin, runnable, delay);
     }
+
+    @Override
+    public BukkitTask runTaskAsynchronously(Runnable runnable) {
+        return Bukkit.getScheduler().runTaskAsynchronously(plugin, runnable);
+    }
 }

@@ -8,4 +8,6 @@ public interface SchedulerAdapter {
     BukkitTask runTask(Runnable runnable);
 
     BukkitTask runTaskLater(Runnable runnable, long delay);
+
+    BukkitTask runTaskAsynchronously(Runnable runnable);
 }
