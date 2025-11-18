@@ -4,6 +4,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
+import me.playbosswar.com.CommandTimerPlugin;
+
 import org.bukkit.plugin.Plugin;
 
 import java.io.*;
@@ -161,7 +164,7 @@ public class Updater {
      */
     private void waitThread() {
         if (thread != null && thread.isAlive()) {
-            this.plugin.getServer().getScheduler().runTaskAsynchronously(this.plugin, () -> {
+            CommandTimerPlugin.getScheduler().runTaskAsynchronously(() -> {
                 try {
                     this.plugin.getLogger().log(Level.INFO, "Waiting for updater thread to finish.");
                     thread.join();

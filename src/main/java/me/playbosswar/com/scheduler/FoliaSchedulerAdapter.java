@@ -110,6 +110,11 @@ public class FoliaSchedulerAdapter implements SchedulerAdapter {
         return new ScheduledTask(null);
     }
 
+    @Override
+    public BukkitTask runTaskAsynchronously(Runnable runnable) {
+        return runTask(runnable);
+    }
+
     private class ScheduledTask implements BukkitTask {
         private final Object task;
 
