@@ -104,7 +104,31 @@ Documentation about the Events Engine can be found [here](events)
 |-------------|------------------------------------------------------|-------------------------------------------------------------------------------------|
 | `fieldName` | Name of the parameter                                | `string`                                                                            |
 | `value`     | Given value for the configured parameter             | `any`                                                                               |
-| `compare`   | Compare value between event value and passed `value` | `EQUAL`, `GREATER_THAN`, `LESS_THAN`, `GREATER_OR_EQUAL_THAN`, `LESS_OR_EQUAL_THEN` |
+| `compare`   | Compare value between event value and passed `value` | `EQUAL`, `GREATER_THAN`, `LESS_THAN`, `GREATER_OR_EQUAL_THAN`, `LESS_OR_EQUAL_THAN` |
+
+## Ad-Hoc Command
+
+Ad-hoc commands are stored in `plugins/CommandTimer/ad-hoc-commands/` as individual JSON files. See [Ad-Hoc Commands](configuration/adhoc-commands) for more information.
+
+| Field           | Description                                                      | Type                                     |
+|-----------------|------------------------------------------------------------------|------------------------------------------|
+| `id`            | Unique identifier for the ad-hoc command. **Do not update manually** | `UUID`                                   |
+| `command`       | Command to execute. Do not include `/` in front of the command   | `string`                                 |
+| `gender`        | Gender of the command                                            | [Gender](configuration/commands#genders) |
+| `scheduledTime` | The date and time when the command should be executed            | `ISO-8601 DateTime`                      |
+| `executed`      | Whether the command has been executed. **Do not update manually** | `boolean`                                |
+
+### Ad-Hoc Command example
+
+```json
+{
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "command": "say Server maintenance in 5 minutes!",
+  "gender": "CONSOLE",
+  "scheduledTime": "2025-12-07T15:30:00+01:00",
+  "executed": false
+}
+```
 
 ## Example
 

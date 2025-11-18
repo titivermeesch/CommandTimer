@@ -6,6 +6,7 @@ import com.google.gson.GsonBuilder;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.time.LocalTime;
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 public class GsonConverter {
@@ -18,6 +19,7 @@ public class GsonConverter {
                 .setPrettyPrinting()
                 .registerTypeAdapter(Date.class, new GsonDate())
                 .registerTypeAdapter(LocalTime.class, new GsonLocalTime())
+                .registerTypeAdapter(ZonedDateTime.class, new GsonZonedDateTime())
                 .create();
     }
 

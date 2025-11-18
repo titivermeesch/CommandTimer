@@ -154,7 +154,18 @@ public enum LanguageKey {
     METRICS_INTEGRATION_DESCRIPTION,
     USED_MINECRAFT_WORLD,
     PLUGIN_RELOADED,
-    MINECRAFT_TIME;
+    MINECRAFT_TIME,
+    SCHEDULED_EXECUTIONS_GUI_TITLE,
+    SCHEDULED_EXECUTIONS_ITEM,
+    SCHEDULED_EXECUTIONS_LORE,
+    REFRESH_BUTTON_TITLE,
+    REFRESH_BUTTON_LORE,
+    FILTER_BUTTON_TITLE,
+    FILTER_BUTTON_LORE,
+    FILTER_BUTTON_CURRENT,
+    FILTER_ALL,
+    FILTER_TASKS_ONLY,
+    FILTER_ADHOC_ONLY;
 
     public static LanguageKey getByTag(String tag) {
         return Arrays.stream(values()).filter(value -> value.toString().equals(tag.toUpperCase())).findFirst()

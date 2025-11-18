@@ -5,7 +5,7 @@ sidebar_position: 8
 
 ## Can I execute a task on restart only
 
-Yes, by using [execution limits](configuration/others#Execution-limits).
+Yes, by using [execution limits](configuration/others#execution-limits).
 
 1. Set the execution limit to 1
 2. Activate the feature "reset execution after restart"

@@ -14,11 +14,11 @@ Conditions can have one of the following types:
 - `AND`: Creates a group of conditions. Each of these conditions needs to be true to execute your [task](../jargon#task).
 - `OR`: Creates a group of conditions. One of these conditions needs to be true to execute your [task](../jargon#task). Even if you have 50 conditions that do not match but one does, the [task](../jargon#task) will still go through
 
-When using `AND` and `OR`, more conditions can be nested. Nesting does not have a depth limit, meaning you could have an `AND` condition in an `OR` condition in an `OR` condition in an `AND` condition which itself contains 4 different `SIMPLE` and `NOT` conditions. It is good to draw a visual map yourself before doing these nested conditions, because it can be cumberstone to debug in case there is an issue.
+When using `AND` and `OR`, more conditions can be nested. Nesting does not have a depth limit, meaning you could have an `AND` condition in an `OR` condition in an `OR` condition in an `AND` condition which itself contains 4 different `SIMPLE` and `NOT` conditions. It is good to draw a visual map yourself before doing these nested conditions, because it can be cumbersome to debug in case there is an issue.
 
 ## Available conditions
 
-Conditions are made availabel through [extensions](../extensions). This means that CommandTimer by default will not have any conditions, making the whole conditions engine useless if no [extensions](../extensions) are installed.
+Conditions are made available through [extensions](../extensions). This means that CommandTimer by default will not have any conditions, making the whole conditions engine useless if no [extensions](../extensions) are installed.
 
 ## Condition values
 

@@ -1,11 +1,10 @@
-package me.playbosswar.com.scheduler;
+package me.playbosswar.com.reflections;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,9 +19,10 @@ public class FoliaSchedulerAdapter implements SchedulerAdapter {
     private static final boolean SUPPORTED;
     private static final boolean HAS_IS_CANCELLED;
 
+    private static @Nullable MethodHandle GLOBAL_SCHEDULER_RUN;
+    private static @Nullable MethodHandle GLOBAL_SCHEDULER_RUN_DELAYED;
+    private static @Nullable MethodHandle GLOBAL_SCHEDULER_RUN_RATE;
     private static @Nullable MethodHandle ASYNC_SCHEDULER_RUN;
-    private static @Nullable MethodHandle ASYNC_SCHEDULER_RUN_DELAYED;
-    private static @Nullable MethodHandle ASYNC_SCHEDULER_RUN_RATE;
     private static @Nullable MethodHandle SCHEDULED_TASK_IS_CANCELLED;
     private static @Nullable MethodHandle SCHEDULED_TASK_CANCEL;
 
@@ -37,19 +37,26 @@ public class FoliaSchedulerAdapter implements SchedulerAdapter {
             ));
             SCHEDULED_TASK_IS_CANCELLED = lookup.findVirtual(scheduledTaskType, "isCancelled", MethodType.methodType(boolean.class));
 
-            Class<?> asyncSchedulerType = Class.forName("io.papermc.paper.threadedregions.scheduler.GlobalRegionScheduler");
+            Class<?> globalSchedulerType = Class.forName("io.papermc.paper.threadedregions.scheduler.GlobalRegionScheduler");
+            MethodHandle getGlobalScheduler = lookup.findVirtual(Server.class, "getGlobalRegionScheduler", MethodType.methodType(globalSchedulerType));
+            Object globalScheduler = getGlobalScheduler.invoke(Bukkit.getServer());
 
-            MethodHandle getAsyncScheduler = lookup.findVirtual(Server.class, "getGlobalRegionScheduler", MethodType.methodType(asyncSchedulerType));
+            GLOBAL_SCHEDULER_RUN = lookup.findVirtual(globalSchedulerType, "run", MethodType.methodType(
+                    scheduledTaskType, Plugin.class, Consumer.class
+            )).bindTo(globalScheduler);
+            GLOBAL_SCHEDULER_RUN_DELAYED = lookup.findVirtual(globalSchedulerType, "runDelayed", MethodType.methodType(
+                    scheduledTaskType, Plugin.class, Consumer.class, long.class
+            )).bindTo(globalScheduler);
+            GLOBAL_SCHEDULER_RUN_RATE = lookup.findVirtual(globalSchedulerType, "runAtFixedRate", MethodType.methodType(
+                    scheduledTaskType, Plugin.class, Consumer.class, long.class, long.class
+            )).bindTo(globalScheduler);
+
+            Class<?> asyncSchedulerType = Class.forName("io.papermc.paper.threadedregions.scheduler.AsyncScheduler");
+            MethodHandle getAsyncScheduler = lookup.findVirtual(Server.class, "getAsyncScheduler", MethodType.methodType(asyncSchedulerType));
             Object asyncScheduler = getAsyncScheduler.invoke(Bukkit.getServer());
 
-            ASYNC_SCHEDULER_RUN = lookup.findVirtual(asyncSchedulerType, "run", MethodType.methodType(
+            ASYNC_SCHEDULER_RUN = lookup.findVirtual(asyncSchedulerType, "runNow", MethodType.methodType(
                     scheduledTaskType, Plugin.class, Consumer.class
-            )).bindTo(asyncScheduler);
-            ASYNC_SCHEDULER_RUN_DELAYED = lookup.findVirtual(asyncSchedulerType, "runDelayed", MethodType.methodType(
-                    scheduledTaskType, Plugin.class, Consumer.class, long.class
-            )).bindTo(asyncScheduler);
-            ASYNC_SCHEDULER_RUN_RATE = lookup.findVirtual(asyncSchedulerType, "runAtFixedRate", MethodType.methodType(
-                    scheduledTaskType, Plugin.class, Consumer.class, long.class, long.class
             )).bindTo(asyncScheduler);
 
             try {
@@ -80,7 +87,7 @@ public class FoliaSchedulerAdapter implements SchedulerAdapter {
     public BukkitTask runTaskTimer(Runnable runnable, long delay, long period) {
         try {
             final Consumer<Object> consumer = task -> runnable.run();
-            return new ScheduledTask(Objects.requireNonNull(ASYNC_SCHEDULER_RUN_RATE).invoke(plugin, consumer, delay, period));
+            return new ScheduledTask(Objects.requireNonNull(GLOBAL_SCHEDULER_RUN_RATE).invoke(plugin, consumer, delay, period));
         } catch (Throwable e) {
             plugin.getLogger().log(Level.SEVERE, "Error in task scheduling by the Folia scheduler adapter", e);
         }
@@ -91,19 +98,18 @@ public class FoliaSchedulerAdapter implements SchedulerAdapter {
     public BukkitTask runTask(Runnable runnable) {
         try {
             final Consumer<Object> consumer = task -> runnable.run();
-            return new ScheduledTask(Objects.requireNonNull(ASYNC_SCHEDULER_RUN).invoke(plugin, consumer));
+            return new ScheduledTask(Objects.requireNonNull(GLOBAL_SCHEDULER_RUN).invoke(plugin, consumer));
         } catch (Throwable e) {
             plugin.getLogger().log(Level.SEVERE, "Error in task scheduling by the Folia scheduler adapter", e);
         }
         return new ScheduledTask(null);
     }
 
-
     @Override
     public BukkitTask runTaskLater(Runnable runnable, long delay) {
         try {
             final Consumer<Object> consumer = task -> runnable.run();
-            return new ScheduledTask(Objects.requireNonNull(ASYNC_SCHEDULER_RUN_DELAYED).invoke(plugin, consumer, delay));
+            return new ScheduledTask(Objects.requireNonNull(GLOBAL_SCHEDULER_RUN_DELAYED).invoke(plugin, consumer, delay));
         } catch (Throwable e) {
             plugin.getLogger().log(Level.SEVERE, "Error in task scheduling by the Folia scheduler adapter", e);
         }
@@ -112,7 +118,13 @@ public class FoliaSchedulerAdapter implements SchedulerAdapter {
 
     @Override
     public BukkitTask runTaskAsynchronously(Runnable runnable) {
-        return runTask(runnable);
+        try {
+            final Consumer<Object> consumer = task -> runnable.run();
+            return new ScheduledTask(Objects.requireNonNull(ASYNC_SCHEDULER_RUN).invoke(plugin, consumer));
+        } catch (Throwable e) {
+            plugin.getLogger().log(Level.SEVERE, "Error in task scheduling by the Folia scheduler adapter", e);
+        }
+        return new ScheduledTask(null);
     }
 
     private class ScheduledTask implements BukkitTask {

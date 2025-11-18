@@ -19,7 +19,7 @@ Once the jar file is in that folder, you should see the extension in different m
 Here is a list of extensions that can be installed. Official extensions are made by the team behind CommandTimer, while
 community extensions, as the name says, are made by the community.
 
-### Oficial extensions
+### Official extensions
 
 - [Time Extension](https://www.spigotmc.org/resources/time-conditions-commandtimer-extension.105591/)
 - [Player Extension](https://www.spigotmc.org/resources/player-conditions-commandtimer-extension.97186/)

@@ -112,6 +112,7 @@ public class Task {
     public void setInterval(TaskInterval interval) {
         this.interval = interval;
         storeInstance();
+        CommandTimerPlugin.getInstance().getTasksManager().resetScheduleForTask(this);
     }
 
     public List<TaskTime> getTimes() {
@@ -121,16 +122,19 @@ public class Task {
     public void setTimes(List<TaskTime> times) {
         this.times = times;
         storeInstance();
+        CommandTimerPlugin.getInstance().getTasksManager().resetScheduleForTask(this);
     }
 
     public void addTime(TaskTime time) {
         this.times.add(time);
         storeInstance();
+        CommandTimerPlugin.getInstance().getTasksManager().resetScheduleForTask(this);
     }
 
     public void removeTime(TaskTime time) {
         times.remove(time);
         storeInstance();
+        CommandTimerPlugin.getInstance().getTasksManager().resetScheduleForTask(this);
     }
 
     public double getRandom() {
@@ -140,6 +144,7 @@ public class Task {
     public void setRandom(double random) {
         this.random = random;
         storeInstance();
+        CommandTimerPlugin.getInstance().getTasksManager().resetScheduleForTask(this);
     }
 
     public List<DayOfWeek> getDays() {
@@ -149,6 +154,7 @@ public class Task {
     public void setDays(List<DayOfWeek> days) {
         this.days = days;
         storeInstance();
+        CommandTimerPlugin.getInstance().getTasksManager().resetScheduleForTask(this);
     }
 
     public void toggleDay(DayOfWeek day) {
@@ -159,6 +165,7 @@ public class Task {
         }
 
         storeInstance();
+        CommandTimerPlugin.getInstance().getTasksManager().resetScheduleForTask(this);
     }
 
     public int getExecutionLimit() {
@@ -168,6 +175,7 @@ public class Task {
     public void setExecutionLimit(int executionLimit) {
         this.executionLimit = executionLimit;
         storeInstance();
+        CommandTimerPlugin.getInstance().getTasksManager().resetScheduleForTask(this);
     }
 
     public int getTimesExecuted() {
@@ -194,11 +202,13 @@ public class Task {
         this.active = active;
         this.lastExecuted = new Date();
         storeInstance();
+        CommandTimerPlugin.getInstance().getTasksManager().resetScheduleForTask(this);
     }
 
     public void toggleActive() {
         this.active = !this.active;
         storeInstance();
+        CommandTimerPlugin.getInstance().getTasksManager().resetScheduleForTask(this);
     }
 
     public CommandExecutionMode getCommandExecutionMode() {

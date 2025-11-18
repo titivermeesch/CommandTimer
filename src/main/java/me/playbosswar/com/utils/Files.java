@@ -37,8 +37,10 @@ public class Files {
     public static void createDataFolders() {
         File timersFile = new File(pluginFolderPath + "/timers");
         File extensionsFolder = new File(pluginFolderPath + "/extensions");
+        File adHocCommandsFolder = new File(pluginFolderPath + "/ad-hoc-commands");
         timersFile.mkdirs();
         extensionsFolder.mkdirs();
+        adHocCommandsFolder.mkdirs();
 
         File dataFolder = CommandTimerPlugin.getPlugin().getDataFolder();
         File enLangFile = new File(dataFolder.getAbsoluteFile() + "/languages/en.json");
@@ -58,6 +60,14 @@ public class Files {
 
     public static String getTaskLocalExecutionFile(UUID id) {
         return pluginFolderPath + "/timers/" + id + ".local.json";
+    }
+
+    public static String getAdHocCommandsDirectory() {
+        return pluginFolderPath + "/ad-hoc-commands";
+    }
+
+    public static String getAdHocCommandFile(UUID id) {
+        return pluginFolderPath + "/ad-hoc-commands/" + id + ".json";
     }
 
     private static void healTask(Task task) {
