@@ -12,7 +12,6 @@ import me.playbosswar.com.conditionsengine.validations.SimpleCondition;
 import me.playbosswar.com.utils.Messages;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
-import org.bukkit.entity.Player;
 import org.jeasy.rules.api.Facts;
 import org.jetbrains.annotations.Nullable;
 

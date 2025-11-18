@@ -24,9 +24,15 @@ public class EditTaskMenu implements InventoryProvider {
     public SmartInventory INVENTORY;
     private final LanguageManager languageManager = CommandTimerPlugin.getLanguageManager();
     private final Task task;
+    private final Callback<?> onClose;
 
     public EditTaskMenu(Task task) {
+        this(task, null);
+    }
+
+    public EditTaskMenu(Task task, Callback<?> onClose) {
         this.task = task;
+        this.onClose = onClose;
         INVENTORY = SmartInventory.builder()
                 .id("edit-task")
                 .provider(this)
@@ -45,7 +51,6 @@ public class EditTaskMenu implements InventoryProvider {
             player.closeInventory();
             TextInputManager.getInstance().startTextInput(player, LanguageKey.NEW_TASK_INPUT, text -> {
                 task.setName(text);
-                task.storeInstance();
                 new EditTaskMenu(task).INVENTORY.open(player);
             });
         });
@@ -106,7 +111,13 @@ public class EditTaskMenu implements InventoryProvider {
             this.INVENTORY.open(player);
         }));
 
-        contents.set(2, 8, ClickableItem.of(Items.getBackItem(), e -> new AllTasksMenu().INVENTORY.open(player)));
+        contents.set(2, 8, ClickableItem.of(Items.getBackItem(), e -> {
+            if (onClose != null) {
+                onClose.execute(null);
+            } else {
+                new AllTasksMenu().INVENTORY.open(player);
+            }
+        }));
     }
 
     public void update(Player player, InventoryContents contents) {

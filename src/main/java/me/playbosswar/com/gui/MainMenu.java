@@ -8,6 +8,7 @@ import fr.minuskube.inv.content.InventoryProvider;
 import me.playbosswar.com.CommandTimerPlugin;
 import me.playbosswar.com.gui.integrations.MainIntegrationsMenu;
 import me.playbosswar.com.gui.tasks.AllTasksMenu;
+import me.playbosswar.com.gui.tasks.ScheduledExecutionsMenu;
 import me.playbosswar.com.language.LanguageKey;
 import me.playbosswar.com.language.LanguageManager;
 import me.playbosswar.com.utils.Items;
@@ -45,6 +46,13 @@ public class MainMenu implements InventoryProvider {
         ClickableItem clickableIntegrationsItem = ClickableItem.of(integrationsItem,
                 e -> new MainIntegrationsMenu().INVENTORY.open(player));
         contents.set(1, 2, clickableIntegrationsItem);
+
+        ItemStack scheduledExecutionsItem = Items.generateItem(LanguageKey.SCHEDULED_EXECUTIONS_ITEM,
+                XMaterial.CLOCK,
+                languageManager.getList(LanguageKey.SCHEDULED_EXECUTIONS_LORE).toArray(new String[]{}));
+        ClickableItem scheduledExecutionsClickableItem = ClickableItem.of(scheduledExecutionsItem,
+                e -> new ScheduledExecutionsMenu().INVENTORY.open(player));
+        contents.set(1, 3, scheduledExecutionsClickableItem);
 
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
         String currentTime = sdf.format(new java.util.Date());

@@ -49,7 +49,6 @@ public class EditTimesMenu implements InventoryProvider {
         ClickableItem clickableAddItem = ClickableItem.of(addItem, e -> {
             TaskTime taskTime = new TaskTime(LocalTime.parse("14:00:00"), false);
             task.addTime(taskTime);
-            task.storeInstance();
             new EditSpecificTimeMenu(task, taskTime).INVENTORY.open(player);
         });
         contents.set(0, 0, clickableAddItem);
@@ -89,7 +88,6 @@ public class EditTimesMenu implements InventoryProvider {
 
                 if(e.getClick().equals(ClickType.RIGHT)) {
                     task.removeTime(taskTime);
-                    task.storeInstance();
                     this.INVENTORY.open(p);
                 }
             });

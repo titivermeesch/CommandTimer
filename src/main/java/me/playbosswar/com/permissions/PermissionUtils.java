@@ -9,6 +9,7 @@ public class PermissionUtils {
                 || sender.hasPermission("commandtimer.activate")
                 || sender.hasPermission("commandtimer.deactivate")
                 || sender.hasPermission("commandtimer.update")
+                || sender.hasPermission("commandtimer.schedule")
                 || sender.hasPermission("commandtimer.toggle");
     }
 }

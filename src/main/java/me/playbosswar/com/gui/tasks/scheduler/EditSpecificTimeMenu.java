@@ -69,6 +69,7 @@ public class EditSpecificTimeMenu implements InventoryProvider {
             if(e.isRightClick()) {
                 taskTime.setTime2(null);
                 task.storeInstance();
+                CommandTimerPlugin.getInstance().getTasksManager().resetScheduleForTask(task);
                 this.INVENTORY.open(player);
             }
         });
@@ -80,6 +81,7 @@ public class EditSpecificTimeMenu implements InventoryProvider {
         contents.set(1, 3, ClickableItem.of(minecraftTimeItem, e -> {
             taskTime.toggleMinecraftTime();
             task.storeInstance();
+            CommandTimerPlugin.getInstance().getTasksManager().resetScheduleForTask(task);
             this.INVENTORY.open(player);
         }));
 
@@ -91,6 +93,7 @@ public class EditSpecificTimeMenu implements InventoryProvider {
             Callback<List<String>> worldCallback = worlds -> {
                 taskTime.setWorld(worlds.get(0));
                 task.storeInstance();
+                CommandTimerPlugin.getInstance().getTasksManager().resetScheduleForTask(task);
                 new EditSpecificTimeMenu(task, taskTime).INVENTORY.open(player);
             };
 

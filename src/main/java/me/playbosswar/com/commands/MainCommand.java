@@ -6,8 +6,11 @@ import me.playbosswar.com.gui.MainMenu;
 import me.playbosswar.com.language.LanguageKey;
 import me.playbosswar.com.language.LanguageManager;
 import me.playbosswar.com.permissions.PermissionUtils;
+import me.playbosswar.com.enums.Gender;
+import me.playbosswar.com.tasks.AdHocCommandsManager;
 import me.playbosswar.com.tasks.CommandIntervalExecutorRunnable;
 import me.playbosswar.com.tasks.Task;
+import me.playbosswar.com.tasks.TaskInterval;
 import me.playbosswar.com.tasks.TasksManager;
 import me.playbosswar.com.utils.Files;
 import me.playbosswar.com.utils.Messages;
@@ -22,6 +25,8 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.sql.SQLException;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainCommand implements CommandExecutor {
@@ -40,6 +45,67 @@ public class MainCommand implements CommandExecutor {
         }
 
         TasksManager tasksManager = CommandTimerPlugin.getInstance().getTasksManager();
+        AdHocCommandsManager adHocCommandsManager = CommandTimerPlugin.getInstance().getAdHocCommandsManager();
+
+        if(args.length >= 2 && args[0].equalsIgnoreCase("schedule")) {
+            if(!sender.hasPermission("commandtimer.schedule")) {
+                Messages.sendNoPermission(sender);
+                return true;
+            }
+
+            TaskInterval delay = new TaskInterval(0, 0, 0, 0);
+            Gender gender = Gender.CONSOLE;
+            List<String> commandParts = new ArrayList<>();
+
+            for(int i = 1; i < args.length; i++) {
+                String arg = args[i];
+                if(arg.equals("-after")) {
+                    if(i + 1 < args.length) {
+                        String timeStr = args[i + 1];
+                        delay = Tools.parseTimeString(timeStr);
+                        i++;
+                    } else {
+                        Messages.sendMessage(sender, "&cMissing value for -after parameter.");
+                        Messages.sendMessage(sender, "&7Usage: /cmt schedule [-after 1h10m5s] [-gender CONSOLE] <command>");
+                        return true;
+                    }
+                } else if(arg.equals("-gender")) {
+                    if(i + 1 < args.length) {
+                        String genderStr = args[i + 1].toUpperCase();
+                        try {
+                            gender = Gender.valueOf(genderStr);
+                            i++;
+                        } catch(IllegalArgumentException e) {
+                            Messages.sendMessage(sender, "&cInvalid gender: " + genderStr + ". Valid options: CONSOLE, PLAYER, OPERATOR, CONSOLE_PER_USER, CONSOLE_PER_USER_OFFLINE, CONSOLE_PROXY");
+                            return true;
+                        }
+                    } else {
+                        Messages.sendMessage(sender, "&cMissing value for -gender parameter.");
+                        Messages.sendMessage(sender, "&7Usage: /cmt schedule [-after 1h10m5s] [-gender CONSOLE] <command>");
+                        return true;
+                    }
+                } else {
+                    commandParts.add(arg);
+                }
+            }
+
+            if(commandParts.isEmpty()) {
+                Messages.sendMessage(sender, "&cYou must provide a command to schedule.");
+                Messages.sendMessage(sender, "&7Usage: /cmt schedule [-after 1h10m5s] [-gender CONSOLE] <command>");
+                return true;
+            }
+
+            String command = String.join(" ", commandParts);
+            if(command.startsWith("/")) {
+                command = command.substring(1);
+            }
+
+            ZonedDateTime scheduledTime = ZonedDateTime.now().plusSeconds(delay.toSeconds());
+            adHocCommandsManager.scheduleCommand(command, gender, scheduledTime);
+
+            Messages.sendMessage(sender, "&aCommand scheduled successfully");
+            return true;
+        }
 
         if(args.length == 0 && sender instanceof Player) {
             if(!sender.hasPermission("commandtimer.manage")) {

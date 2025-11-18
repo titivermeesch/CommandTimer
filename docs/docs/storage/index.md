@@ -5,7 +5,7 @@ sidebar_position: 3
 
 # Storage
 
-There are currently 2 options to tasks. Local JSON files is the default option.
+There are currently 2 options to store tasks. Local JSON files is the default option.
 
 ## Local JSON files
 
@@ -15,6 +15,8 @@ Each time a task is created, a new file will be created in `plugins/CommandTimer
 with that task. The ID is visible in the global tasks list (`/cmt` command).
 
 ## SQL Database (BETA)
+
+**Before trying to set this up, be aware that this feature is not be production ready. Certain features could be missing or feel buggy. Please request support on Discord if you are experiencing issues**
 
 CommandTimer supports SQL databases since v8.9.0. To use this feature you need to set up the following section in
 `config.yml`:

@@ -25,23 +25,25 @@ Clicking the paper will create a fresh task for you.
 | `/cmt activate <task>`   | Enable the specified task                                                                         | `commandtimer.activate` or `commandtimer.toggle`    |
 | `/cmt deactivate <task>` | Disable the specified task                                                                        | `commandtimer.deactivate`  or `commandtimer.toggle` |
 | `/cmt execute <task>`    | Instantly execute the specified task                                                              | `commandtimer.execute`                              |
+| `/cmt schedule`          | Schedule a one-time [ad-hoc command](configuration/adhoc-commands)                                | `commandtimer.schedule`                             |
 | `/cmt reload`            | Reload the plugin. Extensions will not be reloaded. **It is not recommended to use this command** | `commandtimer.manage`                               |
 
 ## Configuration file
 
 The global configuration file allows you to change the global behaviour of CommandTimer:
 
-- `timeonload`: Show the current server time in the console when the plugin loads
-- `debug`: Enable debug mode. This will print additional information to the console
-- `showUpdateMessage`: Show a message in the chat when a plugin update is available
-- `timezoneOverwrite`: Overwrite the timezone of the server (**This feature does not work right now**)
-- `timezoneOverwriteValue`: The timezone to overwrite the server timezone with (**This feature does not work right now**)
-- `language`: The language to use for the plugin. You can add more languages under the `languages` folder
-- `disablePapiPlaceholderWarnings`: Disable the warning message that appears when a PAPI placeholder is not used correctly
+| Option                          | Description                                                                                 |
+|---------------------------------|---------------------------------------------------------------------------------------------|
+| `timeonload`                    | Show the current server time in the console when the plugin loads                           |
+| `debug`                         | Enable debug mode. This will print additional information to the console                    |
+| `showUpdateMessage`             | Show a message in the chat when a plugin update is available                                |
+| `timezoneOverwrite`             | Overwrite the timezone of the server (**Not working currently**)                            |
+| `timezoneOverwriteValue`        | The timezone to overwrite the server timezone with (**Not working currently**)              |
+| `language`                      | The language to use for the plugin. You can add more languages under the `languages` folder |
+| `disablePapiPlaceholderWarnings`| Disable the warning message that appears when a PAPI placeholder is not used correctly      |
 
+## Other Languages
 
-# Other languages
-
-Here is a list of community maintained translations. These are not guaranteed to always be up to date
+Here is a list of community maintained translations. These are not guaranteed to always be up to date.
 
 - Chinese: https://snowcutieowo.github.io/CommandTimer/#/

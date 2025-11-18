@@ -1,5 +1,6 @@
 package me.playbosswar.com.utils;
 
+import me.playbosswar.com.tasks.TaskInterval;
 import org.bukkit.World;
 import org.joda.time.Duration;
 import org.joda.time.Period;
@@ -113,5 +114,101 @@ public class Tools {
         }
 
         return getTenthNumeric(hours) + ":" + getTenthNumeric(minute) + ":" + getTenthNumeric(second);
+    }
+
+    public static TaskInterval parseTimeString(String timeString) {
+        int days = 0;
+        int hours = 0;
+        int minutes = 0;
+        int seconds = 0;
+
+        String remaining = timeString.toLowerCase();
+        
+        if (remaining.contains("d")) {
+            int dIndex = remaining.indexOf("d");
+            int dEnd = dIndex;
+            while (dEnd > 0 && Character.isDigit(remaining.charAt(dEnd - 1))) {
+                dEnd--;
+            }
+            if (dEnd < dIndex) {
+                days = Integer.parseInt(remaining.substring(dEnd, dIndex));
+                remaining = remaining.substring(0, dEnd) + remaining.substring(dIndex + 1);
+            }
+        }
+        
+        if (remaining.contains("h")) {
+            int hIndex = remaining.indexOf("h");
+            int hEnd = hIndex;
+            while (hEnd > 0 && Character.isDigit(remaining.charAt(hEnd - 1))) {
+                hEnd--;
+            }
+            if (hEnd < hIndex) {
+                hours = Integer.parseInt(remaining.substring(hEnd, hIndex));
+                remaining = remaining.substring(0, hEnd) + remaining.substring(hIndex + 1);
+            }
+        }
+        
+        if (remaining.contains("m")) {
+            int mIndex = remaining.indexOf("m");
+            int mEnd = mIndex;
+            while (mEnd > 0 && Character.isDigit(remaining.charAt(mEnd - 1))) {
+                mEnd--;
+            }
+            if (mEnd < mIndex) {
+                minutes = Integer.parseInt(remaining.substring(mEnd, mIndex));
+                remaining = remaining.substring(0, mEnd) + remaining.substring(mIndex + 1);
+            }
+        }
+        
+        if (remaining.contains("s")) {
+            int sIndex = remaining.indexOf("s");
+            int sEnd = sIndex;
+            while (sEnd > 0 && Character.isDigit(remaining.charAt(sEnd - 1))) {
+                sEnd--;
+            }
+            if (sEnd < sIndex) {
+                seconds = Integer.parseInt(remaining.substring(sEnd, sIndex));
+            }
+        }
+
+        return new TaskInterval(days, hours, minutes, seconds);
+    }
+
+    public static ZonedDateTime getNextMinecraftTime(World world, LocalTime targetMcTime, int occurrence) {
+        long currentTicks = world.getTime();
+        long targetTicks = minecraftTimeToTicks(targetMcTime);
+
+        long ticksUntilTarget = targetTicks - currentTicks;
+        if (ticksUntilTarget < 0) {
+            ticksUntilTarget += 24000;
+        }
+
+        ticksUntilTarget += occurrence * 24000;
+
+        long realTimeSeconds = (long) (ticksUntilTarget * 0.05);
+        return ZonedDateTime.now().plusSeconds(realTimeSeconds);
+    }
+
+    public static LocalTime getMinecraftTimeAt(World world, ZonedDateTime realTime) {
+        long timeDiff = java.time.Duration.between(ZonedDateTime.now(), realTime).getSeconds();
+        long ticksDiff = (long) (timeDiff / 0.05);
+        long futureTicks = (world.getTime() + ticksDiff) % 24000;
+
+        long hours = (futureTicks / 1000 + 6) % 24;
+        long minutes = (futureTicks % 1000) * 60 / 1000;
+
+        return LocalTime.of((int) hours, (int) minutes);
+    }
+
+    public static long minecraftTimeToTicks(LocalTime mcTime) {
+        int hours = mcTime.getHour();
+        int minutes = mcTime.getMinute();
+
+        if (hours < 6) {
+            hours += 24;
+        }
+
+        long ticks = (hours - 6) * 1000L + (minutes * 1000L / 60);
+        return ticks % 24000;
     }
 }

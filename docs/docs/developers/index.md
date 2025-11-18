@@ -23,7 +23,6 @@ dependencies {
 ### Maven
 
 ```xml
-
 <repositories>
     <repository>
         <id>jitpack.io</id>
@@ -33,7 +32,6 @@ dependencies {
 ```
 
 ```xml
-
 <dependency>
     <groupId>com.github.titivermeesch</groupId>
     <artifactId>CommandTimer</artifactId>
@@ -50,5 +48,4 @@ functionalities are not available there, the internal CommandTimer API can be us
 
 ## Contributing
 
-Did you found a bug or want to do a general improvement on the plugin or the documentation itself? Feel free to open a
-PR!
+Did you find a bug or want to make a general improvement to the plugin or the documentation? Feel free to open a PR!

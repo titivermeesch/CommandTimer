@@ -28,7 +28,7 @@ to take into account all active tasks
 ## Fallback values
 
 `nextExecution`, `nextExecutionFormat`, `timeFormat` and `nextTaskName` can be suffixed with a fallback value in
-case there is no next execution anymore. For example- `%commandtimer_task_nextExecutionFormat_No next execution%`
+case there is no next execution anymore. For example: `%commandtimer_task_nextExecutionFormat_No next execution%`
 
 ## PAPI Placeholders
 

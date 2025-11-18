@@ -1,4 +1,4 @@
-package me.playbosswar.com.scheduler;
+package me.playbosswar.com.reflections;
 
 import org.bukkit.scheduler.BukkitTask;
 

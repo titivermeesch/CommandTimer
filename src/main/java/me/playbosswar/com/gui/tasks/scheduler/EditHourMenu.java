@@ -52,6 +52,7 @@ public class EditHourMenu implements InventoryProvider {
                 usedTime = taskTime.getTime1();
             }
             task.storeInstance();
+            CommandTimerPlugin.getInstance().getTasksManager().resetScheduleForTask(task);
         }
 
         LocalTime finalUsedTime = usedTime;
@@ -144,5 +145,6 @@ public class EditHourMenu implements InventoryProvider {
         }
 
         task.storeInstance();
+        CommandTimerPlugin.getInstance().getTasksManager().resetScheduleForTask(task);
     }
 }

@@ -150,5 +150,16 @@
   "description_item": "&bDescription",
   "item_description_lore": "&7Description: &e$1",
   "description_lore": "\n&7Set the description for this command\n\n&7Current description: &e$1",
-  "description_conversation_input": "Enter your description:"
+  "description_conversation_input": "Enter your description:",
+  "scheduled_executions_gui_title": "&9&lScheduled Executions",
+  "scheduled_executions_item": "&bScheduled Executions",
+  "scheduled_executions_lore": "\n&7View all scheduled task executions\n&7that will be executed in the future",
+  "refresh_button_title": "&bRefresh",
+  "refresh_button_lore": "&7Click to refresh the list of\n&7scheduled executions",
+  "filter_button_title": "&bFilter",
+  "filter_button_lore": "&7Click to cycle through filters:\n&7  - All\n&7  - Tasks Only\n&7  - Ad-Hoc Only",
+  "filter_button_current": "&7Current filter: &e$1",
+  "filter_all": "All",
+  "filter_tasks_only": "Tasks Only",
+  "filter_adhoc_only": "Ad-Hoc Only"
 }

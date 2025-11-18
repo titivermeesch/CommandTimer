@@ -46,6 +46,7 @@ public class EditIntervalMenu implements InventoryProvider {
         contents.set(1, 1, ClickableItem.of(Items.getAddItem(), e -> {
             interval.incrementDays();
             task.storeInstance();
+            CommandTimerPlugin.getInstance().getTasksManager().resetScheduleForTask(task);
             refresh(player);
         }));
         ClickableTextInputButton daysClocks = new ClickableTextInputButton(
@@ -57,6 +58,7 @@ public class EditIntervalMenu implements InventoryProvider {
                     int days = Integer.parseInt(data);
                     interval.setDays(days);
                     task.storeInstance();
+                    CommandTimerPlugin.getInstance().getTasksManager().resetScheduleForTask(task);
                     refresh(player);
                 }
         );
@@ -64,6 +66,7 @@ public class EditIntervalMenu implements InventoryProvider {
         contents.set(3, 1, ClickableItem.of(Items.getSubstractItem(), e -> {
             interval.decrementDays();
             task.storeInstance();
+            CommandTimerPlugin.getInstance().getTasksManager().resetScheduleForTask(task);
             refresh(player);
         }));
 
@@ -71,6 +74,7 @@ public class EditIntervalMenu implements InventoryProvider {
         contents.set(1, 3, ClickableItem.of(Items.getAddItem(), e -> {
             interval.incrementHours();
             task.storeInstance();
+            CommandTimerPlugin.getInstance().getTasksManager().resetScheduleForTask(task);
             refresh(player);
         }));
         ClickableTextInputButton hoursClock = new ClickableTextInputButton(
@@ -82,6 +86,7 @@ public class EditIntervalMenu implements InventoryProvider {
                     int hours = Integer.parseInt(data);
                     interval.setHours(hours);
                     task.storeInstance();
+                    CommandTimerPlugin.getInstance().getTasksManager().resetScheduleForTask(task);
                     refresh(player);
                 }
         );
@@ -89,6 +94,7 @@ public class EditIntervalMenu implements InventoryProvider {
         contents.set(3, 3, ClickableItem.of(Items.getSubstractItem(), e -> {
             interval.decrementHours();
             task.storeInstance();
+            CommandTimerPlugin.getInstance().getTasksManager().resetScheduleForTask(task);
             refresh(player);
         }));
 
@@ -96,6 +102,7 @@ public class EditIntervalMenu implements InventoryProvider {
         contents.set(1, 5, ClickableItem.of(Items.getAddItem(), e -> {
             interval.incrementMinutes();
             task.storeInstance();
+            CommandTimerPlugin.getInstance().getTasksManager().resetScheduleForTask(task);
             refresh(player);
         }));
         ClickableTextInputButton minutesClock = new ClickableTextInputButton(
@@ -108,6 +115,7 @@ public class EditIntervalMenu implements InventoryProvider {
                     int minutes = Integer.parseInt(data);
                     interval.setMinutes(minutes);
                     task.storeInstance();
+                    CommandTimerPlugin.getInstance().getTasksManager().resetScheduleForTask(task);
                     refresh(player);
                 }
         );
@@ -115,6 +123,7 @@ public class EditIntervalMenu implements InventoryProvider {
         contents.set(3, 5, ClickableItem.of(Items.getSubstractItem(), e -> {
             interval.decrementMinutes();
             task.storeInstance();
+            CommandTimerPlugin.getInstance().getTasksManager().resetScheduleForTask(task);
             refresh(player);
         }));
 
@@ -122,6 +131,7 @@ public class EditIntervalMenu implements InventoryProvider {
         contents.set(1, 7, ClickableItem.of(Items.getAddItem(), e -> {
             interval.incrementSeconds();
             task.storeInstance();
+            CommandTimerPlugin.getInstance().getTasksManager().resetScheduleForTask(task);
             refresh(player);
         }));
         ClickableTextInputButton secondsClock = new ClickableTextInputButton(
@@ -141,6 +151,7 @@ public class EditIntervalMenu implements InventoryProvider {
         contents.set(3, 7, ClickableItem.of(Items.getSubstractItem(), e -> {
             interval.decrementSeconds();
             task.storeInstance();
+            CommandTimerPlugin.getInstance().getTasksManager().resetScheduleForTask(task);
             refresh(player);
         }));
 

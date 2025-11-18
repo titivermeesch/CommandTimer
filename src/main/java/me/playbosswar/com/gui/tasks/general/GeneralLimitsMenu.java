@@ -56,6 +56,7 @@ public class GeneralLimitsMenu implements InventoryProvider {
             if(e.isRightClick()) {
                 task.setTimesExecuted(0);
                 task.storeInstance();
+                CommandTimerPlugin.getInstance().getTasksManager().resetScheduleForTask(task);
                 this.INVENTORY.open(player);
             }
         });

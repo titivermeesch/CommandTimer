@@ -3,6 +3,7 @@ package me.playbosswar.com.hooks;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import me.playbosswar.com.CommandTimerPlugin;
 import me.playbosswar.com.utils.Tools;
+import me.playbosswar.com.tasks.ScheduledTask;
 import me.playbosswar.com.tasks.Task;
 import me.playbosswar.com.tasks.TaskTime;
 import me.playbosswar.com.utils.Messages;
@@ -62,7 +63,12 @@ public class PAPIPlaceholders extends PlaceholderExpansion {
         String fallbackMessage = placeholder.getFallbackMessage();
 
         if(placeholder.getTaskName().equals("ALLTASKS")) {
-            task = getSoonestTask(CommandTimerPlugin.getInstance().getTasksManager().getActiveTasks());
+            ScheduledTask scheduledTask = CommandTimerPlugin.getInstance().getTasksManager().getNextScheduledTaskForTask(task);
+            if(scheduledTask == null) {
+                return fallbackMessage;
+            }
+
+            task = scheduledTask.getTask();
         }
 
         if(task == null) {
@@ -122,75 +128,13 @@ public class PAPIPlaceholders extends PlaceholderExpansion {
 
     // Get time in seconds before next task execution
     private long getNextExecution(Task task) {
-        long now = new Date().getTime();
-        // TODO: Take into account the days
-        if (!task.getTimes().isEmpty()) {
-            List<TaskTime> rangeTimes = task.getTimes().stream().filter(t -> t.getTime2() != null)
-                    .collect(Collectors.toList());
-
-            // If there are no range times, use the single times with the standard
-            // calculation
-            Date date = TaskTimeUtils.getSoonestTaskTime(task, task.getTimes());
-            if (rangeTimes.isEmpty()) {
-                if (date == null || !task.isActive()) {
-                    return -1;
-                }
-
-                return (date.getTime() - now) / 1000;
-            } else {
-                Calendar cal = Calendar.getInstance();
-                cal.setTimeInMillis(now);
-                int currentSeconds = cal.get(Calendar.HOUR_OF_DAY) * 3600 +
-                        cal.get(Calendar.MINUTE) * 60 +
-                        cal.get(Calendar.SECOND);
-
-                List<TaskTime> applicableTimes = new ArrayList<>();
-                for (TaskTime rangeTime : rangeTimes) {
-                    int startSeconds = rangeTime.getTime1().getHour() * 3600 +
-                            rangeTime.getTime1().getMinute() * 60 +
-                            rangeTime.getTime1().getSecond();
-                    int endSeconds = rangeTime.getTime2().getHour() * 3600 +
-                            rangeTime.getTime2().getMinute() * 60 +
-                            rangeTime.getTime2().getSecond();
-
-                    // Handle range spanning to next day
-                    if (endSeconds < startSeconds) {
-                        if (currentSeconds >= startSeconds || currentSeconds <= endSeconds) {
-                            applicableTimes.add(rangeTime);
-                        }
-                    } else if (currentSeconds >= startSeconds && currentSeconds <= endSeconds) {
-                        applicableTimes.add(rangeTime);
-                    }
-                }
-
-                if (applicableTimes.isEmpty()) {
-                    if (date == null || !task.isActive()) {
-                        return -1;
-                    }
-
-                    return (date.getTime() - now) / 1000;
-                }
-
-                Interval interval = new Interval(task.getLastExecuted().getTime(), now);
-                Duration period = interval.toDuration();
-                long timeLeft = task.getInterval().toSeconds() - period.getStandardSeconds();
-                if ((timeLeft < 0 || !task.isActive())) {
-                    return -1;
-                }
-
-                return timeLeft;
-            }
-        }
-
-        Interval interval = new Interval(task.getLastExecuted().getTime(), now);
-        Duration period = interval.toDuration();
-        long timeLeft = task.getInterval().toSeconds() - period.getStandardSeconds();
-
-        if ((timeLeft < 0 || !task.isActive())) {
+        ScheduledTask taskScheduled = CommandTimerPlugin.getInstance().getTasksManager().getNextScheduledTaskForTask(task);
+        if(taskScheduled == null) {
             return -1;
         }
 
-        return timeLeft;
+        long now = System.currentTimeMillis();
+        return (taskScheduled.getDate().toInstant().toEpochMilli() - now) / 1000;
     }
 
     private long getLastExecution(Task task) {
@@ -212,6 +156,9 @@ public class PAPIPlaceholders extends PlaceholderExpansion {
         }
 
         if(format) {
+            if(timeFormat == null) {
+                timeFormat = seconds > 86400 ? "DD:HH:mm:ss" : "HH:mm:ss";
+            }
             return Tools.getTimeString((int) seconds, timeFormat);
         }
 
@@ -226,6 +173,9 @@ public class PAPIPlaceholders extends PlaceholderExpansion {
         }
 
         if(format) {
+            if(timeFormat == null) {
+                timeFormat = seconds > 86400 ? "DD:HH:mm:ss" : "HH:mm:ss";
+            }
             return Tools.getTimeString((int) seconds, timeFormat);
         }
 
@@ -233,27 +183,10 @@ public class PAPIPlaceholders extends PlaceholderExpansion {
     }
 
     private String getNextExecutionText(Task task, String fallbackMessage, boolean format) {
-        return getNextExecutionText(task, fallbackMessage, format, "HH:mm:ss");
+        return getNextExecutionText(task, fallbackMessage, format, null);
     }
 
     private String getLastExecutionText(Task task, String fallbackMessage, boolean format) {
-        return getLastExecutionText(task, fallbackMessage, format, "HH:mm:ss");
-    }
-
-    // Get first task that will execute
-    private Task getSoonestTask(List<Task> tasks) {
-        Map<Task, Long> timeTillExecution = new HashMap<>();
-        tasks.forEach(t -> {
-            long seconds = getNextExecution(t);
-            if(seconds > 0) {
-                timeTillExecution.put(t, seconds);
-            }
-        });
-
-        if(timeTillExecution.isEmpty()) {
-            return null;
-        }
-
-        return Collections.min(timeTillExecution.entrySet(), Map.Entry.comparingByValue()).getKey();
+        return getLastExecutionText(task, fallbackMessage, format, null);
     }
 }

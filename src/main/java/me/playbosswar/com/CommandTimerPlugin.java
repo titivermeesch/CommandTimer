@@ -16,9 +16,10 @@ import me.playbosswar.com.events.JoinEvents;
 import me.playbosswar.com.hooks.HooksManager;
 import me.playbosswar.com.hooks.Metrics;
 import me.playbosswar.com.language.LanguageManager;
-import me.playbosswar.com.scheduler.BukkitSchedulerAdapter;
-import me.playbosswar.com.scheduler.FoliaSchedulerAdapter;
-import me.playbosswar.com.scheduler.SchedulerAdapter;
+import me.playbosswar.com.reflections.BukkitSchedulerAdapter;
+import me.playbosswar.com.reflections.FoliaSchedulerAdapter;
+import me.playbosswar.com.reflections.SchedulerAdapter;
+import me.playbosswar.com.tasks.AdHocCommandsManager;
 import me.playbosswar.com.tasks.Task;
 import me.playbosswar.com.tasks.TasksManager;
 import me.playbosswar.com.tasks.persistors.*;
@@ -45,6 +46,7 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
     private static HooksManager hooksManager;
     private static InventoryManager inventoryManager;
     private static TasksManager tasksManager;
+    private static AdHocCommandsManager adHocCommandsManager;
     private static ConditionEngineManager conditionEngineManager;
     private static EventsManager eventsManager;
     public static Metrics metrics;
@@ -105,6 +107,7 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
         metrics = new Metrics(CommandTimerPlugin.getPlugin(), 9657);
         hooksManager = new HooksManager();
         tasksManager = new TasksManager(this);
+        adHocCommandsManager = new AdHocCommandsManager(this);
         inventoryManager = new InventoryManager(this);
         conditionEngineManager = new ConditionEngineManager();
         eventsManager = new EventsManager(tasksManager);
@@ -122,6 +125,9 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
     @Override
     public void onDisable() {
         tasksManager.disable();
+        if(adHocCommandsManager != null) {
+            adHocCommandsManager.disable();
+        }
         conditionEngineManager.onDisable();
         saveDefaultConfig();
         plugin = null;
@@ -190,6 +196,14 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
 
     public void setTasksManager(TasksManager tasksManager) {
         CommandTimerPlugin.tasksManager = tasksManager;
+    }
+
+    public AdHocCommandsManager getAdHocCommandsManager() {
+        return adHocCommandsManager;
+    }
+
+    public void setAdHocCommandsManager(AdHocCommandsManager adHocCommandsManager) {
+        CommandTimerPlugin.adHocCommandsManager = adHocCommandsManager;
     }
 
     public ConditionEngineManager getConditionEngineManager() {
