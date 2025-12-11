@@ -180,6 +180,11 @@ public class TasksManager {
             return;
         }
 
+        boolean usesMinecraftTime = task.getTimes().stream().anyMatch(TaskTime::isMinecraftTime);
+        if (usesMinecraftTime) {
+            scheduledTasks.removeIf(st -> st.getTask().getId().equals(task.getId()));
+        }
+
         int executionLimit = task.getExecutionLimit();
         int timesExecuted = task.getTimesExecuted();
         long alreadyScheduled = scheduledTasks.stream()
@@ -228,28 +233,56 @@ public class TasksManager {
                         LocalTime startRange = taskTime.getTime1();
                         LocalTime endRange = taskTime.getTime2();
 
-                        int i = 0;
+                        LocalTime currentMcTime = Tools.getMinecraftTimeAt(world, ZonedDateTime.now());
+                        boolean currentlyInWindow = isTimeInRange(currentMcTime, startRange, endRange);
+
+                        int mcDay = 0;
+                        boolean firstIteration = true;
                         while (maxToSchedule > 0) {
-                            ZonedDateTime date = Tools.getNextMinecraftTime(world, startRange, i);
-                            if (!task.getDays().contains(date.getDayOfWeek())) {
-                                i++;
+                            ZonedDateTime windowStart;
+                            ZonedDateTime windowEnd;
+
+                            if (firstIteration && currentlyInWindow) {
+                                windowStart = ZonedDateTime.now();
+                                windowEnd = Tools.getNextMinecraftTime(world, endRange, 0);
+                                if (windowEnd.isBefore(windowStart)) {
+                                    windowEnd = Tools.getNextMinecraftTime(world, endRange, 1);
+                                }
+                            } else {
+                                int dayOffset = (firstIteration && currentlyInWindow) ? 1 : mcDay;
+                                if (firstIteration && !currentlyInWindow) {
+                                    dayOffset = 0;
+                                }
+                                windowStart = Tools.getNextMinecraftTime(world, startRange, dayOffset);
+                                windowEnd = Tools.getNextMinecraftTime(world, endRange, dayOffset);
+                                if (windowEnd.isBefore(windowStart)) {
+                                    windowEnd = Tools.getNextMinecraftTime(world, endRange, dayOffset + 1);
+                                }
+                            }
+                            firstIteration = false;
+
+                            if (!task.getDays().contains(windowStart.toLocalDate().getDayOfWeek())) {
+                                mcDay++;
                                 continue;
                             }
 
-                            LocalTime mcTimeAtExecution = Tools.getMinecraftTimeAt(world, date);
-                            if (!(mcTimeAtExecution.isAfter(startRange) && mcTimeAtExecution.isBefore(endRange))) {
-                                i++;
+                            if (windowEnd.isBefore(latestScheduledDate)) {
+                                mcDay++;
                                 continue;
                             }
 
-                            if (date.isBefore(latestScheduledDate)) {
-                                i++;
-                                continue;
-                            }
+                            ZonedDateTime execTime = windowStart.isBefore(latestScheduledDate) ? latestScheduledDate : windowStart;
+                            long intervalSeconds = task.getInterval().toSeconds();
+                            if (intervalSeconds <= 0) intervalSeconds = 1;
 
-                            scheduledTasks.add(new ScheduledTask(task, date));
-                            maxToSchedule--;
-                            i++;
+                            while (maxToSchedule > 0 && !execTime.isAfter(windowEnd)) {
+                                if (!execTime.isBefore(latestScheduledDate)) {
+                                    scheduledTasks.add(new ScheduledTask(task, execTime));
+                                    maxToSchedule--;
+                                }
+                                execTime = execTime.plusSeconds(intervalSeconds);
+                            }
+                            mcDay++;
                         }
                     } else {
                         LocalTime time = taskTime.getTime1();
@@ -365,6 +398,14 @@ public class TasksManager {
         }
 
         return selectedCommandIndex;
+    }
+
+    private boolean isTimeInRange(LocalTime time, LocalTime start, LocalTime end) {
+        if (start.isBefore(end)) {
+            return !time.isBefore(start) && !time.isAfter(end);
+        } else {
+            return !time.isBefore(start) || !time.isAfter(end);
+        }
     }
 
     public void disable() {

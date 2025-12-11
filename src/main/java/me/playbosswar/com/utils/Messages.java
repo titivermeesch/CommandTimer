@@ -101,7 +101,6 @@ public class Messages {
         Messages.sendMessage(sender, "§e/cmt activate <task> - §7Activate a task");
         Messages.sendMessage(sender, "§e/cmt deactivate <task> - §7Deactivate a task");
         Messages.sendMessage(sender, "§e/cmt execute <task> - §7Instantly execute a task");
-        Messages.sendMessage(sender, "§e/cmt nextexecutions <task> - §7Show next 10 executions for a task");
         Messages.sendMessage(sender, "§e/cmt schedule [-after 1h10m5s] [-gender CONSOLE] <command> - §7Schedule a one-time command");
         Messages.sendMessage(sender, "§e/cmt reload - §7Reload the plugin");
         Messages.sendMessage(sender, "§e/cmt migrateToDatabase - §7Migrate JSON files to database");
