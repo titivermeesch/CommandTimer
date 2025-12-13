@@ -15,6 +15,7 @@ import me.playbosswar.com.tasks.TasksManager;
 import me.playbosswar.com.utils.Files;
 import me.playbosswar.com.utils.Messages;
 import me.playbosswar.com.utils.Tools;
+import me.playbosswar.com.utils.migrations.MigrationManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -184,8 +185,33 @@ public class MainCommand implements CommandExecutor {
 
         if(args.length == 2) {
             String action = args[0];
-            String taskName = args[1];
 
+            if(action.equalsIgnoreCase("rollback")) {
+                if(!sender.hasPermission("commandtimer.manage")) {
+                    Messages.sendNoPermission(sender);
+                    return true;
+                }
+
+                try {
+                    int targetVersion = Integer.parseInt(args[1]);
+                    MigrationManager migrationManager = new MigrationManager(CommandTimerPlugin.getInstance());
+                    
+                    if(targetVersion > migrationManager.getCurrentVersion()) {
+                        Messages.sendMessage(sender, "&cCannot rollback to version " + targetVersion + ". Current version is " + migrationManager.getCurrentVersion());
+                        return true;
+                    }
+
+                    Messages.sendMessage(sender, "&eStarting rollback to version " + targetVersion + "...");
+                    migrationManager.rollbackToVersion(targetVersion);
+                    Messages.sendMessage(sender, "&aRollback complete. Please restart the server for changes to take effect.");
+                    return true;
+                } catch(NumberFormatException e) {
+                    Messages.sendMessage(sender, "&cInvalid version number: " + args[1]);
+                    return true;
+                }
+            }
+
+            String taskName = args[1];
             Task task = tasksManager.getTaskByName(taskName);
             if(task == null) {
                 Messages.sendMessage(sender, languageManager.get(LanguageKey.NO_TASK));

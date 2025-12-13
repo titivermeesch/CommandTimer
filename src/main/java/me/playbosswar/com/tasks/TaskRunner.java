@@ -65,8 +65,6 @@ public class TaskRunner implements Runnable {
             task.setLastExecutedCommandIndex(task.getCommands().indexOf(taskCommand));
             CommandTimerPlugin.getScheduler().runTask(() -> tasksManager.processCommandExecution(task, taskCommand));
         }
-
-        task.storeInstance();
     }
 
     @Override

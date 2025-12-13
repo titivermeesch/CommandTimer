@@ -40,9 +40,9 @@ public class Task {
     private Collection<DayOfWeek> days = new ArrayList<>();
     @DatabaseField
     private int executionLimit = -1;
-    private int timesExecuted = 0;
-    private int lastExecutedCommandIndex = 0;
-    private Date lastExecuted = new Date();
+    private transient int timesExecuted = 0;
+    private transient int lastExecutedCommandIndex = 0;
+    private transient Date lastExecuted = new Date();
     @DatabaseField
     private CommandExecutionMode commandExecutionMode = CommandExecutionMode.ALL;
     @DatabaseField(persisterClass = TaskIntervalPersistor.class)
@@ -184,6 +184,7 @@ public class Task {
 
     public void setTimesExecuted(int timesExecuted) {
         this.timesExecuted = timesExecuted;
+        storeExecutionMetadata();
     }
 
     public Date getLastExecuted() {
@@ -192,6 +193,7 @@ public class Task {
 
     public void setLastExecuted(Date lastExecuted) {
         this.lastExecuted = lastExecuted;
+        storeExecutionMetadata();
     }
 
     public boolean isActive() {
@@ -264,6 +266,7 @@ public class Task {
 
     public void setLastExecutedCommandIndex(int lastExecutedCommandIndex) {
         this.lastExecutedCommandIndex = lastExecutedCommandIndex;
+        storeExecutionMetadata();
     }
 
     public Condition getCondition() {
@@ -320,6 +323,10 @@ public class Task {
         this.id = id;
     }
 
+    public void storeExecutionMetadata() {
+        Files.updateLocalTaskMetadata(this);
+    }
+
     public void storeInstance() {
         if(CommandTimerPlugin.getInstance().getConfig().getBoolean("database.enabled")) {
             try {
@@ -335,11 +342,10 @@ public class Task {
         String json = gson.toJson(this);
         transaction.setContext("task", json);
 
-        try {
-            FileWriter jsonFile = new FileWriter(Files.getTaskFile(id));
+        try (FileWriter jsonFile = new FileWriter(Files.getTaskFile(id))) {
             jsonFile.write(json);
             jsonFile.flush();
-        } catch(IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             transaction.setThrowable(e);
             transaction.setStatus(SpanStatus.INTERNAL_ERROR);

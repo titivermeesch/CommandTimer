@@ -1,17 +1,27 @@
 package me.playbosswar.com.tasks;
 
 import java.util.Date;
+import java.util.UUID;
 
-// Data class only used to store metadata in local json files
 public class TaskExecutionMetadata {
+    private UUID taskId;
     private int timesExecuted = 0;
     private int lastExecutedCommandIndex = 0;
     private Date lastExecuted = new Date();
 
-    public TaskExecutionMetadata(int timesExecuted, int lastExecutedCommandIndex, Date lastExecuted) {
+    public TaskExecutionMetadata(UUID taskId, int timesExecuted, int lastExecutedCommandIndex, Date lastExecuted) {
+        this.taskId = taskId;
         this.timesExecuted = timesExecuted;
         this.lastExecutedCommandIndex = lastExecutedCommandIndex;
         this.lastExecuted = lastExecuted;
+    }
+
+    public UUID getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(UUID taskId) {
+        this.taskId = taskId;
     }
 
     public int getTimesExecuted() {

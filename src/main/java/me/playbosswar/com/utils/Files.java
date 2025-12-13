@@ -38,9 +38,11 @@ public class Files {
         File timersFile = new File(pluginFolderPath + "/timers");
         File extensionsFolder = new File(pluginFolderPath + "/extensions");
         File adHocCommandsFolder = new File(pluginFolderPath + "/ad-hoc-commands");
+        File executionDataFolder = new File(pluginFolderPath + "/execution-data");
         timersFile.mkdirs();
         extensionsFolder.mkdirs();
         adHocCommandsFolder.mkdirs();
+        executionDataFolder.mkdirs();
 
         File dataFolder = CommandTimerPlugin.getPlugin().getDataFolder();
         File enLangFile = new File(dataFolder.getAbsoluteFile() + "/languages/en.json");
@@ -59,7 +61,7 @@ public class Files {
     }
 
     public static String getTaskLocalExecutionFile(UUID id) {
-        return pluginFolderPath + "/timers/" + id + ".local.json";
+        return pluginFolderPath + "/execution-data/" + id + ".json";
     }
 
     public static String getAdHocCommandsDirectory() {
@@ -91,7 +93,7 @@ public class Files {
 
     public static void migrateFileNamesToFileUuids() {
         File dir = new File(pluginFolderPath + "/timers");
-        File[] directoryListing = dir.listFiles(file -> !file.getName().contains(".local.json"));
+        File[] directoryListing = dir.listFiles(file -> file.getName().endsWith(".json"));
 
         if(directoryListing != null) {
             for(File file : directoryListing) {
@@ -112,9 +114,10 @@ public class Files {
 
                         GsonConverter gson = new GsonConverter();
                         String json = gson.toJson(task);
-                        FileWriter jsonFile = new FileWriter(pluginFolderPath + "/timers/" + uuid + ".json");
-                        jsonFile.write(json);
-                        jsonFile.flush();
+                        try (FileWriter jsonFile = new FileWriter(pluginFolderPath + "/timers/" + uuid + ".json")) {
+                            jsonFile.write(json);
+                            jsonFile.flush();
+                        }
 
                         file.delete();
                         Messages.sendConsole("Migrated " + file.getName() + " to " + uuid + ".json");
@@ -130,14 +133,15 @@ public class Files {
         try {
             String path = getTaskLocalExecutionFile(task.getId());
             File file = new File(path);
-            if(!file.exists()) {
-                TaskExecutionMetadata metadata = new TaskExecutionMetadata(task.getTimesExecuted(),
-                        task.getLastExecutedCommandIndex(), task.getLastExecuted());
+            if (!file.exists()) {
+                TaskExecutionMetadata metadata = new TaskExecutionMetadata(task.getId(),
+                        task.getTimesExecuted(), task.getLastExecutedCommandIndex(), task.getLastExecuted());
                 GsonConverter gson = new GsonConverter();
                 String json = gson.toJson(metadata);
-                FileWriter jsonFile = new FileWriter(path);
-                jsonFile.write(json);
-                jsonFile.flush();
+                try (FileWriter jsonFile = new FileWriter(path)) {
+                    jsonFile.write(json);
+                    jsonFile.flush();
+                }
                 return metadata;
             }
 
@@ -153,16 +157,15 @@ public class Files {
     }
 
     public static void updateLocalTaskMetadata(Task task) {
-        TaskExecutionMetadata metadata = new TaskExecutionMetadata(task.getTimesExecuted(),
-                task.getLastExecutedCommandIndex(), task.getLastExecuted());
+        TaskExecutionMetadata metadata = new TaskExecutionMetadata(task.getId(),
+                task.getTimesExecuted(), task.getLastExecutedCommandIndex(), task.getLastExecuted());
 
         GsonConverter gson = new GsonConverter();
         String json = gson.toJson(metadata);
-        try {
-            FileWriter jsonFile = new FileWriter(getTaskLocalExecutionFile(task.getId()));
+        try (FileWriter jsonFile = new FileWriter(getTaskLocalExecutionFile(task.getId()))) {
             jsonFile.write(json);
             jsonFile.flush();
-        } catch(IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -171,7 +174,7 @@ public class Files {
         ITransaction transaction = Sentry.startTransaction("deserializeJsonFilesIntoCommandTimers()",
                 "initiation");
         File dir = new File(pluginFolderPath + "/timers");
-        File[] directoryListing = dir.listFiles(file -> !file.getName().contains(".local.json"));
+        File[] directoryListing = dir.listFiles(file -> file.getName().endsWith(".json"));
         JSONParser jsonParser = new JSONParser();
         List<Task> tasks = new ArrayList<>();
 
@@ -183,7 +186,7 @@ public class Files {
                     }
 
                     try {
-                        Messages.sendConsole("Processing task " + file.getName());
+                        Messages.sendConsole("Loading task " + file.getName());
                         FileReader fr = new FileReader(file.getPath());
 
                         GsonConverter gson = new GsonConverter();
@@ -200,6 +203,13 @@ public class Files {
                         });
                         if(task.getEvents() == null) {
                             task.setEvents(new ArrayList<>());
+                        }
+
+                        TaskExecutionMetadata metadata = getOrCreateTaskMetadata(task);
+                        if (metadata != null) {
+                            task.setTimesExecuted(metadata.getTimesExecuted());
+                            task.setLastExecutedCommandIndex(metadata.getLastExecutedCommandIndex());
+                            task.setLastExecuted(metadata.getLastExecuted());
                         }
 
                         tasks.add(task);
