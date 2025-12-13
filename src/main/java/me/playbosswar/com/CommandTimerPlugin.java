@@ -26,6 +26,7 @@ import me.playbosswar.com.tasks.persistors.*;
 import me.playbosswar.com.updater.Updater;
 import me.playbosswar.com.utils.Files;
 import me.playbosswar.com.utils.Messages;
+import me.playbosswar.com.utils.migrations.MigrationManager;
 import me.playbosswar.com.utils.Tools;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -88,6 +89,7 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(new JoinEvents(), this);
 
         Files.migrateFileNamesToFileUuids();
+        new MigrationManager(this).runMigrations();
         if(getConfig().getBoolean("database.enabled")) {
             try {
                 Class.forName("com.mysql.jdbc.Driver");

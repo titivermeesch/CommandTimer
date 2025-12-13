@@ -58,9 +58,7 @@ public class LanguageManager {
         }
 
         if (fileSaveRequired) {
-            try {
-                String filePath = getLanguageFilePath(selectedLanguage);
-                FileWriter jsonFile = new FileWriter(filePath);
+            try (FileWriter jsonFile = new FileWriter(getLanguageFilePath(selectedLanguage))) {
                 jsonFile.write(selectedLanguageObject.toJSONString());
                 jsonFile.flush();
             } catch (IOException e) {

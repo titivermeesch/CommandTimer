@@ -59,7 +59,6 @@ public class TasksManager {
             if (task.isResetExecutionsAfterRestart()) {
                 task.setTimesExecuted(0);
                 task.setLastExecuted(new Date());
-                task.storeInstance();
             }
         });
 
@@ -159,7 +158,6 @@ public class TasksManager {
             if (executed) {
                 task.setLastExecuted(new Date());
                 task.setTimesExecuted(task.getTimesExecuted() + 1);
-                task.storeInstance();
             }
         });
     }
@@ -409,8 +407,6 @@ public class TasksManager {
     }
 
     public void disable() {
-        List<Task> tasksToStore = loadedTasks.stream().filter(Task::isActive).collect(Collectors.toList());
-        tasksToStore.forEach(Task::storeInstance);
         stopRunner = true;
         if (runnerThread != null && runnerThread.isAlive()) {
             runnerThread.interrupt();
