@@ -14,6 +14,8 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import java.io.File;
 import java.io.FileReader;
@@ -53,14 +55,90 @@ public class Files {
         CommandTimerPlugin.getPlugin().saveResource("languages/default.json", true);
     }
 
-    /**
-     * Returns timer json file
-     */
+    private static File findTaskFileByUuid(UUID id) {
+        File dir = new File(pluginFolderPath + "/timers");
+        File[] files = dir.listFiles(file -> file.getName().endsWith(".json"));
+        if (files == null) return null;
+
+        for (File file : files) {
+            try (FileReader fr = new FileReader(file)) {
+                JsonObject json = new JsonParser().parse(fr).getAsJsonObject();
+                if (json.has("id")) {
+                    UUID fileId = UUID.fromString(json.get("id").getAsString());
+                    if (fileId.equals(id)) {
+                        return file;
+                    }
+                }
+            } catch (Exception e) {
+                continue;
+            }
+        }
+        return null;
+    }
+
+    private static File findMetadataFileByUuid(UUID id) {
+        File dir = new File(pluginFolderPath + "/execution-data");
+        File[] files = dir.listFiles(file -> file.getName().endsWith(".json"));
+        if (files == null) return null;
+
+        for (File file : files) {
+            try (FileReader fr = new FileReader(file)) {
+                JsonObject json = new JsonParser().parse(fr).getAsJsonObject();
+                if (json.has("taskId")) {
+                    UUID fileId = UUID.fromString(json.get("taskId").getAsString());
+                    if (fileId.equals(id)) {
+                        return file;
+                    }
+                }
+            } catch (Exception e) {
+                continue;
+            }
+        }
+        return null;
+    }
+
+    private static File findAdHocCommandFileByUuid(UUID id) {
+        File dir = new File(pluginFolderPath + "/ad-hoc-commands");
+        File[] files = dir.listFiles(file -> file.getName().endsWith(".json"));
+        if (files == null) return null;
+
+        for (File file : files) {
+            try (FileReader fr = new FileReader(file)) {
+                JsonObject json = new JsonParser().parse(fr).getAsJsonObject();
+                if (json.has("id")) {
+                    UUID fileId = UUID.fromString(json.get("id").getAsString());
+                    if (fileId.equals(id)) {
+                        return file;
+                    }
+                }
+            } catch (Exception e) {
+                continue;
+            }
+        }
+        return null;
+    }
+
     public static String getTaskFile(UUID id) {
-        return pluginFolderPath + "/timers/" + id + ".json";
+        File file = findTaskFileByUuid(id);
+        if (file != null) {
+            return file.getAbsolutePath();
+        }
+        throw new IllegalStateException("Task file not found for UUID: " + id);
     }
 
     public static String getTaskLocalExecutionFile(UUID id) {
+        File file = findMetadataFileByUuid(id);
+        if (file != null) {
+            return file.getAbsolutePath();
+        }
+        throw new IllegalStateException("Task metadata file not found for UUID: " + id);
+    }
+
+    public static String getNewTaskFile(UUID id) {
+        return pluginFolderPath + "/timers/" + id + ".json";
+    }
+
+    public static String getNewTaskLocalExecutionFile(UUID id) {
         return pluginFolderPath + "/execution-data/" + id + ".json";
     }
 
@@ -69,6 +147,14 @@ public class Files {
     }
 
     public static String getAdHocCommandFile(UUID id) {
+        File file = findAdHocCommandFileByUuid(id);
+        if (file != null) {
+            return file.getAbsolutePath();
+        }
+        throw new IllegalStateException("Ad-hoc command file not found for UUID: " + id);
+    }
+
+    public static String getNewAdHocCommandFile(UUID id) {
         return pluginFolderPath + "/ad-hoc-commands/" + id + ".json";
     }
 
@@ -91,53 +177,15 @@ public class Files {
         }
     }
 
-    public static void migrateFileNamesToFileUuids() {
-        File dir = new File(pluginFolderPath + "/timers");
-        File[] directoryListing = dir.listFiles(file -> file.getName().endsWith(".json"));
-
-        if(directoryListing != null) {
-            for(File file : directoryListing) {
-                if(!file.exists() || !file.getName().contains("json")) {
-                    continue;
-                }
-
-                try {
-                    UUID.fromString(file.getName().replace(".json", ""));
-                } catch(IllegalArgumentException e) {
-                    try {
-                        UUID uuid = UUID.randomUUID();
-
-                        FileReader fr = new FileReader(file.getPath());
-                        JSONParser jsonParser = new JSONParser();
-                        Task task = new GsonConverter().fromJson(jsonParser.parse(fr).toString(), Task.class);
-                        task.setId(uuid);
-
-                        GsonConverter gson = new GsonConverter();
-                        String json = gson.toJson(task);
-                        try (FileWriter jsonFile = new FileWriter(pluginFolderPath + "/timers/" + uuid + ".json")) {
-                            jsonFile.write(json);
-                            jsonFile.flush();
-                        }
-
-                        file.delete();
-                        Messages.sendConsole("Migrated " + file.getName() + " to " + uuid + ".json");
-                    } catch(IOException | ParseException ex) {
-                        throw new RuntimeException(ex);
-                    }
-                }
-            }
-        }
-    }
-
     public static TaskExecutionMetadata getOrCreateTaskMetadata(Task task) {
         try {
-            String path = getTaskLocalExecutionFile(task.getId());
-            File file = new File(path);
-            if (!file.exists()) {
+            File file = findMetadataFileByUuid(task.getId());
+            if (file == null || !file.exists()) {
                 TaskExecutionMetadata metadata = new TaskExecutionMetadata(task.getId(),
                         task.getTimesExecuted(), task.getLastExecutedCommandIndex(), task.getLastExecuted());
                 GsonConverter gson = new GsonConverter();
                 String json = gson.toJson(metadata);
+                String path = getNewTaskLocalExecutionFile(task.getId());
                 try (FileWriter jsonFile = new FileWriter(path)) {
                     jsonFile.write(json);
                     jsonFile.flush();
@@ -145,7 +193,7 @@ public class Files {
                 return metadata;
             }
 
-            FileReader fr = new FileReader(getTaskLocalExecutionFile(task.getId()));
+            FileReader fr = new FileReader(file);
             JSONParser jsonParser = new JSONParser();
             TaskExecutionMetadata metadata = new GsonConverter().fromJson(jsonParser.parse(fr).toString(),
                     TaskExecutionMetadata.class);
@@ -162,7 +210,9 @@ public class Files {
 
         GsonConverter gson = new GsonConverter();
         String json = gson.toJson(metadata);
-        try (FileWriter jsonFile = new FileWriter(getTaskLocalExecutionFile(task.getId()))) {
+        File file = findMetadataFileByUuid(task.getId());
+        String path = file != null ? file.getAbsolutePath() : getNewTaskLocalExecutionFile(task.getId());
+        try (FileWriter jsonFile = new FileWriter(path)) {
             jsonFile.write(json);
             jsonFile.flush();
         } catch (IOException e) {
@@ -181,7 +231,7 @@ public class Files {
         try {
             if(directoryListing != null) {
                 for(File file : directoryListing) {
-                    if(!file.exists() || !file.getName().contains("json")) {
+                    if(!file.exists() || !file.getName().contains(".json")) {
                         continue;
                     }
 

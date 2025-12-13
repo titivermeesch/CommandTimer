@@ -88,7 +88,6 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
 
         Bukkit.getPluginManager().registerEvents(new JoinEvents(), this);
 
-        Files.migrateFileNamesToFileUuids();
         new MigrationManager(this).runMigrations();
         if(getConfig().getBoolean("database.enabled")) {
             try {

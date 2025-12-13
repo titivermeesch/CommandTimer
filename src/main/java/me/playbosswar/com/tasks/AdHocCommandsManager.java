@@ -123,9 +123,17 @@ public class AdHocCommandsManager {
     private void storeCommand(AdHocCommand command) {
         GsonConverter gson = new GsonConverter();
         String json = gson.toJson(command);
-        try (FileWriter jsonFile = new FileWriter(Files.getAdHocCommandFile(command.getId()))) {
-            jsonFile.write(json);
-            jsonFile.flush();
+        try {
+            String path;
+            try {
+                path = Files.getAdHocCommandFile(command.getId());
+            } catch (IllegalStateException e) {
+                path = Files.getNewAdHocCommandFile(command.getId());
+            }
+            try (FileWriter jsonFile = new FileWriter(path)) {
+                jsonFile.write(json);
+                jsonFile.flush();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

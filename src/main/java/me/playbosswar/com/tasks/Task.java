@@ -14,7 +14,12 @@ import me.playbosswar.com.enums.CommandExecutionMode;
 import me.playbosswar.com.tasks.persistors.*;
 import me.playbosswar.com.utils.Files;
 import me.playbosswar.com.utils.gson.GsonConverter;
+import me.playbosswar.com.utils.migrations.MigrationManager;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
+import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -342,9 +347,43 @@ public class Task {
         String json = gson.toJson(this);
         transaction.setContext("task", json);
 
-        try (FileWriter jsonFile = new FileWriter(Files.getTaskFile(id))) {
-            jsonFile.write(json);
-            jsonFile.flush();
+        try {
+            String path;
+            File existingFile = null;
+            try {
+                path = Files.getTaskFile(id);
+                existingFile = new File(path);
+            } catch (IllegalStateException e) {
+                path = Files.getNewTaskFile(id);
+            }
+
+            JsonObject jsonObject = new JsonParser().parse(json).getAsJsonObject();
+            
+            if (existingFile != null && existingFile.exists()) {
+                try (FileReader fr = new FileReader(existingFile)) {
+                    JsonObject existingJson = new JsonParser().parse(fr).getAsJsonObject();
+                    if (existingJson.has("configVersion")) {
+                        jsonObject.addProperty("configVersion", existingJson.get("configVersion").getAsInt());
+                    } else {
+                        jsonObject.addProperty("configVersion", MigrationManager.CURRENT_VERSION);
+                    }
+                } catch (Exception e) {
+                    if (!jsonObject.has("configVersion")) {
+                        jsonObject.addProperty("configVersion", MigrationManager.CURRENT_VERSION);
+                    }
+                }
+            } else {
+                if (!jsonObject.has("configVersion")) {
+                    jsonObject.addProperty("configVersion", MigrationManager.CURRENT_VERSION);
+                }
+            }
+
+            json = gson.toJson(jsonObject);
+
+            try (FileWriter jsonFile = new FileWriter(path)) {
+                jsonFile.write(json);
+                jsonFile.flush();
+            }
         } catch (IOException e) {
             e.printStackTrace();
             transaction.setThrowable(e);
