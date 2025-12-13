@@ -103,6 +103,7 @@ public class TasksManager {
             try {
                 loadedTasks.remove(task);
                 java.nio.file.Files.delete(Paths.get(Files.getTaskFile(task.getId())));
+                java.nio.file.Files.delete(Paths.get(Files.getTaskLocalExecutionFile(task.getId())));
             } catch (IOException e) {
                 e.printStackTrace();
             }

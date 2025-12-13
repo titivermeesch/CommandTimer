@@ -46,6 +46,7 @@ public class MigrationManager {
 
                 Messages.sendConsole("Migrating task file: " + file.getName() + " (v" + fileVersion + " -> v" + CURRENT_VERSION + ")");
 
+                boolean failed = false;
                 for (Migration migration : migrations.stream()
                         .filter(m -> m.getVersion() > fileVersion)
                         .sorted(Comparator.comparingInt(Migration::getVersion))
@@ -55,7 +56,15 @@ public class MigrationManager {
                     } catch (Exception e) {
                         Messages.sendConsole("Migration v" + migration.getVersion() + " failed for " + file.getName() + ": " + e.getMessage());
                         e.printStackTrace();
+                        failed = true;
+                        break;
                     }
+                }
+
+                if (failed) {
+                    Messages.sendConsole("Migration failed for " + file.getName() + ". Disabling plugin...");
+                    CommandTimerPlugin.getInstance().getServer().getPluginManager().disablePlugin(CommandTimerPlugin.getInstance());
+                    return;
                 }
 
                 Messages.sendConsole("Migration complete for " + file.getName() + " (v" + fileVersion + " -> v" + CURRENT_VERSION + ")");
