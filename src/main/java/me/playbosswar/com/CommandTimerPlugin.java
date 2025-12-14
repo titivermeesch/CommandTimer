@@ -125,11 +125,15 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
 
     @Override
     public void onDisable() {
-        tasksManager.disable();
+        if(tasksManager != null) {
+            tasksManager.disable();
+        }
         if(adHocCommandsManager != null) {
             adHocCommandsManager.disable();
         }
-        conditionEngineManager.onDisable();
+        if(conditionEngineManager != null) {
+            conditionEngineManager.onDisable();
+        }
         saveDefaultConfig();
         plugin = null;
     }

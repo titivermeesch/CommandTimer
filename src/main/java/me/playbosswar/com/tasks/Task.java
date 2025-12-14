@@ -348,18 +348,12 @@ public class Task {
         transaction.setContext("task", json);
 
         try {
-            String path;
-            File existingFile = null;
-            try {
-                path = Files.getTaskFile(id);
-                existingFile = new File(path);
-            } catch (IllegalStateException e) {
-                path = Files.getNewTaskFile(id);
-            }
+            String path = Files.getTaskFile(id);
+            File existingFile = new File(path);
 
             JsonObject jsonObject = new JsonParser().parse(json).getAsJsonObject();
             
-            if (existingFile != null && existingFile.exists()) {
+            if (existingFile.exists()) {
                 try (FileReader fr = new FileReader(existingFile)) {
                     JsonObject existingJson = new JsonParser().parse(fr).getAsJsonObject();
                     if (existingJson.has("configVersion")) {
