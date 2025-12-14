@@ -123,7 +123,7 @@ public class Files {
         if (file != null) {
             return file.getAbsolutePath();
         }
-        throw new IllegalStateException("Task file not found for UUID: " + id);
+        return getNewTaskFile(id);
     }
 
     public static String getTaskLocalExecutionFile(UUID id) {
@@ -131,7 +131,7 @@ public class Files {
         if (file != null) {
             return file.getAbsolutePath();
         }
-        throw new IllegalStateException("Task metadata file not found for UUID: " + id);
+        return getNewTaskLocalExecutionFile(id);
     }
 
     public static String getNewTaskFile(UUID id) {
@@ -151,7 +151,7 @@ public class Files {
         if (file != null) {
             return file.getAbsolutePath();
         }
-        throw new IllegalStateException("Ad-hoc command file not found for UUID: " + id);
+        return getNewAdHocCommandFile(id);
     }
 
     public static String getNewAdHocCommandFile(UUID id) {
