@@ -211,4 +211,12 @@ public class Tools {
         long ticks = (hours - 6) * 1000L + (minutes * 1000L / 60);
         return ticks % 24000;
     }
+
+    public static boolean isTimeInRange(LocalTime time, LocalTime startRange, LocalTime endRange) {
+        if (startRange.isBefore(endRange) || startRange.equals(endRange)) {
+            return !time.isBefore(startRange) && !time.isAfter(endRange);
+        } else {
+            return !time.isBefore(startRange) || !time.isAfter(endRange);
+        }
+    }
 }
