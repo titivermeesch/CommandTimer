@@ -210,10 +210,11 @@ public class TasksManager {
                 .filter(scheduledTask -> scheduledTask.getTask().getId().equals(task.getId()))
                 .map(ScheduledTask::getDate).max(ZonedDateTime::compareTo).orElse(null);
 
+        boolean hadNoScheduledTasks = (latestScheduledDate == null);
+        ZonedDateTime lastExecuted = task.getLastExecuted().toInstant().atZone(ZoneId.systemDefault());
+        ZonedDateTime now = ZonedDateTime.now();
         if (latestScheduledDate == null) {
-            ZonedDateTime now = ZonedDateTime.now();
-            ZonedDateTime lastExecuted = task.getLastExecuted().toInstant().atZone(ZoneId.systemDefault());
-            latestScheduledDate = lastExecuted.isAfter(now) ? lastExecuted : now;
+            latestScheduledDate = lastExecuted;
         }
 
         if (maxToSchedule <= 0) {
@@ -221,6 +222,9 @@ public class TasksManager {
         }
 
         if (!task.getTimes().isEmpty()) {
+            if (latestScheduledDate.isBefore(now)) {
+                latestScheduledDate = now;
+            }
             List<TaskTime> rangeTimes = new ArrayList<>();
             List<TaskTime> nonRangeTimes = new ArrayList<>();
             
@@ -383,10 +387,29 @@ public class TasksManager {
             return;
         }
 
+        long intervalSeconds = task.getInterval().toSeconds();
+        if (intervalSeconds <= 0) intervalSeconds = 1;
+        
+        ZonedDateTime nextExpectedExecution = lastExecuted.plusSeconds(intervalSeconds);
+        
+        if (hadNoScheduledTasks && nextExpectedExecution.isBefore(now)) {
+            if (task.getDays().contains(nextExpectedExecution.toLocalDate().getDayOfWeek())) {
+                scheduledTasks.add(new ScheduledTask(task, nextExpectedExecution));
+                maxToSchedule--;
+            }
+        }
+        
         int i = 1;
+        ZonedDateTime startDate = latestScheduledDate;
+        
         while (maxToSchedule > 0) {
-            ZonedDateTime date = latestScheduledDate.plusSeconds(i * task.getInterval().toSeconds());
+            ZonedDateTime date = startDate.plusSeconds(i * intervalSeconds);
             if (!task.getDays().contains(date.getDayOfWeek())) {
+                i++;
+                continue;
+            }
+
+            if (date.isBefore(now)) {
                 i++;
                 continue;
             }
