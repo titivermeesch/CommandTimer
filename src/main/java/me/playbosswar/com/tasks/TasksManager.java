@@ -420,6 +420,11 @@ public class TasksManager {
         }
     }
 
+    public ScheduledTask getNextScheduledTask() {
+        return scheduledTasks.peek();
+    }
+
+
     public ScheduledTask getNextScheduledTaskForTask(Task task) {
         return scheduledTasks.stream().filter(scheduledTask -> scheduledTask.getTask().getId().equals(task.getId())).min(Comparator.comparing(ScheduledTask::getDate)).orElse(null);
     }
