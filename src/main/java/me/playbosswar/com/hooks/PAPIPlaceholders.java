@@ -63,7 +63,7 @@ public class PAPIPlaceholders extends PlaceholderExpansion {
         String fallbackMessage = placeholder.getFallbackMessage();
 
         if(placeholder.getTaskName().equals("ALLTASKS")) {
-            ScheduledTask scheduledTask = CommandTimerPlugin.getInstance().getTasksManager().getNextScheduledTaskForTask(task);
+            ScheduledTask scheduledTask = CommandTimerPlugin.getInstance().getTasksManager().getNextScheduledTask();
             if(scheduledTask == null) {
                 return fallbackMessage;
             }
