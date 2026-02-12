@@ -49,7 +49,6 @@ public class Files {
         File dataFolder = CommandTimerPlugin.getPlugin().getDataFolder();
         File enLangFile = new File(dataFolder.getAbsoluteFile() + "/languages/en.json");
         if(!enLangFile.exists()) {
-            Messages.sendDebugConsole("could not find languages/en.json, creating default");
             CommandTimerPlugin.getPlugin().saveResource("languages/en.json", false);
         }
         CommandTimerPlugin.getPlugin().saveResource("languages/default.json", true);
