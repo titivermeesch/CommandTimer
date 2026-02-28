@@ -1,23 +1,100 @@
-/**
- * CSS files with the .module.css suffix will be treated as CSS modules
- * and scoped locally.
- */
-
 .heroBanner {
-  padding: 4rem 0;
+  padding: 4rem 0 3rem;
   text-align: center;
   position: relative;
   overflow: hidden;
+  background: linear-gradient(160deg, var(--ifm-background-color) 0%, var(--ifm-color-emphasis-100) 100%);
 }
 
-@media screen and (max-width: 996px) {
-  .heroBanner {
-    padding: 2rem;
-  }
+.heroLogo {
+  width: 120px;
+  height: 120px;
+  border-radius: 20px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
 }
 
 .buttons {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+/* Quick Start */
+
+.quickStart {
+  padding: 3rem 0 4rem;
+  background: var(--ifm-color-emphasis-100);
+}
+
+[data-theme='dark'] .quickStart {
+  background: var(--ifm-background-surface-color, #1b1b1d);
+}
+
+.sectionTitle {
+  text-align: center;
+  margin-bottom: 2.5rem;
+  font-size: 1.8rem;
+}
+
+.steps {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.step {
+  flex: 1;
+  text-align: center;
+  padding: 1.5rem;
+}
+
+.stepNumber {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--ifm-color-primary);
+  color: #1b1b1d;
+  font-size: 1.4rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+}
+
+.step h3 {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.step p {
+  font-size: 0.9rem;
+  color: var(--ifm-color-emphasis-700);
+  line-height: 1.5;
+  margin: 0;
+}
+
+@media screen and (max-width: 996px) {
+  .heroBanner {
+    padding: 2rem 1rem;
+  }
+
+  .heroLogo {
+    width: 80px;
+    height: 80px;
+  }
+
+  .buttons {
+    flex-direction: column;
+  }
+
+  .steps {
+    flex-direction: column;
+    gap: 1rem;
+  }
 }
