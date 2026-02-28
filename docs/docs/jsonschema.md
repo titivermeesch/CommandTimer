@@ -28,11 +28,13 @@ following this JSON schema
 
 ## Command
 
-| Field      | Description                                                                                    | Type                                     |
-|------------|------------------------------------------------------------------------------------------------|------------------------------------------|
-| `command`  | Command to execute. Do not include `/` in front of the command                                 | `string`                                 |
-| `gender`   | Gender of the command                                                                          | [Gender](configuration/commands#genders) |
-| `interval` | Defined the iteration interval between each command when the execution iterates over all users | [Interval](#interval)                    |
+| Field         | Description                                                                                    | Type                                     |
+|---------------|------------------------------------------------------------------------------------------------|------------------------------------------|
+| `command`     | Command to execute. Do not include `/` in front of the command                                 | `string`                                 |
+| `gender`      | Gender of the command                                                                          | [Gender](configuration/commands#genders) |
+| `interval`    | Defined the iteration interval between each command when the execution iterates over all users  | [Interval](#interval)                    |
+| `delay`       | Individual command delay used with the `ORDERED` [execution mode](configuration/commands#execution-modes) | [Interval](#interval)                    |
+| `description` | Optional description or notes for the command                                                  | `string`                                 |
 
 ## Interval
 

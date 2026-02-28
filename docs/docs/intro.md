@@ -27,6 +27,8 @@ Clicking the paper will create a fresh task for you.
 | `/cmt execute <task>`    | Instantly execute the specified task                                                              | `commandtimer.execute`                              |
 | `/cmt schedule`          | Schedule a one-time [ad-hoc command](configuration/adhoc-commands)                                | `commandtimer.schedule`                             |
 | `/cmt reload`            | Reload the plugin. Extensions will not be reloaded. **It is not recommended to use this command** | `commandtimer.manage`                               |
+| `/cmt migrateToDatabase` | Migrate JSON task files to database storage. Requires database to be enabled in config            | `commandtimer.manage`                               |
+| `/cmt rollback <version>`| Rollback database/configuration to a specific version. Requires server restart after completion   | `commandtimer.manage`                               |
 
 ## Configuration file
 

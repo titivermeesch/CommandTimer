@@ -1,0 +1,58 @@
+.features {
+  padding: 3rem 0;
+}
+
+.featureRow {
+  row-gap: 1.5rem;
+}
+
+.featureCol {
+  padding: 0 0.75rem;
+}
+
+.featureCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1.5rem;
+  border-radius: 12px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  text-decoration: none !important;
+  color: inherit !important;
+  height: 100%;
+  background: var(--ifm-card-background-color, #fff);
+  border: 1px solid var(--ifm-color-emphasis-200);
+}
+
+.featureCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  text-decoration: none !important;
+  color: inherit !important;
+}
+
+[data-theme='dark'] .featureCard {
+  background: var(--ifm-card-background-color, #1b1b1d);
+}
+
+[data-theme='dark'] .featureCard:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.featureIcon {
+  font-size: 2.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.featureTitle {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.featureDescription {
+  font-size: 0.9rem;
+  color: var(--ifm-color-emphasis-700);
+  line-height: 1.5;
+  margin: 0;
+}

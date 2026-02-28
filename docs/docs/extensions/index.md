@@ -73,10 +73,11 @@ player. Here is a list of supported types:
 - Double
 - Integer
 - String
+- World
 - ConditionCompare
 
 All these types are the native Java types, except `ConditionCompare`, which is used to define a comparison between 2
-values. This could be EQUAL, LESS_THEN, BIGGER_OR_EQUAL_THEN,... The different choices are available on the class
+values. This could be `EQUAL`, `LESS_THAN`, `GREATER_OR_EQUAL_THAN`,... The different choices are available on the class
 itself. A good example of this is
 available [here](https://github.com/titivermeesch/CommandTimer_PlayerConditions/blob/master/src/main/java/me/playbosswar/cmtplayerconditions/conditions/PlayerTimeInWorldCondition.java)
 
