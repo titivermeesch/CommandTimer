@@ -183,6 +183,13 @@ public class Task {
         CommandTimerPlugin.getInstance().getTasksManager().resetScheduleForTask(this);
     }
 
+    public void loadExecutionMetadata(int timesExecuted, Date lastExecuted, int lastExecutedCommandIndex) {
+        this.timesExecuted = timesExecuted;
+        this.lastExecuted = lastExecuted;
+        this.lastExecutedCommandIndex = lastExecutedCommandIndex;
+        // No storeExecutionMetadata() — we're restoring what's already on disk
+    }
+
     public int getTimesExecuted() {
         return timesExecuted;
     }

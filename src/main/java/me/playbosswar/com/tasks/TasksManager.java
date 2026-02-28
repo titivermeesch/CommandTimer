@@ -3,6 +3,7 @@ package me.playbosswar.com.tasks;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.sql.SQLException;
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -39,6 +40,15 @@ public class TasksManager {
     private Thread populateScheduleRunnerThread;
     public boolean stopRunner = false;
     public int executionsSinceLastSync = 0;
+    private Clock clock = Clock.systemDefaultZone();
+
+    TasksManager() {
+        // For testing — no plugin loading, no threads
+    }
+
+    void setClock(Clock clock) {
+        this.clock = clock;
+    }
 
     public TasksManager(Plugin plugin) {
         if (plugin.getConfig().getBoolean("database.enabled")) {
@@ -186,8 +196,221 @@ public class TasksManager {
 
         int executionLimit = task.getExecutionLimit();
         int timesExecuted = task.getTimesExecuted();
+        long totalAlreadyScheduled = scheduledTasks.stream()
+                .filter(st -> st.getTask().getId().equals(task.getId())).count();
+
+        if (executionLimit != -1) {
+            int remaining = executionLimit - timesExecuted - (int) totalAlreadyScheduled;
+            if (remaining <= 0) {
+                Messages.sendDebugConsole(
+                        "Task " + task.getName() + " has reached execution limit, skipping scheduling");
+                return;
+            }
+        }
+
+        ZonedDateTime now = ZonedDateTime.now(clock);
+
+        if (!task.getTimes().isEmpty()) {
+            for (TaskTime taskTime : task.getTimes()) {
+                populateScheduleForTaskTime(task, taskTime, now);
+            }
+            return;
+        }
+
+        ZonedDateTime lastExecuted = task.getLastExecuted().toInstant().atZone(ZoneId.systemDefault());
+        populateIntervalOnlySchedule(task, lastExecuted, now);
+    }
+
+    private void populateScheduleForTaskTime(Task task, TaskTime taskTime, ZonedDateTime now) {
+        long alreadyScheduledForThisTime = scheduledTasks.stream()
+                .filter(st -> st.getTask().getId().equals(task.getId()) && st.getTaskTime() == taskTime)
+                .count();
+
+        if (alreadyScheduledForThisTime >= 50) {
+            Messages.sendDebugConsole(
+                    "TaskTime for task " + task.getName() + " already has 50 scheduled entries, skipping");
+            return;
+        }
+
+        int maxToSchedule = 50 - (int) alreadyScheduledForThisTime;
+
+        int executionLimit = task.getExecutionLimit();
+        if (executionLimit != -1) {
+            long totalAlreadyScheduled = scheduledTasks.stream()
+                    .filter(st -> st.getTask().getId().equals(task.getId())).count();
+            int remaining = executionLimit - task.getTimesExecuted() - (int) totalAlreadyScheduled;
+            if (remaining <= 0) {
+                return;
+            }
+            maxToSchedule = Math.min(maxToSchedule, remaining);
+        }
+
+        ZonedDateTime latestScheduledDate = scheduledTasks.stream()
+                .filter(st -> st.getTask().getId().equals(task.getId()) && st.getTaskTime() == taskTime)
+                .map(ScheduledTask::getDate).max(ZonedDateTime::compareTo).orElse(null);
+
+        if (latestScheduledDate == null) {
+            latestScheduledDate = now;
+        } else if (latestScheduledDate.isBefore(now)) {
+            latestScheduledDate = now;
+        }
+
+        if (taskTime.isRange()) {
+            if (taskTime.isMinecraftTime()) {
+                scheduleRangeMinecraftTime(task, taskTime, maxToSchedule, latestScheduledDate);
+            } else {
+                scheduleRangeRealTime(task, taskTime, maxToSchedule, latestScheduledDate);
+            }
+        } else {
+            if (taskTime.isMinecraftTime()) {
+                scheduleFixedMinecraftTime(task, taskTime, maxToSchedule, latestScheduledDate);
+            } else {
+                scheduleFixedRealTime(task, taskTime, maxToSchedule, latestScheduledDate);
+            }
+        }
+    }
+
+    private void scheduleRangeMinecraftTime(Task task, TaskTime taskTime, int maxToSchedule,
+            ZonedDateTime latestScheduledDate) {
+        World world = Bukkit.getWorld(taskTime.getWorld() == null ? "world" : taskTime.getWorld());
+        if (world == null) {
+            return;
+        }
+
+        LocalTime startRange = taskTime.getTime1();
+        LocalTime endRange = taskTime.getTime2();
+
+        LocalTime currentMcTime = Tools.getMinecraftTimeAt(world, ZonedDateTime.now());
+        boolean currentlyInWindow = isTimeInRange(currentMcTime, startRange, endRange);
+
+        int mcDay = 0;
+        boolean firstIteration = true;
+        while (maxToSchedule > 0) {
+            ZonedDateTime windowStart;
+            ZonedDateTime windowEnd;
+
+            if (firstIteration && currentlyInWindow) {
+                windowStart = ZonedDateTime.now();
+                windowEnd = Tools.getNextMinecraftTime(world, endRange, 0);
+                if (windowEnd.isBefore(windowStart)) {
+                    windowEnd = Tools.getNextMinecraftTime(world, endRange, 1);
+                }
+            } else {
+                int dayOffset = (firstIteration && currentlyInWindow) ? 1 : mcDay;
+                if (firstIteration && !currentlyInWindow) {
+                    dayOffset = 0;
+                }
+                windowStart = Tools.getNextMinecraftTime(world, startRange, dayOffset);
+                windowEnd = Tools.getNextMinecraftTime(world, endRange, dayOffset);
+                if (windowEnd.isBefore(windowStart)) {
+                    windowEnd = Tools.getNextMinecraftTime(world, endRange, dayOffset + 1);
+                }
+            }
+            firstIteration = false;
+
+            if (!task.getDays().contains(windowStart.toLocalDate().getDayOfWeek())) {
+                mcDay++;
+                continue;
+            }
+
+            if (windowEnd.isBefore(latestScheduledDate)) {
+                mcDay++;
+                continue;
+            }
+
+            ZonedDateTime execTime = windowStart.isBefore(latestScheduledDate) ? latestScheduledDate : windowStart;
+            long intervalSeconds = task.getInterval().toSeconds();
+            if (intervalSeconds <= 0) intervalSeconds = 1;
+
+            while (maxToSchedule > 0 && !execTime.isAfter(windowEnd)) {
+                if (execTime.isAfter(latestScheduledDate)) {
+                    scheduledTasks.add(new ScheduledTask(task, execTime, taskTime));
+                    maxToSchedule--;
+                }
+                execTime = execTime.plusSeconds(intervalSeconds);
+            }
+            mcDay++;
+        }
+    }
+
+    private void scheduleRangeRealTime(Task task, TaskTime taskTime, int maxToSchedule,
+            ZonedDateTime latestScheduledDate) {
+        LocalTime startRange = taskTime.getTime1();
+        LocalTime endRange = taskTime.getTime2();
+
+        int i = 0;
+        while (maxToSchedule > 0) {
+            ZonedDateTime date = ZonedDateTime.of(LocalDate.now(clock), startRange, ZoneId.systemDefault())
+                    .plusSeconds(i * task.getInterval().toSeconds());
+            if (!task.getDays().contains(date.getDayOfWeek())) {
+                i++;
+                continue;
+            }
+
+            boolean isInRange = Tools.isTimeInRange(date.toLocalTime(), startRange, endRange);
+            if (!isInRange) {
+                i++;
+                continue;
+            }
+
+            if (!date.isAfter(latestScheduledDate)) {
+                i++;
+                continue;
+            }
+
+            scheduledTasks.add(new ScheduledTask(task, date, taskTime));
+            maxToSchedule--;
+            i++;
+        }
+    }
+
+    private void scheduleFixedMinecraftTime(Task task, TaskTime taskTime, int maxToSchedule,
+            ZonedDateTime latestScheduledDate) {
+        World world = Bukkit.getWorld(taskTime.getWorld() == null ? "world" : taskTime.getWorld());
+        if (world == null) {
+            return;
+        }
+
+        LocalTime time = taskTime.getTime1();
+        int i = 0;
+        int collected = 0;
+        while (collected < maxToSchedule) {
+            ZonedDateTime nextMinecraftTime = Tools.getNextMinecraftTime(world, time, i);
+            if (task.getDays().contains(nextMinecraftTime.getDayOfWeek())
+                    && nextMinecraftTime.isAfter(latestScheduledDate)) {
+                scheduledTasks.add(new ScheduledTask(task, nextMinecraftTime, taskTime));
+                collected++;
+            }
+            i++;
+        }
+    }
+
+    private void scheduleFixedRealTime(Task task, TaskTime taskTime, int maxToSchedule,
+            ZonedDateTime latestScheduledDate) {
+        LocalTime time = taskTime.getTime1();
+        int i = 0;
+        int collected = 0;
+        while (collected < maxToSchedule) {
+            ZonedDateTime date = ZonedDateTime.of(LocalDate.now(clock), time, ZoneId.systemDefault())
+                    .plusDays(i);
+            if (task.getDays().contains(date.getDayOfWeek())
+                    && date.isAfter(latestScheduledDate)) {
+                scheduledTasks.add(new ScheduledTask(task, date, taskTime));
+                collected++;
+            }
+            i++;
+        }
+    }
+
+    private void populateIntervalOnlySchedule(Task task, ZonedDateTime lastExecuted, ZonedDateTime now) {
+        if (task.getInterval().toSeconds() == 0 && !task.getEvents().isEmpty()) {
+            Messages.sendDebugConsole(
+                    "Task " + task.getName() + "has no interval set and uses events, skipping scheduling");
+            return;
+        }
+
         long alreadyScheduled = scheduledTasks.stream()
-                .filter(scheduledTask -> scheduledTask.getTask().getId().equals(task.getId())).count();
+                .filter(st -> st.getTask().getId().equals(task.getId())).count();
 
         if (alreadyScheduled >= 50) {
             Messages.sendDebugConsole(
@@ -195,9 +418,11 @@ public class TasksManager {
             return;
         }
 
-        int maxToSchedule = 50;
+        int maxToSchedule = 50 - (int) alreadyScheduled;
+
+        int executionLimit = task.getExecutionLimit();
         if (executionLimit != -1) {
-            int remaining = executionLimit - timesExecuted - (int) alreadyScheduled;
+            int remaining = executionLimit - task.getTimesExecuted() - (int) alreadyScheduled;
             if (remaining <= 0) {
                 Messages.sendDebugConsole(
                         "Task " + task.getName() + " has reached execution limit, skipping scheduling");
@@ -207,201 +432,29 @@ public class TasksManager {
         }
 
         ZonedDateTime latestScheduledDate = scheduledTasks.stream()
-                .filter(scheduledTask -> scheduledTask.getTask().getId().equals(task.getId()))
+                .filter(st -> st.getTask().getId().equals(task.getId()))
                 .map(ScheduledTask::getDate).max(ZonedDateTime::compareTo).orElse(null);
 
         boolean hadNoScheduledTasks = (latestScheduledDate == null);
-        ZonedDateTime lastExecuted = task.getLastExecuted().toInstant().atZone(ZoneId.systemDefault());
-        ZonedDateTime now = ZonedDateTime.now();
         if (latestScheduledDate == null) {
             latestScheduledDate = lastExecuted;
         }
 
-        if (maxToSchedule <= 0) {
-            return;
-        }
-
-        if (!task.getTimes().isEmpty()) {
-            if (latestScheduledDate.isBefore(now)) {
-                latestScheduledDate = now;
-            }
-            List<TaskTime> rangeTimes = new ArrayList<>();
-            List<TaskTime> nonRangeTimes = new ArrayList<>();
-            
-            for (TaskTime taskTime : task.getTimes()) {
-                if (taskTime.isRange()) {
-                    rangeTimes.add(taskTime);
-                } else {
-                    nonRangeTimes.add(taskTime);
-                }
-            }
-            
-            for (TaskTime taskTime : rangeTimes) {
-                if (taskTime.isMinecraftTime()) {
-                    World world = Bukkit.getWorld(taskTime.getWorld() == null ? "world" : taskTime.getWorld());
-                    if (world == null) {
-                        continue;
-                    }
-
-                    LocalTime startRange = taskTime.getTime1();
-                    LocalTime endRange = taskTime.getTime2();
-
-                    LocalTime currentMcTime = Tools.getMinecraftTimeAt(world, ZonedDateTime.now());
-                    boolean currentlyInWindow = isTimeInRange(currentMcTime, startRange, endRange);
-
-                    int mcDay = 0;
-                    boolean firstIteration = true;
-                    while (maxToSchedule > 0) {
-                        ZonedDateTime windowStart;
-                        ZonedDateTime windowEnd;
-
-                        if (firstIteration && currentlyInWindow) {
-                            windowStart = ZonedDateTime.now();
-                            windowEnd = Tools.getNextMinecraftTime(world, endRange, 0);
-                            if (windowEnd.isBefore(windowStart)) {
-                                windowEnd = Tools.getNextMinecraftTime(world, endRange, 1);
-                            }
-                        } else {
-                            int dayOffset = (firstIteration && currentlyInWindow) ? 1 : mcDay;
-                            if (firstIteration && !currentlyInWindow) {
-                                dayOffset = 0;
-                            }
-                            windowStart = Tools.getNextMinecraftTime(world, startRange, dayOffset);
-                            windowEnd = Tools.getNextMinecraftTime(world, endRange, dayOffset);
-                            if (windowEnd.isBefore(windowStart)) {
-                                windowEnd = Tools.getNextMinecraftTime(world, endRange, dayOffset + 1);
-                            }
-                        }
-                        firstIteration = false;
-
-                        if (!task.getDays().contains(windowStart.toLocalDate().getDayOfWeek())) {
-                            mcDay++;
-                            continue;
-                        }
-
-                        if (windowEnd.isBefore(latestScheduledDate)) {
-                            mcDay++;
-                            continue;
-                        }
-
-                        ZonedDateTime execTime = windowStart.isBefore(latestScheduledDate) ? latestScheduledDate : windowStart;
-                        long intervalSeconds = task.getInterval().toSeconds();
-                        if (intervalSeconds <= 0) intervalSeconds = 1;
-
-                        while (maxToSchedule > 0 && !execTime.isAfter(windowEnd)) {
-                            if (!execTime.isBefore(latestScheduledDate)) {
-                                scheduledTasks.add(new ScheduledTask(task, execTime));
-                                maxToSchedule--;
-                            }
-                            execTime = execTime.plusSeconds(intervalSeconds);
-                        }
-                        mcDay++;
-                    }
-                } else {
-                    LocalTime startRange = taskTime.getTime1();
-                    LocalTime endRange = taskTime.getTime2();
-
-                    int i = 0;
-                    while (maxToSchedule > 0) {
-                        ZonedDateTime date = ZonedDateTime.of(LocalDate.now(), startRange, ZoneId.systemDefault())
-                                .plusSeconds(i * task.getInterval().toSeconds());
-                        if (!task.getDays().contains(date.getDayOfWeek())) {
-                            i++;
-                            continue;
-                        }
-
-                        boolean isInRange = Tools.isTimeInRange(date.toLocalTime(), startRange, endRange);
-                        if (!isInRange) {
-                            i++;
-                            continue;
-                        }
-
-                        if (date.isBefore(latestScheduledDate)) {
-                            i++;
-                            continue;
-                        }
-
-                        scheduledTasks.add(new ScheduledTask(task, date));
-                        maxToSchedule--;
-                        i++;
-                    }
-                }
-            }
-            
-            if (!nonRangeTimes.isEmpty()) {
-                List<ZonedDateTime> allOccurrences = new ArrayList<>();
-                
-                for (TaskTime taskTime : nonRangeTimes) {
-                    if (taskTime.isMinecraftTime()) {
-                        World world = Bukkit.getWorld(taskTime.getWorld() == null ? "world" : taskTime.getWorld());
-                        if (world == null) {
-                            continue;
-                        }
-
-                        LocalTime time = taskTime.getTime1();
-                        int i = 0;
-                        int collected = 0;
-                        while (collected < maxToSchedule * 2) {
-                            ZonedDateTime nextMinecraftTime = Tools.getNextMinecraftTime(world, time, i);
-                            if (task.getDays().contains(nextMinecraftTime.getDayOfWeek()) 
-                                    && !nextMinecraftTime.isBefore(latestScheduledDate)) {
-                                allOccurrences.add(nextMinecraftTime);
-                                collected++;
-                            }
-                            i++;
-                        }
-                    } else {
-                        LocalTime time = taskTime.getTime1();
-                        int i = 0;
-                        int collected = 0;
-                        while (collected < maxToSchedule * 2) {
-                            ZonedDateTime date = ZonedDateTime.of(LocalDate.now(), time, ZoneId.systemDefault())
-                                    .plusDays(i);
-                            if (task.getDays().contains(date.getDayOfWeek()) 
-                                    && !date.isBefore(latestScheduledDate)) {
-                                allOccurrences.add(date);
-                                collected++;
-                            }
-                            i++;
-                        }
-                    }
-                }
-                
-                allOccurrences.sort(ZonedDateTime::compareTo);
-                
-                for (ZonedDateTime date : allOccurrences) {
-                    if (maxToSchedule <= 0) {
-                        break;
-                    }
-                    scheduledTasks.add(new ScheduledTask(task, date));
-                    maxToSchedule--;
-                }
-            }
-            
-            return;
-        }
-
-        if (task.getInterval().toSeconds() == 0 && !task.getEvents().isEmpty()) {
-            Messages.sendDebugConsole(
-                    "Task " + task.getName() + "has no interval set and uses events, skipping scheduling");
-            return;
-        }
-
         long intervalSeconds = task.getInterval().toSeconds();
         if (intervalSeconds <= 0) intervalSeconds = 1;
-        
+
         ZonedDateTime nextExpectedExecution = lastExecuted.plusSeconds(intervalSeconds);
-        
+
         if (hadNoScheduledTasks && nextExpectedExecution.isBefore(now)) {
             if (task.getDays().contains(nextExpectedExecution.toLocalDate().getDayOfWeek())) {
                 scheduledTasks.add(new ScheduledTask(task, nextExpectedExecution));
                 maxToSchedule--;
             }
         }
-        
+
         int i = 1;
         ZonedDateTime startDate = latestScheduledDate;
-        
+
         while (maxToSchedule > 0) {
             ZonedDateTime date = startDate.plusSeconds(i * intervalSeconds);
             if (!task.getDays().contains(date.getDayOfWeek())) {

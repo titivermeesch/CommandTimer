@@ -13,9 +13,10 @@ public class DatabaseUtils {
         tasks.forEach(task -> {
             TaskExecutionMetadata metadata = Files.getOrCreateTaskMetadata(task);
             if(metadata != null) {
-                task.setTimesExecuted(metadata.getTimesExecuted());
-                task.setLastExecuted(metadata.getLastExecuted());
-                task.setLastExecutedCommandIndex(metadata.getLastExecutedCommandIndex());
+                task.loadExecutionMetadata(
+                        metadata.getTimesExecuted(),
+                        metadata.getLastExecuted(),
+                        metadata.getLastExecutedCommandIndex());
             }
         });
         return tasks;
