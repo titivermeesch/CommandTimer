@@ -256,9 +256,10 @@ public class Files {
 
                         TaskExecutionMetadata metadata = getOrCreateTaskMetadata(task);
                         if (metadata != null) {
-                            task.setTimesExecuted(metadata.getTimesExecuted());
-                            task.setLastExecutedCommandIndex(metadata.getLastExecutedCommandIndex());
-                            task.setLastExecuted(metadata.getLastExecuted());
+                            task.loadExecutionMetadata(
+                                    metadata.getTimesExecuted(),
+                                    metadata.getLastExecuted(),
+                                    metadata.getLastExecutedCommandIndex());
                         }
 
                         tasks.add(task);

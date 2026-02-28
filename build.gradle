@@ -67,6 +67,16 @@ dependencies {
     compileOnly 'org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT'
     compileOnly 'me.clip:placeholderapi:2.11.6'
     compileOnly 'org.jetbrains:annotations:23.0.0'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.3'
+    testImplementation 'org.mockito:mockito-core:4.11.0'
+    testImplementation 'org.mockito:mockito-junit-jupiter:4.11.0'
+    testImplementation 'org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT'
+    testImplementation 'org.jetbrains:annotations:23.0.0'
+}
+
+test {
+    useJUnitPlatform()
 }
 
 publishing {
