@@ -165,7 +165,11 @@ public enum LanguageKey {
     FILTER_BUTTON_CURRENT,
     FILTER_ALL,
     FILTER_TASKS_ONLY,
-    FILTER_ADHOC_ONLY;
+    FILTER_ADHOC_ONLY,
+    INTERVAL_START_TIME_TITLE,
+    INTERVAL_START_TIME_LORE,
+    INTERVAL_START_TIME_GUI_TITLE,
+    INTERVAL_START_TIME_CLEAR;
 
     public static LanguageKey getByTag(String tag) {
         return Arrays.stream(values()).filter(value -> value.toString().equals(tag.toUpperCase())).findFirst()

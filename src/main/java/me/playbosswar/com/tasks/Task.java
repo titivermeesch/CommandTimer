@@ -24,6 +24,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.DayOfWeek;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -60,6 +61,8 @@ public class Task {
     private Condition condition;
     @DatabaseField(persisterClass = EventConfigurationPersistor.class)
     private Collection<EventConfiguration> events = new ArrayList<>();
+    @DatabaseField(persisterClass = LocalTimePersistor.class)
+    private LocalTime intervalStartTime = null;
 
     Task() {
         // all persisted classes must define a no-arg constructor with at least package visibility
@@ -304,6 +307,16 @@ public class Task {
 
     public void setEvents(List<EventConfiguration> events) {
         this.events = events;
+    }
+
+    public LocalTime getIntervalStartTime() {
+        return intervalStartTime;
+    }
+
+    public void setIntervalStartTime(LocalTime intervalStartTime) {
+        this.intervalStartTime = intervalStartTime;
+        storeInstance();
+        CommandTimerPlugin.getInstance().getTasksManager().resetScheduleForTask(this);
     }
 
     public boolean hasCondition() {
