@@ -31,6 +31,44 @@ When configuring Minecraft time, a world also needs to be selected to use the ti
 
 If you want to know the world time, go to the world you want to check and execute `/cmt time`
 
+## Interval Start Time
+
+By default, interval-based tasks schedule executions relative to when the task was last run. This means the exact execution times can shift depending on when your server started or when the task was activated.
+
+The **Interval Start Time** feature lets you anchor executions to fixed clock times instead. When a start time is configured, executions will always land on a predictable grid.
+
+### How it works
+
+The start time acts as an anchor point. Combined with your interval, it creates a repeating grid of execution times that stays consistent regardless of server restarts.
+
+For example, if you set:
+- **Interval**: 15 minutes
+- **Start Time**: 15:00
+
+Your task will execute at: ..., 14:00, 14:15, 14:30, 14:45, 15:00, 15:15, 15:30, ...
+
+The grid extends across the entire day based on the interval. Even if your server restarts at 14:02, the next execution will still be at 14:15 — not at 14:17.
+
+### Examples
+
+| Interval | Start Time | Executions |
+|----------|-----------|------------|
+| 15 min | 15:00 | 00:00, 00:15, 00:30, ..., 14:45, 15:00, 15:15, ... |
+| 2 hours | 13:00 | 01:00, 03:00, 05:00, 07:00, 09:00, 11:00, 13:00, ... |
+| 30 min | 10:15 | 00:15, 00:45, 01:15, ..., 10:15, 10:45, 11:15, ... |
+
+### Configuring
+
+In the task scheduler menu, click the **Interval Start Time** item (compass icon). From there you can set the hours, minutes, and seconds for the anchor time. Use the **Clear** button to remove the start time and go back to the default behavior.
+
+:::tip
+This is especially useful for tasks that need to run at predictable clock-aligned times, such as hourly announcements or scheduled restarts.
+:::
+
+:::note
+The start time only affects interval-based scheduling. If your task uses [fixed times](#fixed-times), those already execute at exact clock times and don't need a start time anchor.
+:::
+
 ## Days
 
 In the days menu, you can select on which days the [task](../jargon#task) will be executed. By default all the days are selected.

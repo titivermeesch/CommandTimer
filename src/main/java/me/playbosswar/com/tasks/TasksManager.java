@@ -217,6 +217,11 @@ public class TasksManager {
             return;
         }
 
+        if (task.getIntervalStartTime() != null) {
+            populateAlignedIntervalSchedule(task, now);
+            return;
+        }
+
         ZonedDateTime lastExecuted = task.getLastExecuted().toInstant().atZone(ZoneId.systemDefault());
         populateIntervalOnlySchedule(task, lastExecuted, now);
     }
@@ -470,6 +475,84 @@ public class TasksManager {
             scheduledTasks.add(new ScheduledTask(task, date));
             maxToSchedule--;
             i++;
+        }
+    }
+
+    private void populateAlignedIntervalSchedule(Task task, ZonedDateTime now) {
+        long alreadyScheduled = scheduledTasks.stream()
+                .filter(st -> st.getTask().getId().equals(task.getId())).count();
+
+        if (alreadyScheduled >= 50) {
+            Messages.sendDebugConsole(
+                    "Task " + task.getName() + " has already been scheduled 50 times, skipping scheduling");
+            return;
+        }
+
+        int maxToSchedule = 50 - (int) alreadyScheduled;
+
+        int executionLimit = task.getExecutionLimit();
+        if (executionLimit != -1) {
+            int remaining = executionLimit - task.getTimesExecuted() - (int) alreadyScheduled;
+            if (remaining <= 0) {
+                Messages.sendDebugConsole(
+                        "Task " + task.getName() + " has reached execution limit, skipping scheduling");
+                return;
+            }
+            maxToSchedule = Math.min(maxToSchedule, remaining);
+        }
+
+        ZonedDateTime latestScheduledDate = scheduledTasks.stream()
+                .filter(st -> st.getTask().getId().equals(task.getId()))
+                .map(ScheduledTask::getDate).max(ZonedDateTime::compareTo).orElse(null);
+
+        long intervalSeconds = task.getInterval().toSeconds();
+        if (intervalSeconds <= 0) intervalSeconds = 1;
+
+        LocalTime startTime = task.getIntervalStartTime();
+        LocalDate currentDay = now.toLocalDate();
+
+        while (maxToSchedule > 0) {
+            if (!task.getDays().contains(currentDay.getDayOfWeek())) {
+                currentDay = currentDay.plusDays(1);
+                continue;
+            }
+
+            ZonedDateTime anchorForDay = ZonedDateTime.of(currentDay, startTime, now.getZone());
+
+            // Compute the first grid point at or after the effective start for this day
+            ZonedDateTime effectiveStart = now;
+            if (latestScheduledDate != null && latestScheduledDate.isAfter(effectiveStart)) {
+                effectiveStart = latestScheduledDate;
+            }
+
+            // Use modulo to find first grid point at or after effectiveStart
+            // Grid: anchor + N * interval for any integer N
+            long diffSeconds = java.time.Duration.between(anchorForDay, effectiveStart).getSeconds();
+            long remainder = ((diffSeconds % intervalSeconds) + intervalSeconds) % intervalSeconds;
+            ZonedDateTime firstGridPoint;
+            if (remainder == 0) {
+                firstGridPoint = effectiveStart;
+            } else {
+                firstGridPoint = effectiveStart.plusSeconds(intervalSeconds - remainder);
+            }
+
+            // Only schedule points that fall on this calendar day
+            ZonedDateTime endOfDay = ZonedDateTime.of(currentDay.plusDays(1), LocalTime.MIDNIGHT, now.getZone());
+
+            ZonedDateTime gridPoint = firstGridPoint;
+            while (maxToSchedule > 0 && gridPoint.isBefore(endOfDay)) {
+                if (gridPoint.toLocalDate().equals(currentDay)) {
+                    boolean isDuplicate = latestScheduledDate != null && !gridPoint.isAfter(latestScheduledDate);
+                    if (!isDuplicate && !gridPoint.isBefore(now)) {
+                        scheduledTasks.add(new ScheduledTask(task, gridPoint));
+                        maxToSchedule--;
+                        latestScheduledDate = gridPoint;
+                    }
+                }
+                gridPoint = gridPoint.plusSeconds(intervalSeconds);
+            }
+
+            currentDay = currentDay.plusDays(1);
         }
     }
 

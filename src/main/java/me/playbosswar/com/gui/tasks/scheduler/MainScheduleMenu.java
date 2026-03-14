@@ -14,8 +14,9 @@ import me.playbosswar.com.utils.Items;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.List;
 
 public class MainScheduleMenu implements InventoryProvider {
     public SmartInventory INVENTORY;
@@ -62,6 +63,17 @@ public class MainScheduleMenu implements InventoryProvider {
         ClickableItem clickableDaysItem = ClickableItem.of(daysItem,
                 e -> new EditDaysMenu(task).INVENTORY.open(player));
         contents.set(1, 3, clickableDaysItem);
+
+        LocalTime startTime = task.getIntervalStartTime();
+        String startTimeDisplay = startTime != null
+                ? startTime.format(DateTimeFormatter.ofPattern("HH:mm:ss"))
+                : languageManager.get(LanguageKey.NOT_SET);
+        ArrayList<String> startTimeLore = languageManager.getList(LanguageKey.INTERVAL_START_TIME_LORE, startTimeDisplay);
+        ItemStack startTimeItem = Items.generateItem(LanguageKey.INTERVAL_START_TIME_TITLE, XMaterial.COMPASS,
+                startTimeLore.toArray(new String[]{}));
+        ClickableItem clickableStartTimeItem = ClickableItem.of(startTimeItem,
+                e -> new EditIntervalStartTimeMenu(task).INVENTORY.open(player));
+        contents.set(1, 4, clickableStartTimeItem);
 
         contents.set(2, 8, ClickableItem.of(Items.getBackItem(), e -> new EditTaskMenu(task).INVENTORY.open(player)));
     }

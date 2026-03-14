@@ -161,5 +161,9 @@
   "filter_button_current": "&7Current filter: &e$1",
   "filter_all": "All",
   "filter_tasks_only": "Tasks Only",
-  "filter_adhoc_only": "Ad-Hoc Only"
+  "filter_adhoc_only": "Ad-Hoc Only",
+  "interval_start_time_title": "&bInterval Start Time",
+  "interval_start_time_lore": "\n&7Set a start time anchor for interval execution.\n&7This aligns executions to clock boundaries\n&7instead of relative to last execution.\n\n&7Current: &e$1",
+  "interval_start_time_gui_title": "&9&lInterval Start Time",
+  "interval_start_time_clear": "&cClear start time"
 }

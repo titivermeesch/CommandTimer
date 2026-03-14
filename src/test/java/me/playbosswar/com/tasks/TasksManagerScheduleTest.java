@@ -603,6 +603,152 @@ class TasksManagerScheduleTest {
                 "Should skip scheduling for event-only tasks with no interval");
     }
 
+    // ========================= Aligned interval (grid-locked) =========================
+
+    @Test
+    void alignedInterval_schedulesAtCorrectGridTimes() {
+        // startTime=15:00, interval=15min, now=Monday 08:00
+        // Grid for today: 08:00, 08:15, 08:30, ...
+        Task task = createTestTask();
+        setField(task, "interval", new TaskInterval(0, 0, 15, 0)); // 15 min
+        setField(task, "intervalStartTime", LocalTime.of(15, 0));
+
+
+        manager.populateScheduleForTask(task);
+
+        List<ScheduledTask> scheduled = scheduledFor(task);
+        assertTrue(scheduled.size() > 0, "Should have scheduled entries");
+
+        // All entries should fall on 15-minute grid aligned to 15:00
+        for (ScheduledTask st : scheduled) {
+            LocalTime t = st.getDate().toLocalTime();
+            long minutesSinceMidnight = t.getHour() * 60 + t.getMinute();
+            // 15:00 = 900 minutes; grid: any time where (minutes - 900) % 15 == 0
+            long offset = ((minutesSinceMidnight - 900) % 15 + 15) % 15;
+            assertEquals(0, offset,
+                    "Entry at " + t + " should be on 15-min grid anchored at 15:00");
+            assertEquals(0, t.getSecond(), "Seconds should be 0");
+        }
+    }
+
+    @Test
+    void alignedInterval_firstEntryIsNextGridPointAfterNow() {
+        // startTime=15:00, interval=15min, now=08:00
+        // Grid: ...07:45, 08:00, 08:15... → first should be 08:00
+        Task task = createTestTask();
+        setField(task, "interval", new TaskInterval(0, 0, 15, 0));
+        setField(task, "intervalStartTime", LocalTime.of(15, 0));
+
+
+        manager.populateScheduleForTask(task);
+
+        List<ZonedDateTime> dates = scheduledFor(task).stream()
+                .map(ScheduledTask::getDate)
+                .sorted()
+                .collect(Collectors.toList());
+
+        // 08:00 is exactly on the grid, so it should be the first entry
+        assertEquals(LocalTime.of(8, 0), dates.get(0).toLocalTime(),
+                "First entry should be at 08:00 (on the grid)");
+    }
+
+    @Test
+    void alignedInterval_rollsOverToNextDay() {
+        // startTime=23:00, interval=2h, now=08:00
+        // Grid today: 09:00, 11:00, 13:00, 15:00, 17:00, 19:00, 21:00, 23:00
+        // Should eventually schedule entries on the next day too
+        Task task = createTestTask();
+        setField(task, "interval", new TaskInterval(0, 2, 0, 0)); // 2h
+        setField(task, "intervalStartTime", LocalTime.of(23, 0));
+
+
+        manager.populateScheduleForTask(task);
+
+        List<ZonedDateTime> dates = scheduledFor(task).stream()
+                .map(ScheduledTask::getDate)
+                .sorted()
+                .collect(Collectors.toList());
+
+        assertTrue(dates.size() >= 2, "Should have multiple entries");
+
+        // Should have entries on multiple days
+        long distinctDays = dates.stream()
+                .map(d -> d.toLocalDate())
+                .distinct()
+                .count();
+        assertTrue(distinctDays > 1, "Should schedule across multiple days");
+    }
+
+    @Test
+    void alignedInterval_respectsDayFilter() {
+        Task task = createTestTask();
+        setField(task, "interval", new TaskInterval(0, 1, 0, 0)); // 1h
+        setField(task, "intervalStartTime", LocalTime.of(12, 0));
+
+        // Only Wednesday (now is Monday)
+        Collection<DayOfWeek> wednesdayOnly = new ArrayList<>();
+        wednesdayOnly.add(DayOfWeek.WEDNESDAY);
+        setField(task, "days", wednesdayOnly);
+
+        manager.populateScheduleForTask(task);
+
+        List<ScheduledTask> scheduled = scheduledFor(task);
+        assertTrue(scheduled.size() > 0);
+        for (ScheduledTask st : scheduled) {
+            assertEquals(DayOfWeek.WEDNESDAY, st.getDate().getDayOfWeek(),
+                    "All entries should be on Wednesday");
+        }
+    }
+
+    @Test
+    void alignedInterval_respectsExecutionLimit() {
+        Task task = createTestTask();
+        setField(task, "interval", new TaskInterval(0, 0, 15, 0));
+        setField(task, "intervalStartTime", LocalTime.of(12, 0));
+
+        setField(task, "executionLimit", 5);
+        setField(task, "timesExecuted", 0);
+
+        manager.populateScheduleForTask(task);
+
+        assertEquals(5, scheduledFor(task).size(), "Should respect execution limit");
+    }
+
+    @Test
+    void alignedInterval_repopulationDoesNotDuplicate() {
+        Task task = createTestTask();
+        setField(task, "interval", new TaskInterval(0, 0, 15, 0));
+        setField(task, "intervalStartTime", LocalTime.of(12, 0));
+
+
+        manager.populateScheduleForTask(task);
+        int firstCount = scheduledFor(task).size();
+        assertEquals(50, firstCount);
+
+        manager.populateScheduleForTask(task);
+        assertEquals(50, scheduledFor(task).size(),
+                "Repopulation should NOT add duplicates for aligned interval tasks");
+    }
+
+    @Test
+    void nullStartTime_fallsBackToExistingBehavior() {
+        // No intervalStartTime set — should behave identically to the original test
+        Task task = createTestTask();
+        setField(task, "interval", new TaskInterval(0, 0, 0, 30));
+        setField(task, "lastExecuted", Date.from(FIXED_INSTANT.minusSeconds(300)));
+        // intervalStartTime is null by default
+
+        manager.populateScheduleForTask(task);
+
+        List<ScheduledTask> scheduled = scheduledFor(task);
+        assertEquals(50, scheduled.size());
+
+        // First entry should be catch-up at lastExecuted + 30s
+        Instant catchUpInstant = FIXED_INSTANT.minusSeconds(270);
+        assertTrue(scheduled.stream().anyMatch(st -> st.getDate().toInstant().equals(catchUpInstant)),
+                "Should have catch-up entry at lastExecuted + interval (null startTime = existing behavior)");
+    }
+
     @Test
     void allEntriesHaveCorrectTaskReference() {
         Task task = createTestTask();
