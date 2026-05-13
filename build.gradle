@@ -9,7 +9,7 @@ java {
 }
 
 group = 'me.playbosswar.com'
-version = '8.17.0'
+version = '8.17.1'
 description = 'CommandTimer'
 
 repositories {
@@ -36,9 +36,8 @@ repositories {
 
 shadowJar {
     dependencies {
-        // include(dependency('fr.minuskube.inv:smart-invs:1.2.7'))
         include(dependency('com.github.titivermeesch:SmartInvs:feat~folia-support-SNAPSHOT'))
-        include(dependency('com.github.cryptomorin:XSeries:8.6.2'))
+        include(dependency('com.github.cryptomorin:XSeries:13.8.0'))
         include(dependency('joda-time:joda-time:2.10.13'))
         include(dependency('org.jeasy:easy-rules-core:4.1.0'))
         include(dependency('org.apache.commons:commons-text:1.9'))
@@ -55,8 +54,7 @@ compileJava {
 }
 
 dependencies {
-    implementation 'com.github.cryptomorin:XSeries:8.6.2'
-    // implementation 'fr.minuskube.inv:smart-invs:1.2.7'
+    implementation 'com.github.cryptomorin:XSeries:13.8.0'
     implementation 'com.github.titivermeesch:SmartInvs:feat~folia-support-SNAPSHOT'
     implementation 'joda-time:joda-time:2.10.13'
     implementation 'org.jeasy:easy-rules-core:4.1.0'
@@ -84,7 +82,7 @@ publishing {
         maven(MavenPublication) {
             groupId = 'me.playbosswar.com'
             artifactId = 'commandtimer'
-            version = '8.17.0'
+            version = '8.17.1'
 
             from components.java
         }
