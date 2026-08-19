@@ -216,8 +216,19 @@ public class Task {
     }
 
     public void setActive(boolean active) {
+        if(this.active == active) {
+            return;
+        }
+
         this.active = active;
-        this.lastExecuted = new Date();
+
+        // Activating restarts the interval countdown so a stale last execution date does not
+        // make the task fire immediately. Deactivating keeps it, so reactivating later is explicit
+        if(active) {
+            this.lastExecuted = new Date();
+            storeExecutionMetadata();
+        }
+
         storeInstance();
         CommandTimerPlugin.getInstance().getTasksManager().resetScheduleForTask(this);
     }
