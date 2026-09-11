@@ -1,8 +1,11 @@
 package me.playbosswar.com.tasks;
 
 import me.playbosswar.com.CommandTimerPlugin;
+import me.playbosswar.com.language.LanguageManager;
+import me.playbosswar.com.utils.Files;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,18 +13,22 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.lang.reflect.Field;
+import java.nio.file.Path;
 import java.time.Clock;
 import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -33,31 +40,49 @@ class TasksManagerScheduleTest {
     private static final Clock FIXED_CLOCK = Clock.fixed(FIXED_INSTANT, ZONE);
 
     private TasksManager manager;
+    private static CommandTimerPlugin mockPlugin;
+    private static Path dataFolder;
 
     @BeforeAll
     static void setUpPlugin() throws Exception {
         // Set a mock plugin so Messages static initializer doesn't NPE
-        CommandTimerPlugin mockPlugin = Mockito.mock(CommandTimerPlugin.class);
+        mockPlugin = Mockito.mock(CommandTimerPlugin.class);
         FileConfiguration mockConfig = Mockito.mock(FileConfiguration.class);
         Mockito.when(mockPlugin.getConfig()).thenReturn(mockConfig);
         Mockito.when(mockConfig.getBoolean(Mockito.anyString())).thenReturn(false);
 
-        Field pluginField = CommandTimerPlugin.class.getDeclaredField("plugin");
-        pluginField.setAccessible(true);
-        pluginField.set(null, mockPlugin);
+        // Temporary data folder so Task.storeInstance()/storeExecutionMetadata() can write files.
+        // getDataFolder() is final and can't be stubbed, so set the backing field directly.
+        dataFolder = java.nio.file.Files.createTempDirectory("commandtimer-test");
+        java.nio.file.Files.createDirectories(dataFolder.resolve("timers"));
+        java.nio.file.Files.createDirectories(dataFolder.resolve("execution-data"));
+        Field dataFolderField = JavaPlugin.class.getDeclaredField("dataFolder");
+        dataFolderField.setAccessible(true);
+        dataFolderField.set(mockPlugin, dataFolder.toFile());
+
+        setStaticField(CommandTimerPlugin.class, "plugin", mockPlugin);
+        setStaticField(CommandTimerPlugin.class, "instance", mockPlugin);
+        // ConditionType's enum constructor resolves its description through the language manager
+        setStaticField(CommandTimerPlugin.class, "languageManager", Mockito.mock(LanguageManager.class));
     }
 
     @AfterAll
     static void tearDownPlugin() throws Exception {
-        Field pluginField = CommandTimerPlugin.class.getDeclaredField("plugin");
-        pluginField.setAccessible(true);
-        pluginField.set(null, null);
+        setStaticField(CommandTimerPlugin.class, "plugin", null);
+        setStaticField(CommandTimerPlugin.class, "instance", null);
+        setStaticField(CommandTimerPlugin.class, "languageManager", null);
+        if (dataFolder != null) {
+            try (Stream<Path> paths = java.nio.file.Files.walk(dataFolder)) {
+                paths.sorted(Comparator.reverseOrder()).forEach(path -> path.toFile().delete());
+            }
+        }
     }
 
     @BeforeEach
     void setUp() {
         manager = new TasksManager();
         manager.setClock(FIXED_CLOCK);
+        Mockito.when(mockPlugin.getTasksManager()).thenReturn(manager);
     }
 
     // ========================= Helpers =========================
@@ -84,6 +109,12 @@ class TasksManagerScheduleTest {
             days.add(d);
         }
         return days;
+    }
+
+    private static void setStaticField(Class<?> clazz, String fieldName, Object value) throws Exception {
+        Field field = clazz.getDeclaredField(fieldName);
+        field.setAccessible(true);
+        field.set(null, value);
     }
 
     private static void setField(Object obj, String fieldName, Object value) {
@@ -760,5 +791,42 @@ class TasksManagerScheduleTest {
         for (ScheduledTask st : scheduledFor(task)) {
             assertSame(task, st.getTask(), "ScheduledTask should reference the original task");
         }
+    }
+
+    // --- Activation persistence ---
+
+    @Test
+    void setActive_persistsResetLastExecutedSoRestartKeepsCountdown() {
+        Task task = createTestTask();
+        setField(task, "active", false);
+        setField(task, "interval", new TaskInterval(14, 0, 0, 0));
+        // Timer last ran a week ago (e.g. when it deactivated itself); that is what is on disk
+        Date stale = Date.from(FIXED_INSTANT.minus(7, ChronoUnit.DAYS));
+        setField(task, "lastExecuted", stale);
+        Files.updateLocalTaskMetadata(task);
+
+        // /cmt activate <task>
+        task.setActive(true);
+        Date activatedAt = task.getLastExecuted();
+        assertTrue(activatedAt.after(stale), "activation should reset lastExecuted");
+
+        // Simulate a restart: execution metadata is re-read from disk into a fresh Task
+        TaskExecutionMetadata reloaded = Files.getOrCreateTaskMetadata(task);
+        assertNotNull(reloaded);
+        assertEquals(activatedAt.getTime(), reloaded.getLastExecuted().getTime(),
+                "lastExecuted on disk should match the value set at activation");
+
+        Task restarted = createTestTask();
+        setField(restarted, "id", task.getId());
+        setField(restarted, "interval", new TaskInterval(14, 0, 0, 0));
+        restarted.loadExecutionMetadata(reloaded.getTimesExecuted(), reloaded.getLastExecuted(),
+                reloaded.getLastExecutedCommandIndex());
+
+        manager.populateScheduleForTask(restarted);
+
+        ScheduledTask next = manager.getNextScheduledTaskForTask(restarted);
+        assertNotNull(next);
+        assertEquals(activatedAt.toInstant().plus(14, ChronoUnit.DAYS), next.getDate().toInstant(),
+                "countdown after restart should still be a full interval from activation");
     }
 }

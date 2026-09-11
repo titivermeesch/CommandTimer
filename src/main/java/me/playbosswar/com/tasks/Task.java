@@ -219,6 +219,9 @@ public class Task {
         this.active = active;
         this.lastExecuted = new Date();
         storeInstance();
+        // lastExecuted is transient, so storeInstance() does not persist it. Without this the
+        // reset countdown only lives in memory and a restart re-reads the stale value from disk.
+        storeExecutionMetadata();
         CommandTimerPlugin.getInstance().getTasksManager().resetScheduleForTask(this);
     }
 
