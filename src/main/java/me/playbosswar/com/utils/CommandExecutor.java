@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandException;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -305,7 +306,10 @@ public class CommandExecutor {
         boolean delayedExecutions = context.interval.toSeconds() > 0;
 
         int i = 0;
-        for (OfflinePlayer p : Bukkit.getOfflinePlayers()) {
+        for (OfflinePlayer p : getOfflinePlayers()) {
+            if (!isPluginEnabled()) {
+                break;
+            }
             if (context.conditionChecker != null) {
                 Boolean valid = context.conditionChecker.apply(p);
                 if (valid == null || !valid) {
@@ -314,32 +318,59 @@ public class CommandExecutor {
                 }
             }
             if (delayedExecutions) {
-                CommandTimerPlugin.getScheduler().runTaskLater(() -> {
-                    CommandTimerPlugin.getScheduler().runTask(() -> {
-                        Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command, p));
-                        if (context.executionCounter != null) {
-                            context.executionCounter.accept(1);
-                        }
-                        if (context.onExecution != null) {
-                            context.onExecution.run();
-                        }
-                    });
-                }, (20L * i * context.interval.toSeconds()) + 1);
+                CommandTimerPlugin.getScheduler().runTaskLater(() -> parseThenDispatchAsConsole(command, p, context),
+                        (20L * i * context.interval.toSeconds()) + 1);
             } else {
-                CommandTimerPlugin.getScheduler().runTask(() -> {
-                    Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), PAPIHook.parsePAPI(command, p));
-                    if (context.executionCounter != null) {
-                        context.executionCounter.accept(1);
-                    }
-                    if (context.onExecution != null) {
-                        context.onExecution.run();
-                    }
-                });
+                parseThenDispatchAsConsole(command, p, context);
             }
             i++;
         }
 
         return true;
+    }
+
+    private static OfflinePlayer[] getOfflinePlayers() {
+        OfflinePlayerCache cache = CommandTimerPlugin.getOfflinePlayerCache();
+        if (cache == null) {
+            return Bukkit.getOfflinePlayers();
+        }
+
+        return cache.get();
+    }
+
+    private static boolean isPluginEnabled() {
+        Plugin plugin = CommandTimerPlugin.getPlugin();
+        return plugin != null && plugin.isEnabled();
+    }
+
+    private static void parseThenDispatchAsConsole(String command, OfflinePlayer p, ExecutionContext context) {
+        if (!isPluginEnabled()) {
+            return;
+        }
+
+        if (Tools.isServerThread()) {
+            CommandTimerPlugin.getScheduler()
+                    .runTaskAsynchronously(() -> dispatchAsConsole(PAPIHook.parsePAPI(command, p), context));
+            return;
+        }
+
+        dispatchAsConsole(PAPIHook.parsePAPI(command, p), context);
+    }
+
+    private static void dispatchAsConsole(String parsedCommand, ExecutionContext context) {
+        if (!isPluginEnabled()) {
+            return;
+        }
+
+        CommandTimerPlugin.getScheduler().runTask(() -> {
+            Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), parsedCommand);
+            if (context.executionCounter != null) {
+                context.executionCounter.accept(1);
+            }
+            if (context.onExecution != null) {
+                context.onExecution.run();
+            }
+        });
     }
 
     private static boolean runConsoleProxyCommand(ExecutionContext context) {
