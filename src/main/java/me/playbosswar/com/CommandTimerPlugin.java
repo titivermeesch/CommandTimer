@@ -26,6 +26,7 @@ import me.playbosswar.com.tasks.persistors.*;
 import me.playbosswar.com.updater.Updater;
 import me.playbosswar.com.utils.Files;
 import me.playbosswar.com.utils.Messages;
+import me.playbosswar.com.utils.OfflinePlayerCache;
 import me.playbosswar.com.utils.migrations.MigrationManager;
 import me.playbosswar.com.utils.Tools;
 import org.bukkit.Bukkit;
@@ -55,6 +56,7 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
     public static LanguageManager languageManager;
     public static Dao<Task, Integer> taskDao;
     public static SchedulerAdapter schedulerAdapter;
+    private static OfflinePlayerCache offlinePlayerCache;
 
     @Override
     public void onEnable() {
@@ -71,6 +73,8 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
             schedulerAdapter = new BukkitSchedulerAdapter(this);    
             Messages.sendConsole("&eUsing Bukkit scheduler adapter");
         }
+
+        offlinePlayerCache = new OfflinePlayerCache();
 
         Sentry.init(options -> {
             options.setDsn("https://45383fac83f64e65a45d83c3059eb934@o1414814.ingest.sentry.io/6755132");
@@ -245,5 +249,9 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
 
     public static SchedulerAdapter getScheduler() {
         return schedulerAdapter;
+    }
+
+    public static OfflinePlayerCache getOfflinePlayerCache() {
+        return offlinePlayerCache;
     }
 }

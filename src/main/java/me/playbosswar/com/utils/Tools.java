@@ -1,6 +1,7 @@
 package me.playbosswar.com.utils;
 
 import me.playbosswar.com.tasks.TaskInterval;
+import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.joda.time.Duration;
 import org.joda.time.Period;
@@ -13,6 +14,14 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class Tools {
+    public static boolean isServerThread() {
+        try {
+            return Bukkit.getServer() != null && Bukkit.isPrimaryThread();
+        } catch(Throwable t) {
+            return false;
+        }
+    }
+
     /**
      * Show current time & day
      */
