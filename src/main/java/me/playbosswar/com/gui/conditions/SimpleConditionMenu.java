@@ -56,16 +56,11 @@ public class SimpleConditionMenu implements InventoryProvider {
 
     private void changeSelectedConditionGroup(String newGroup) {
         String conditionGroup = simpleCondition.getConditionGroup();
-        if(conditionGroup != null && conditionGroup.equals(newGroup)) {
-            simpleCondition.setConditionGroup(null);
-            simpleCondition.setRule(null);
-            this.selectedConditionGroup = null;
-            this.ruleName = null;
-            return;
-        }
+        boolean deselecting = conditionGroup != null && conditionGroup.equals(newGroup);
 
-        simpleCondition.setConditionGroup(newGroup);
-        this.selectedConditionGroup = newGroup;
+        simpleCondition.selectConditionGroup(deselecting ? null : newGroup);
+        this.selectedConditionGroup = simpleCondition.getConditionGroup();
+        this.ruleName = null;
         task.storeInstance();
     }
 
@@ -78,7 +73,7 @@ public class SimpleConditionMenu implements InventoryProvider {
                 .getConditionEngineManager()
                 .getRule(this.selectedConditionGroup, rule);
 
-        if(conditionRule.getNeededValues() == null) {
+        if(conditionRule == null || conditionRule.getNeededValues() == null) {
             simpleCondition.setConditionParamFields(null);
             task.storeInstance();
             return;

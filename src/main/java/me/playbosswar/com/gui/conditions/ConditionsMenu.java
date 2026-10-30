@@ -99,8 +99,8 @@ public class ConditionsMenu implements InventoryProvider {
                 };
             } else {
                 SimpleCondition simpleCondition = condition.getSimpleCondition();
-                String conditionGroup = simpleCondition.getConditionGroup();
-                String rule = simpleCondition.getRule();
+                String conditionGroup = simpleCondition == null ? null : simpleCondition.getConditionGroup();
+                String rule = simpleCondition == null ? null : simpleCondition.getRule();
 
                 lore = new String[]{"",
                         languageManager.get(LanguageKey.TYPE, conditionType.toString()),
