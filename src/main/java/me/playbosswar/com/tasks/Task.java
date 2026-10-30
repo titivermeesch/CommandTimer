@@ -15,6 +15,7 @@ import me.playbosswar.com.tasks.persistors.*;
 import me.playbosswar.com.utils.Files;
 import me.playbosswar.com.utils.gson.GsonConverter;
 import me.playbosswar.com.utils.migrations.MigrationManager;
+import org.bukkit.ChatColor;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -87,7 +88,8 @@ public class Task {
     }
 
     public void setName(String name) {
-        this.name = name.replaceAll(" ", "");
+        String withoutColors = ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', name));
+        this.name = withoutColors.replaceAll("&#[0-9a-fA-F]{6}", "").replaceAll(" ", "");
         storeInstance();
     }
 

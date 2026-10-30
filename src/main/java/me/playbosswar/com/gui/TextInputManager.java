@@ -54,7 +54,7 @@ public class TextInputManager implements Listener {
         player.sendMessage("§7" + languageManager.get(LanguageKey.TEXT_INPUT_CANCEL_HINT));
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerChat(AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
         UUID playerId = player.getUniqueId();
