@@ -28,6 +28,13 @@ public class SimpleCondition {
         this.conditionGroup = conditionGroup;
     }
 
+    // Rules belong to a group, so a stale rule could never be resolved in the new one
+    public void selectConditionGroup(String conditionGroup) {
+        this.conditionGroup = conditionGroup;
+        this.rule = null;
+        this.conditionParamFields = new ArrayList<>();
+    }
+
     public String getRule() {
         return rule;
     }

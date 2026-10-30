@@ -327,20 +327,19 @@ public class Task {
             return false;
         }
 
-        if(!this.condition.getConditions().isEmpty()) {
-            return true;
-        }
-
-        if(this.condition.getSimpleCondition() == null) {
+        ConditionType conditionType = this.condition.getConditionType();
+        if(conditionType == null) {
             return false;
         }
 
-        if(this.getCondition().getSimpleCondition().getConditionGroup() == null) {
-            return false;
+        // Only look at what the type evaluates: parts for AND/OR, the simple condition otherwise
+        if(conditionType.equals(ConditionType.AND) || conditionType.equals(ConditionType.OR)) {
+            List<Condition> conditions = this.condition.getConditions();
+            return conditions != null && !conditions.isEmpty();
         }
 
-
-        return true;
+        SimpleCondition simpleCondition = this.condition.getSimpleCondition();
+        return simpleCondition != null && simpleCondition.getConditionGroup() != null;
     }
 
     public UUID getId() {

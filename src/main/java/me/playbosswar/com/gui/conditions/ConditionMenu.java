@@ -74,7 +74,12 @@ public class ConditionMenu implements InventoryProvider {
                     internalCallback).INVENTORY.open(player));
             contents.set(1, 2, clickableConditions);
         } else {
-            SimpleCondition simpleCondition = condition.getSimpleCondition();
+            if(condition.getSimpleCondition() == null) {
+                condition.setSimpleCondition(new SimpleCondition());
+                task.storeInstance();
+            }
+
+            final SimpleCondition simpleCondition = condition.getSimpleCondition();
 
             String conditionGroup = simpleCondition.getConditionGroup();
             String rule = simpleCondition.getRule();
