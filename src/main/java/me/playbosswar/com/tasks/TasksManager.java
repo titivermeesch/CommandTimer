@@ -6,7 +6,6 @@ import java.sql.SQLException;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -29,6 +28,7 @@ import me.playbosswar.com.utils.CommandExecutor;
 import me.playbosswar.com.utils.DatabaseUtils;
 import me.playbosswar.com.utils.Files;
 import me.playbosswar.com.utils.Messages;
+import me.playbosswar.com.utils.ServerTime;
 import me.playbosswar.com.utils.Tools;
 
 public class TasksManager {
@@ -40,7 +40,7 @@ public class TasksManager {
     private Thread populateScheduleRunnerThread;
     public boolean stopRunner = false;
     public int executionsSinceLastSync = 0;
-    private Clock clock = Clock.systemDefaultZone();
+    private Clock clock = ServerTime.getClock();
 
     TasksManager() {
         // For testing — no plugin loading, no threads
@@ -222,7 +222,7 @@ public class TasksManager {
             return;
         }
 
-        ZonedDateTime lastExecuted = task.getLastExecuted().toInstant().atZone(ZoneId.systemDefault());
+        ZonedDateTime lastExecuted = task.getLastExecuted().toInstant().atZone(clock.getZone());
         populateIntervalOnlySchedule(task, lastExecuted, now);
     }
 
@@ -285,7 +285,7 @@ public class TasksManager {
         LocalTime startRange = taskTime.getTime1();
         LocalTime endRange = taskTime.getTime2();
 
-        LocalTime currentMcTime = Tools.getMinecraftTimeAt(world, ZonedDateTime.now());
+        LocalTime currentMcTime = Tools.getMinecraftTimeAt(world, ZonedDateTime.now(clock));
         boolean currentlyInWindow = isTimeInRange(currentMcTime, startRange, endRange);
 
         int mcDay = 0;
@@ -295,7 +295,7 @@ public class TasksManager {
             ZonedDateTime windowEnd;
 
             if (firstIteration && currentlyInWindow) {
-                windowStart = ZonedDateTime.now();
+                windowStart = ZonedDateTime.now(clock);
                 windowEnd = Tools.getNextMinecraftTime(world, endRange, 0);
                 if (windowEnd.isBefore(windowStart)) {
                     windowEnd = Tools.getNextMinecraftTime(world, endRange, 1);
@@ -345,7 +345,7 @@ public class TasksManager {
 
         int i = 0;
         while (maxToSchedule > 0) {
-            ZonedDateTime date = ZonedDateTime.of(LocalDate.now(clock), startRange, ZoneId.systemDefault())
+            ZonedDateTime date = ZonedDateTime.of(LocalDate.now(clock), startRange, clock.getZone())
                     .plusSeconds(i * task.getInterval().toSeconds());
             if (!task.getDays().contains(date.getDayOfWeek())) {
                 i++;
@@ -396,7 +396,7 @@ public class TasksManager {
         int i = 0;
         int collected = 0;
         while (collected < maxToSchedule) {
-            ZonedDateTime date = ZonedDateTime.of(LocalDate.now(clock), time, ZoneId.systemDefault())
+            ZonedDateTime date = ZonedDateTime.of(LocalDate.now(clock), time, clock.getZone())
                     .plusDays(i);
             if (task.getDays().contains(date.getDayOfWeek())
                     && date.isAfter(latestScheduledDate)) {

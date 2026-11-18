@@ -26,10 +26,10 @@ public class Tools {
      * Show current time & day
      */
     public static void printDate() {
-        final LocalDate date = LocalDate.now();
-        final DayOfWeek dow = date.getDayOfWeek();
-        final String time = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"));
-        Messages.sendConsole("&aServer time :&e " + time);
+        final ZonedDateTime now = ServerTime.now();
+        final DayOfWeek dow = now.getDayOfWeek();
+        final String time = now.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
+        Messages.sendConsole("&aServer time :&e " + time + " (" + now.getZone() + ")");
         Messages.sendConsole("&aServer day :&e " + dow);
     }
 
@@ -195,11 +195,11 @@ public class Tools {
         ticksUntilTarget += occurrence * 24000;
 
         long realTimeSeconds = (long) (ticksUntilTarget * 0.05);
-        return ZonedDateTime.now().plusSeconds(realTimeSeconds);
+        return ServerTime.now().plusSeconds(realTimeSeconds);
     }
 
     public static LocalTime getMinecraftTimeAt(World world, ZonedDateTime realTime) {
-        long timeDiff = java.time.Duration.between(ZonedDateTime.now(), realTime).getSeconds();
+        long timeDiff = java.time.Duration.between(ServerTime.now(), realTime).getSeconds();
         long ticksDiff = (long) (timeDiff / 0.05);
         long futureTicks = (world.getTime() + ticksDiff) % 24000;
 

@@ -5,6 +5,7 @@ import me.playbosswar.com.enums.Gender;
 import me.playbosswar.com.utils.CommandExecutor;
 import me.playbosswar.com.utils.Files;
 import me.playbosswar.com.utils.Messages;
+import me.playbosswar.com.utils.ServerTime;
 import me.playbosswar.com.utils.gson.GsonConverter;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Nullable;
@@ -71,7 +72,7 @@ public class AdHocCommandsManager {
     }
 
     public List<AdHocCommand> getCommandsToExecute() {
-        ZonedDateTime now = ZonedDateTime.now();
+        ZonedDateTime now = ServerTime.now();
         return loadedCommands.stream()
                 .filter(cmd -> !cmd.isExecuted() && cmd.getScheduledTime().toInstant().toEpochMilli() <= now.toInstant().toEpochMilli())
                 .collect(Collectors.toList());

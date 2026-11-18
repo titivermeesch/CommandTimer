@@ -27,6 +27,7 @@ import me.playbosswar.com.updater.Updater;
 import me.playbosswar.com.utils.Files;
 import me.playbosswar.com.utils.Messages;
 import me.playbosswar.com.utils.OfflinePlayerCache;
+import me.playbosswar.com.utils.ServerTime;
 import me.playbosswar.com.utils.SentryEventFilter;
 import me.playbosswar.com.utils.migrations.MigrationManager;
 import me.playbosswar.com.utils.Tools;
@@ -65,6 +66,7 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
         instance = this;
 
         this.loadConfig();
+        ServerTime.configure(getConfig(), getLogger());
         languageManager = new LanguageManager(this, getConfig().getString("language"));
 
         if(FoliaSchedulerAdapter.isSupported()) {

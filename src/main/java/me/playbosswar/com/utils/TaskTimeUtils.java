@@ -18,7 +18,7 @@ public class TaskTimeUtils {
         List<Date> dates = new ArrayList<>();
 
         taskTimes.forEach(taskTime -> {
-            Calendar cal = Calendar.getInstance();
+            Calendar cal = Calendar.getInstance(ServerTime.getTimeZone());
             // TODO: Caching could be used here
             for(int i = 0; i <= 30; i++) {
                 if(i != 0) {
