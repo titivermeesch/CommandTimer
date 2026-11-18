@@ -14,6 +14,7 @@ import me.playbosswar.com.tasks.TaskInterval;
 import me.playbosswar.com.tasks.TasksManager;
 import me.playbosswar.com.utils.Files;
 import me.playbosswar.com.utils.Messages;
+import me.playbosswar.com.utils.ServerTime;
 import me.playbosswar.com.utils.Tools;
 import me.playbosswar.com.utils.migrations.MigrationManager;
 import org.bukkit.command.Command;
@@ -101,7 +102,7 @@ public class MainCommand implements CommandExecutor {
                 command = command.substring(1);
             }
 
-            ZonedDateTime scheduledTime = ZonedDateTime.now().plusSeconds(delay.toSeconds());
+            ZonedDateTime scheduledTime = ServerTime.now().plusSeconds(delay.toSeconds());
             adHocCommandsManager.scheduleCommand(command, gender, scheduledTime);
 
             Messages.sendMessage(sender, "&aCommand scheduled successfully");

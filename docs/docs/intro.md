@@ -39,8 +39,8 @@ The global configuration file allows you to change the global behaviour of Comma
 | `timeonload`                    | Show the current server time in the console when the plugin loads                           |
 | `debug`                         | Enable debug mode. This will print additional information to the console                    |
 | `showUpdateMessage`             | Show a message in the chat when a plugin update is available                                |
-| `timezoneOverwrite`             | Overwrite the timezone of the server (**Not working currently**)                            |
-| `timezoneOverwriteValue`        | The timezone to overwrite the server timezone with (**Not working currently**)              |
+| `timezoneOverwrite`             | Use `timezoneOverwriteValue` instead of the server timezone for all task times and days     |
+| `timezoneOverwriteValue`        | Timezone ID such as `Europe/Brussels` or `UTC`. Falls back to the server timezone if invalid |
 | `language`                      | The language to use for the plugin. You can add more languages under the `languages` folder |
 | `disablePapiPlaceholderWarnings`| Disable the warning message that appears when a PAPI placeholder is not used correctly      |
 

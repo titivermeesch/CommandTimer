@@ -16,6 +16,7 @@ import me.playbosswar.com.tasks.ScheduledTask;
 import me.playbosswar.com.utils.Callback;
 import me.playbosswar.com.utils.Items;
 import me.playbosswar.com.utils.Messages;
+import me.playbosswar.com.utils.ServerTime;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
@@ -138,7 +139,7 @@ public class ScheduledExecutionsMenu implements InventoryProvider {
         for(int i = 0; i < items.length; i++) {
             ExecutionItem executionItem = allItems.get(i);
             ZonedDateTime date = executionItem.date;
-            String formattedDate = date.format(DATE_FORMATTER);
+            String formattedDate = date.withZoneSameInstant(ServerTime.getZone()).format(DATE_FORMATTER);
             
             if (executionItem.scheduledTask != null) {
                 String[] lore = new String[]{

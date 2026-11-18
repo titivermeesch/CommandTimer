@@ -165,7 +165,6 @@ class TasksManagerScheduleTest {
         assertEquals(50, scheduled.size());
 
         // First entry is catch-up at lastExecuted + 30s (in the past)
-        // Compare instants to avoid timezone mismatch (code uses system default zone)
         Instant catchUpInstant = FIXED_INSTANT.minusSeconds(270);
         assertTrue(scheduled.stream().anyMatch(st -> st.getDate().toInstant().equals(catchUpInstant)),
                 "Should have catch-up entry at lastExecuted + interval");
@@ -286,6 +285,77 @@ class TasksManagerScheduleTest {
 
         assertTrue(dates.get(0).isAfter(fixedNow()),
                 "All entries should be after now");
+    }
+
+    @Test
+    void fixedTime_usesClockZoneNotSystemZone() {
+        ZoneId tokyo = ZoneId.of("Asia/Tokyo");
+        manager.setClock(Clock.fixed(FIXED_INSTANT, tokyo));
+        Task task = createTestTask();
+        addTime(task, new TaskTime(LocalTime.of(14, 0), false));
+
+        manager.populateScheduleForTask(task);
+
+        ZonedDateTime first = scheduledFor(task).stream()
+                .map(ScheduledTask::getDate).min(ZonedDateTime::compareTo).get();
+        assertEquals(ZonedDateTime.of(2024, 1, 16, 14, 0, 0, 0, tokyo).toInstant(), first.toInstant());
+    }
+
+    @Test
+    void fixedTime_dayFilterUsesClockZone() {
+        ZoneId tokyo = ZoneId.of("Asia/Tokyo");
+        manager.setClock(Clock.fixed(FIXED_INSTANT, tokyo));
+        Task task = createTestTask();
+        Collection<DayOfWeek> tuesdayOnly = new ArrayList<>();
+        tuesdayOnly.add(DayOfWeek.TUESDAY);
+        setField(task, "days", tuesdayOnly);
+        addTime(task, new TaskTime(LocalTime.of(1, 0), false));
+
+        manager.populateScheduleForTask(task);
+
+        ZonedDateTime first = scheduledFor(task).stream()
+                .map(ScheduledTask::getDate).min(ZonedDateTime::compareTo).get();
+        assertEquals(ZonedDateTime.of(2024, 1, 16, 1, 0, 0, 0, tokyo).toInstant(), first.toInstant());
+    }
+
+    @Test
+    void range_usesClockZone() {
+        ZoneId tokyo = ZoneId.of("Asia/Tokyo");
+        manager.setClock(Clock.fixed(FIXED_INSTANT, tokyo));
+        Task task = createTestTask();
+        setField(task, "interval", new TaskInterval(0, 0, 30, 0));
+        TaskTime range = new TaskTime(LocalTime.of(10, 0), false);
+        range.setTime2(LocalTime.of(12, 0));
+        addTime(task, range);
+
+        manager.populateScheduleForTask(task);
+
+        List<ZonedDateTime> dates = scheduledFor(task).stream()
+                .map(st -> st.getDate().withZoneSameInstant(tokyo))
+                .sorted()
+                .collect(Collectors.toList());
+        assertEquals(ZonedDateTime.of(2024, 1, 16, 10, 0, 0, 0, tokyo), dates.get(0));
+        for (ZonedDateTime date : dates) {
+            assertFalse(date.toLocalTime().isBefore(LocalTime.of(10, 0)));
+            assertFalse(date.toLocalTime().isAfter(LocalTime.of(12, 0)));
+        }
+    }
+
+    @Test
+    void intervalOnly_dayFilterUsesClockZone() {
+        ZoneId tokyo = ZoneId.of("Asia/Tokyo");
+        manager.setClock(Clock.fixed(FIXED_INSTANT, tokyo));
+        Task task = createTestTask();
+        setField(task, "interval", new TaskInterval(0, 1, 0, 0));
+        Collection<DayOfWeek> tuesdayOnly = new ArrayList<>();
+        tuesdayOnly.add(DayOfWeek.TUESDAY);
+        setField(task, "days", tuesdayOnly);
+
+        manager.populateScheduleForTask(task);
+
+        ZonedDateTime first = scheduledFor(task).stream()
+                .map(ScheduledTask::getDate).min(ZonedDateTime::compareTo).get();
+        assertEquals(ZonedDateTime.of(2024, 1, 16, 0, 55, 0, 0, tokyo).toInstant(), first.toInstant());
     }
 
     // --- Multiple fixed times (independent budgets) ---

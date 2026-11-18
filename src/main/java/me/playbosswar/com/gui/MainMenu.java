@@ -12,6 +12,7 @@ import me.playbosswar.com.gui.tasks.ScheduledExecutionsMenu;
 import me.playbosswar.com.language.LanguageKey;
 import me.playbosswar.com.language.LanguageManager;
 import me.playbosswar.com.utils.Items;
+import me.playbosswar.com.utils.ServerTime;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -55,6 +56,7 @@ public class MainMenu implements InventoryProvider {
         contents.set(1, 3, scheduledExecutionsClickableItem);
 
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+        sdf.setTimeZone(ServerTime.getTimeZone());
         String currentTime = sdf.format(new java.util.Date());
         ItemStack infoItem = Items.generateItem(LanguageKey.GENERAL_INFORMATION_ITEM,
                 XMaterial.REDSTONE_TORCH,
