@@ -5,7 +5,7 @@ sidebar_position: 3
 
 **DISCLAIMER: This is one of the most complex parts of CommandTimer. Please look at the rest of the documentation first before trying out the conditions engine**
 
-The conditions engine is used to add extra logic on top of your [fixed times](schedules#Fixed-times) and [intervals](schedules#intervals).
+The conditions engine is used to add extra logic on top of your [fixed times](schedules#fixed-times) and [intervals](schedules#intervals).
 
 Conditions can have one of the following types:
 
