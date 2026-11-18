@@ -27,6 +27,7 @@ import me.playbosswar.com.updater.Updater;
 import me.playbosswar.com.utils.Files;
 import me.playbosswar.com.utils.Messages;
 import me.playbosswar.com.utils.OfflinePlayerCache;
+import me.playbosswar.com.utils.SentryEventFilter;
 import me.playbosswar.com.utils.migrations.MigrationManager;
 import me.playbosswar.com.utils.Tools;
 import org.bukkit.Bukkit;
@@ -80,6 +81,7 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
             options.setDsn("https://45383fac83f64e65a45d83c3059eb934@o1414814.ingest.sentry.io/6755132");
             options.setTracesSampleRate(0.3);
             options.setRelease(getDescription().getVersion());
+            options.setBeforeSend((event, hint) -> SentryEventFilter.filter(event));
         });
         Sentry.configureScope(scope -> {
             scope.setExtra("bukkit_version", getServer().getBukkitVersion());
@@ -139,6 +141,8 @@ public class CommandTimerPlugin extends JavaPlugin implements Listener {
             conditionEngineManager.onDisable();
         }
         saveDefaultConfig();
+        // Restores the previous default uncaught exception handler so a reload doesn't leave ours behind.
+        Sentry.close();
         plugin = null;
     }
 
